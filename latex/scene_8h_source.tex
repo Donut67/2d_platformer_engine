@@ -1,0 +1,77 @@
+\hypertarget{scene_8h_source}{}\doxysection{scene.\+h}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_\_SCENE\_H\_\_}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_\_SCENE\_H\_\_}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}raylib.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}nTree.h"{}}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}gameObject.h"{}}}
+\DoxyCodeLine{7 \textcolor{comment}{// \#include "{}bulkfile.h"{}}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <cstdlib>}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#include <memory>}}
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#include <map>}}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{keyword}{using namespace }std;}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16 \textcolor{keyword}{class }\mbox{\hyperlink{class_game_object}{GameObject}};}
+\DoxyCodeLine{17 }
+\DoxyCodeLine{18 \textcolor{keyword}{class }\mbox{\hyperlink{class_scene}{Scene}} : \textcolor{keyword}{public} enable\_shared\_from\_this<Scene>\{}
+\DoxyCodeLine{19     \textcolor{keyword}{public}:}
+\DoxyCodeLine{20         \textcolor{comment}{// [[ CONSTRUCTORS ]]}}
+\DoxyCodeLine{21         \mbox{\hyperlink{class_scene}{Scene}}();}
+\DoxyCodeLine{22         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{23         \textcolor{comment}{// post: default constructor}}
+\DoxyCodeLine{24         \mbox{\hyperlink{class_scene}{Scene}}(vector<string> fileNames, \textcolor{keyword}{const} \textcolor{keywordtype}{int} \&act);}
+\DoxyCodeLine{25         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{26         \textcolor{comment}{// post: constructor from the set of creator files on 'fileNames' and sets the current scene}}
+\DoxyCodeLine{27 }
+\DoxyCodeLine{28         \textcolor{comment}{// [[ DESTRUCTORS ]]}}
+\DoxyCodeLine{29 }
+\DoxyCodeLine{30         \textcolor{comment}{// [[ MODIFIERS ]]}}
+\DoxyCodeLine{31         \textcolor{keywordtype}{void} update();}
+\DoxyCodeLine{32         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{33         \textcolor{comment}{// post: updates every enabled and not paused gameobject of the current NTree}}
+\DoxyCodeLine{34         \textcolor{keywordtype}{void} changeScene(\textcolor{keyword}{const} \textcolor{keywordtype}{int} \&scene);}
+\DoxyCodeLine{35         \textcolor{comment}{// pre:  0 <= 'scene' < lenght of NTree list}}
+\DoxyCodeLine{36         \textcolor{comment}{// post: changes the current NTree}}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{38         \textcolor{comment}{// [[ CONSULTORS ]]}}
+\DoxyCodeLine{39         \textcolor{keywordtype}{int} changeScene() \textcolor{keyword}{const};}
+\DoxyCodeLine{40         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{41         \textcolor{comment}{// post: return the current scene position on the list}}
+\DoxyCodeLine{42         \textcolor{keywordtype}{bool} WindowShouldClose() \textcolor{keyword}{const};}
+\DoxyCodeLine{43         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{44         \textcolor{comment}{// post: returns if the window should close}}
+\DoxyCodeLine{45         \textcolor{keywordtype}{void} draw();}
+\DoxyCodeLine{46         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{47         \textcolor{comment}{// post: draws every enabled gameobject of the current NTree}}
+\DoxyCodeLine{48 }
+\DoxyCodeLine{49     \textcolor{keyword}{private}:}
+\DoxyCodeLine{50         \textcolor{keywordtype}{bool} \_shouldClose;}
+\DoxyCodeLine{51         \textcolor{keywordtype}{int} \_actual;}
+\DoxyCodeLine{52 }
+\DoxyCodeLine{53         vector<shared\_ptr<NTree<GameObject>>> \_rootlist;}
+\DoxyCodeLine{54         map<string, shared\_ptr<Texture2D>> \_texturelist;}
+\DoxyCodeLine{55         map<string, shared\_ptr<Font>> \_fontlist;}
+\DoxyCodeLine{56 }
+\DoxyCodeLine{57         \textcolor{keywordtype}{void} updatePostorder(\textcolor{keyword}{const} \mbox{\hyperlink{class_n_tree}{NTree<GameObject>}} \&a);}
+\DoxyCodeLine{58         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{59         \textcolor{comment}{// post: if the content of the root of 'a' is enabled and not paused, updates the content }}
+\DoxyCodeLine{60         \textcolor{comment}{//       of the root of 'a' and recursivelly calls itself for all the childs of 'a'}}
+\DoxyCodeLine{61         \textcolor{keywordtype}{void} drawPostorder(\textcolor{keyword}{const} \mbox{\hyperlink{class_n_tree}{NTree<GameObject>}} \&a);}
+\DoxyCodeLine{62         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{63         \textcolor{comment}{// post: if the content of the root of 'a' is enabled, draws the content of the }}
+\DoxyCodeLine{64         \textcolor{comment}{//       root of 'a' and recursivelly calls itself for all the childs of 'a'}}
+\DoxyCodeLine{65         \textcolor{keywordtype}{bool} exists(\textcolor{keyword}{const} \mbox{\hyperlink{class_n_tree}{NTree<GameObject>}} \&a, \textcolor{keywordtype}{string} name);}
+\DoxyCodeLine{66         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{67         \textcolor{comment}{// post: recusivelly searches for a content in a where its name is 'name'}}
+\DoxyCodeLine{68         \mbox{\hyperlink{class_n_tree}{NTree<GameObject>}} getNextGameObject(ifstream \&file, \textcolor{keywordtype}{bool} \&end);}
+\DoxyCodeLine{69         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{70         \textcolor{comment}{// post: adds to the last root on the list, content from the file}}
+\DoxyCodeLine{71 \};}
+\DoxyCodeLine{72 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

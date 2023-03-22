@@ -1,0 +1,71 @@
+\hypertarget{class_game_object}{}\doxysection{Game\+Object Class Reference}
+\label{class_game_object}\index{GameObject@{GameObject}}
+Inheritance diagram for Game\+Object\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_game_object}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_game_object_a5a02dc33911d76e240ede3eef6c9dcc5}\label{class_game_object_a5a02dc33911d76e240ede3eef6c9dcc5}} 
+{\bfseries Game\+Object} (string name, shared\+\_\+ptr$<$ \mbox{\hyperlink{class_n_tree}{NTree}}$<$ \mbox{\hyperlink{class_game_object}{Game\+Object}} $>$ $>$ root)
+\item 
+\mbox{\Hypertarget{class_game_object_ac0c4f483196f1950f24be79ddec510dc}\label{class_game_object_ac0c4f483196f1950f24be79ddec510dc}} 
+void {\bfseries close\+Window} ()
+\item 
+\mbox{\Hypertarget{class_game_object_a09040a75e5c721358414ff5f48115b71}\label{class_game_object_a09040a75e5c721358414ff5f48115b71}} 
+void {\bfseries add\+Component} (shared\+\_\+ptr$<$ \mbox{\hyperlink{class_component}{Component}} $>$ comp)
+\item 
+\mbox{\Hypertarget{class_game_object_a98f2ec015dbca1a101e1a54413778be3}\label{class_game_object_a98f2ec015dbca1a101e1a54413778be3}} 
+void {\bfseries set\+Enable} (const bool \&enable)
+\item 
+\mbox{\Hypertarget{class_game_object_aaccc9ca2d3ebe7cdabc1b0d66f85d112}\label{class_game_object_aaccc9ca2d3ebe7cdabc1b0d66f85d112}} 
+void {\bfseries set\+Paused} (const bool \&paused)
+\item 
+\mbox{\Hypertarget{class_game_object_adad7d284b670db722a2fda8e6a7997e3}\label{class_game_object_adad7d284b670db722a2fda8e6a7997e3}} 
+void {\bfseries update} ()
+\item 
+\mbox{\Hypertarget{class_game_object_aa8bae16960d8465212c203887c7df794}\label{class_game_object_aa8bae16960d8465212c203887c7df794}} 
+string {\bfseries name} () const
+\item 
+\mbox{\Hypertarget{class_game_object_a78a4c8cb2371bb254267e6ddd20aad4a}\label{class_game_object_a78a4c8cb2371bb254267e6ddd20aad4a}} 
+bool {\bfseries is\+Enable} () const
+\item 
+\mbox{\Hypertarget{class_game_object_a9b03ee5d7759d3182b6f543a6ed5be0e}\label{class_game_object_a9b03ee5d7759d3182b6f543a6ed5be0e}} 
+bool {\bfseries is\+Paused} () const
+\item 
+\mbox{\Hypertarget{class_game_object_a6573d750bf35cde5690bd7b1ccb6393a}\label{class_game_object_a6573d750bf35cde5690bd7b1ccb6393a}} 
+bool {\bfseries Window\+Should\+Close} () const
+\item 
+\mbox{\Hypertarget{class_game_object_a9d506496588574129c665c1ec9b23895}\label{class_game_object_a9d506496588574129c665c1ec9b23895}} 
+vector$<$ shared\+\_\+ptr$<$ \mbox{\hyperlink{class_component}{Component}} $>$ $>$ {\bfseries get\+Components} () const
+\item 
+\mbox{\Hypertarget{class_game_object_a8972830190d98fecdd0960d58a2798c6}\label{class_game_object_a8972830190d98fecdd0960d58a2798c6}} 
+shared\+\_\+ptr$<$ \mbox{\hyperlink{class_component}{Component}} $>$ {\bfseries operator\mbox{[}$\,$\mbox{]}} (const int \&pos) const
+\item 
+\mbox{\Hypertarget{class_game_object_a9fd67a430c23868a3ade5eb4e6694c1e}\label{class_game_object_a9fd67a430c23868a3ade5eb4e6694c1e}} 
+{\footnotesize template$<$typename N $>$ }\\shared\+\_\+ptr$<$ N $>$ {\bfseries operator\mbox{[}$\,$\mbox{]}} (const N \&type) const
+\item 
+\mbox{\Hypertarget{class_game_object_a92303762a653ab86324f36920b3d2e99}\label{class_game_object_a92303762a653ab86324f36920b3d2e99}} 
+shared\+\_\+ptr$<$ \mbox{\hyperlink{class_n_tree}{NTree}}$<$ \mbox{\hyperlink{class_game_object}{Game\+Object}} $>$ $>$ {\bfseries get\+Root} () const
+\item 
+\mbox{\Hypertarget{class_game_object_a89f072a8eba8105a6eab7541bfacdf49}\label{class_game_object_a89f072a8eba8105a6eab7541bfacdf49}} 
+\mbox{\hyperlink{class_n_tree}{NTree}}$<$ \mbox{\hyperlink{class_game_object}{Game\+Object}} $>$ {\bfseries get\+Parent} () const
+\item 
+\mbox{\Hypertarget{class_game_object_a90cf8b2fe60ec35dc2360cad74b73561}\label{class_game_object_a90cf8b2fe60ec35dc2360cad74b73561}} 
+\mbox{\hyperlink{class_n_tree}{NTree}}$<$ \mbox{\hyperlink{class_game_object}{Game\+Object}} $>$ {\bfseries find\+\_\+this} () const
+\item 
+\mbox{\Hypertarget{class_game_object_aa68ee617ab7f7ddeb60025f35faeea0c}\label{class_game_object_aa68ee617ab7f7ddeb60025f35faeea0c}} 
+\mbox{\hyperlink{class_n_tree}{NTree}}$<$ \mbox{\hyperlink{class_game_object}{Game\+Object}} $>$ {\bfseries find} (const string \&name) const
+\item 
+\mbox{\Hypertarget{class_game_object_a54eca2d885b3c3543acb84695e1aa9ea}\label{class_game_object_a54eca2d885b3c3543acb84695e1aa9ea}} 
+void {\bfseries draw} () const
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+game\+Object.\+h\item 
+game\+Object.\+cpp\end{DoxyCompactItemize}

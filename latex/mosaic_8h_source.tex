@@ -1,0 +1,48 @@
+\hypertarget{mosaic_8h_source}{}\doxysection{mosaic.\+h}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_\_MOSAIC\_H\_\_}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_\_MOSAIC\_H\_\_}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}raylib.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}gameObject.h"{}}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}component.h"{}}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include <cstdlib>}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#include <map>}}
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#include <utility>}}
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#include <memory>}}
+\DoxyCodeLine{12 }
+\DoxyCodeLine{13 \textcolor{keyword}{using namespace }std;}
+\DoxyCodeLine{14 }
+\DoxyCodeLine{15 \textcolor{keyword}{class }\mbox{\hyperlink{class_game_object}{GameObject}};}
+\DoxyCodeLine{16 \textcolor{keyword}{class }\mbox{\hyperlink{class_component}{Component}};}
+\DoxyCodeLine{17 }
+\DoxyCodeLine{18 \textcolor{keyword}{class }\mbox{\hyperlink{class_mosaic}{Mosaic}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_component}{Component}}\{}
+\DoxyCodeLine{19     \textcolor{keyword}{public}:}
+\DoxyCodeLine{20         \textcolor{comment}{// CONSTRUCTORS}}
+\DoxyCodeLine{21         \mbox{\hyperlink{class_mosaic}{Mosaic}}();}
+\DoxyCodeLine{22         \mbox{\hyperlink{class_mosaic}{Mosaic}}(shared\_ptr<Texture2D> texture, \textcolor{keywordtype}{float} scale);}
+\DoxyCodeLine{23 }
+\DoxyCodeLine{24         \textcolor{comment}{// DESTRUCTORS}}
+\DoxyCodeLine{25         \mbox{\hyperlink{class_mosaic}{\string~Mosaic}}();}
+\DoxyCodeLine{26 }
+\DoxyCodeLine{27         \textcolor{comment}{// MODIFIERS}}
+\DoxyCodeLine{28         \textcolor{keywordtype}{void} setGameObject(shared\_ptr<GameObject> go);}
+\DoxyCodeLine{29         }
+\DoxyCodeLine{30         \textcolor{keywordtype}{void} update();}
+\DoxyCodeLine{31 }
+\DoxyCodeLine{32         \textcolor{comment}{// CONSULTORS}}
+\DoxyCodeLine{33         \textcolor{keywordtype}{void} draw();}
+\DoxyCodeLine{34 }
+\DoxyCodeLine{35     \textcolor{keyword}{private}:}
+\DoxyCodeLine{36         shared\_ptr<Texture2D> \_texture;}
+\DoxyCodeLine{37         \mbox{\hyperlink{struct_vector2}{Vector2}} \_tileSize;}
+\DoxyCodeLine{38         \textcolor{keywordtype}{string} \_filename;}
+\DoxyCodeLine{39         \textcolor{keywordtype}{float} \_scale;}
+\DoxyCodeLine{40 }
+\DoxyCodeLine{41         shared\_ptr<GameObject> \_gameObject;}
+\DoxyCodeLine{42 \};}
+\DoxyCodeLine{43 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

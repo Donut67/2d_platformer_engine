@@ -1,0 +1,44 @@
+\hypertarget{selector_8h_source}{}\doxysection{selector.\+h}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_\_SELECTOR\_H\_\_}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_\_SELECTOR\_H\_\_}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}raylib.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}gameObject.h"{}}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}component.h"{}}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include <cstdlib>}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#include <memory>}}
+\DoxyCodeLine{10 }
+\DoxyCodeLine{11 \textcolor{keyword}{using namespace }std;}
+\DoxyCodeLine{12 }
+\DoxyCodeLine{13 \textcolor{keyword}{class }\mbox{\hyperlink{class_game_object}{GameObject}};}
+\DoxyCodeLine{14 \textcolor{keyword}{class }\mbox{\hyperlink{class_component}{Component}};}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16 \textcolor{keyword}{class }\mbox{\hyperlink{class_selector}{Selector}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_component}{Component}}\{}
+\DoxyCodeLine{17     \textcolor{keyword}{public}:}
+\DoxyCodeLine{18         \textcolor{comment}{// CONSTRUCTORS}}
+\DoxyCodeLine{19         \mbox{\hyperlink{class_selector}{Selector}}();}
+\DoxyCodeLine{20 }
+\DoxyCodeLine{21         \textcolor{comment}{// DESTRUCTORS}}
+\DoxyCodeLine{22         \mbox{\hyperlink{class_selector}{\string~Selector}}();}
+\DoxyCodeLine{23 }
+\DoxyCodeLine{24         \textcolor{comment}{// MODIFIERS}}
+\DoxyCodeLine{25         \textcolor{keywordtype}{void} setGameObject(shared\_ptr<GameObject> go);}
+\DoxyCodeLine{26 }
+\DoxyCodeLine{27         \textcolor{keywordtype}{void} update();}
+\DoxyCodeLine{28 }
+\DoxyCodeLine{29         \textcolor{comment}{// CONSULTORS}}
+\DoxyCodeLine{30         \textcolor{keywordtype}{void} draw();}
+\DoxyCodeLine{31 }
+\DoxyCodeLine{32     \textcolor{keyword}{private}:}
+\DoxyCodeLine{33         \textcolor{keywordtype}{int} \_actual;}
+\DoxyCodeLine{34         \textcolor{keywordtype}{bool} \_show;}
+\DoxyCodeLine{35 }
+\DoxyCodeLine{36         shared\_ptr<GameObject> \_gameObject;}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{38 \};}
+\DoxyCodeLine{39 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

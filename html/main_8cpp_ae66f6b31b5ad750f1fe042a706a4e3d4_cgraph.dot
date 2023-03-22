@@ -1,0 +1,32 @@
+digraph "main"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="main",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="BeginDrawing",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$raylib_8h.html#a6a5f60baaf1babaae6b0a6edcc55a46c",tooltip=" "];
+  Node1 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="ClearBackground",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$raylib_8h.html#a2a13b1782563e1cad3f415c4b4feacdd",tooltip=" "];
+  Node1 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="CloseWindow",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$raylib_8h.html#a1382776f563b2e87d0c6ba5837fc2b8b",tooltip=" "];
+  Node1 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="DrawText",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$raylib_8h.html#a7f1d5b2cf25fe118146c0063313704b6",tooltip=" "];
+  Node1 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="EndDrawing",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$raylib_8h.html#a7631fc4ac264364a24241c83dfc98685",tooltip=" "];
+  Node1 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="GetFPS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$raylib_8h.html#ab3a4bd0e92015bacb09d4b85e3415f97",tooltip=" "];
+  Node1 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="InitWindow",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$raylib_8h.html#a0cf9b0ddf8b9e2939b24085ed0d208c3",tooltip=" "];
+  Node1 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="MaximizeWindow",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$raylib_8h.html#aee6662f34fd654d3d7da1366dbffd84e",tooltip=" "];
+  Node1 -> Node10 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="SetConfigFlags",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$raylib_8h.html#a46cd0626daa3738ad9f696645aa86c2e",tooltip=" "];
+  Node1 -> Node11 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="SetExitKey",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$raylib_8h.html#a97827bbbf49cef56ef21619633f3b48f",tooltip=" "];
+  Node1 -> Node12 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="SetTargetFPS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$raylib_8h.html#a1ffc8aece4952bf99f488e192e77eb33",tooltip=" "];
+  Node1 -> Node13 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="WindowShouldClose",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$raylib_8h.html#a14dab2feeb947c7810c3b8830ffee233",tooltip=" "];
+}

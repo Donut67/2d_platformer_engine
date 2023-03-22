@@ -1,0 +1,110 @@
+\hypertarget{game_object_8h_source}{}\doxysection{game\+Object.\+h}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_\_GAME\_OBJECT\_H\_\_}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_\_GAME\_OBJECT\_H\_\_}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}raylib.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}nTree.h"{}}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}component.h"{}}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include "{}bulkfile.h"{}}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <cstdlib>}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#include <variant>}}
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#include <vector>}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#include <memory>}}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{keyword}{using namespace }std;}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16 \textcolor{keyword}{class }\mbox{\hyperlink{class_scene}{Scene}};}
+\DoxyCodeLine{17 \textcolor{keyword}{class }\mbox{\hyperlink{class_component}{Component}};}
+\DoxyCodeLine{18 }
+\DoxyCodeLine{19 \textcolor{keyword}{class }\mbox{\hyperlink{class_game_object}{GameObject}} : \textcolor{keyword}{public} enable\_shared\_from\_this<GameObject>\{}
+\DoxyCodeLine{20     \textcolor{keyword}{public}:}
+\DoxyCodeLine{21         \textcolor{comment}{// [[ CONSTRUCTORS ]]}}
+\DoxyCodeLine{22         \mbox{\hyperlink{class_game_object}{GameObject}}();}
+\DoxyCodeLine{23         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{24         \textcolor{comment}{// post: default constructor}}
+\DoxyCodeLine{25         \mbox{\hyperlink{class_game_object}{GameObject}}(\textcolor{keywordtype}{string} name, shared\_ptr<\mbox{\hyperlink{class_n_tree}{NTree<GameObject>}}> root);}
+\DoxyCodeLine{26         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{27         \textcolor{comment}{// post: constructor that sets the name of the game object and a pointer to the current NTree of its scene}}
+\DoxyCodeLine{28 }
+\DoxyCodeLine{29         \textcolor{comment}{// [[ DESTRUCTORS ]]}}
+\DoxyCodeLine{30 }
+\DoxyCodeLine{31         \textcolor{comment}{// [[ MODIFIERS ]]}}
+\DoxyCodeLine{32         \textcolor{keywordtype}{void} closeWindow();}
+\DoxyCodeLine{33         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{34         \textcolor{comment}{// post: sets if the window should close}}
+\DoxyCodeLine{35         \textcolor{keywordtype}{void} addComponent(shared\_ptr<Component> comp);}
+\DoxyCodeLine{36         \textcolor{comment}{// pre:  'comp' exists}}
+\DoxyCodeLine{37         \textcolor{comment}{// post: adds 'comp' to the back of the list of components of the game object}}
+\DoxyCodeLine{38         \textcolor{keywordtype}{void} setEnable(\textcolor{keyword}{const} \textcolor{keywordtype}{bool} \&enable);}
+\DoxyCodeLine{39         \textcolor{comment}{// pre:  'enabled' exists}}
+\DoxyCodeLine{40         \textcolor{comment}{// post: sets if the game object is enabled by 'enabled'}}
+\DoxyCodeLine{41         \textcolor{keywordtype}{void} setPaused(\textcolor{keyword}{const} \textcolor{keywordtype}{bool} \&paused);}
+\DoxyCodeLine{42         \textcolor{comment}{// pre:  'paused' exists}}
+\DoxyCodeLine{43         \textcolor{comment}{// post: sets if the game object is paused by 'paused'}}
+\DoxyCodeLine{44         \textcolor{keywordtype}{void} update();}
+\DoxyCodeLine{45         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{46         \textcolor{comment}{// post: updates all the components of the game object in order}}
+\DoxyCodeLine{47 }
+\DoxyCodeLine{48         \textcolor{comment}{// [[ CONSULTORS ]]}}
+\DoxyCodeLine{49         \textcolor{keywordtype}{string} name() \textcolor{keyword}{const};}
+\DoxyCodeLine{50         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{51         \textcolor{comment}{// post: returns the name of the game object}}
+\DoxyCodeLine{52         \textcolor{keywordtype}{bool} isEnable() \textcolor{keyword}{const};}
+\DoxyCodeLine{53         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{54         \textcolor{comment}{// post: returns if the game object is enabled}}
+\DoxyCodeLine{55         \textcolor{keywordtype}{bool} isPaused() \textcolor{keyword}{const};}
+\DoxyCodeLine{56         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{57         \textcolor{comment}{// post: returns if the game object is paused}}
+\DoxyCodeLine{58         \textcolor{keywordtype}{bool} WindowShouldClose() \textcolor{keyword}{const};}
+\DoxyCodeLine{59         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{60         \textcolor{comment}{// post: returns if the window should close}}
+\DoxyCodeLine{61         vector<shared\_ptr<Component>> getComponents() \textcolor{keyword}{const};}
+\DoxyCodeLine{62         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{63         \textcolor{comment}{// post: returns the list of components of the gam object}}
+\DoxyCodeLine{64         shared\_ptr<Component> operator [](\textcolor{keyword}{const} \textcolor{keywordtype}{int} \&pos) \textcolor{keyword}{const};}
+\DoxyCodeLine{65         \textcolor{comment}{// pre:  0 <= pos < lenght of '\_compList'}}
+\DoxyCodeLine{66         \textcolor{comment}{// post: returns the component at 'pos' position}}
+\DoxyCodeLine{67         \textcolor{keyword}{template}<\textcolor{keyword}{typename} N>}
+\DoxyCodeLine{68         shared\_ptr<N> operator [](\textcolor{keyword}{const} N \&type)\textcolor{keyword}{ const}\{}
+\DoxyCodeLine{69             \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{70             \textcolor{comment}{// post: returns the first component that is of the type of 'type'}}
+\DoxyCodeLine{71             shared\_ptr<N> ret = NULL;}
+\DoxyCodeLine{72             \textcolor{keywordflow}{for}(\textcolor{keyword}{auto} i : \_compList) \textcolor{keywordflow}{if}(\textcolor{keyword}{auto} j = dynamic\_pointer\_cast<N>(i)) \textcolor{keywordflow}{return} j;}
+\DoxyCodeLine{73             \textcolor{keywordflow}{return} ret;}
+\DoxyCodeLine{74         \}}
+\DoxyCodeLine{75         shared\_ptr<NTree<GameObject>> getRoot() \textcolor{keyword}{const};}
+\DoxyCodeLine{76         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{77         \textcolor{comment}{// post: return the root of the actual scene NTree}}
+\DoxyCodeLine{78         \mbox{\hyperlink{class_n_tree}{NTree<GameObject>}} getParent() \textcolor{keyword}{const};}
+\DoxyCodeLine{79         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{80         \textcolor{comment}{// post: returns the parent of this game object, empty NTree if this is the root of the scene NTree}}
+\DoxyCodeLine{81         \mbox{\hyperlink{class_n_tree}{NTree<GameObject>}} find\_this() \textcolor{keyword}{const};}
+\DoxyCodeLine{82         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{83         \textcolor{comment}{// post: returns an NTree which content is this}}
+\DoxyCodeLine{84         \mbox{\hyperlink{class_n_tree}{NTree<GameObject>}} find(\textcolor{keyword}{const} \textcolor{keywordtype}{string} \&name) \textcolor{keyword}{const};}
+\DoxyCodeLine{85         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{86         \textcolor{comment}{// post: returns an NTree which content is a game object of name 'name', empty if it doesn't exists}}
+\DoxyCodeLine{87         \textcolor{keywordtype}{void} draw() \textcolor{keyword}{const};}
+\DoxyCodeLine{88         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{89         \textcolor{comment}{// post: draws all the components of the game object in order}}
+\DoxyCodeLine{90 }
+\DoxyCodeLine{91     \textcolor{keyword}{private}:}
+\DoxyCodeLine{92         \textcolor{keywordtype}{string} \_name;}
+\DoxyCodeLine{93         \textcolor{keywordtype}{bool} \_enabled, \_shouldClose, \_isPaused;}
+\DoxyCodeLine{94 }
+\DoxyCodeLine{95         vector<shared\_ptr<Component>> \_compList;}
+\DoxyCodeLine{96         shared\_ptr<NTree<GameObject>> \_root;}
+\DoxyCodeLine{97 }
+\DoxyCodeLine{98         \mbox{\hyperlink{class_n_tree}{NTree<GameObject>}} getParent\_i(\textcolor{keyword}{const} \mbox{\hyperlink{class_n_tree}{NTree<GameObject>}} \&a, \textcolor{keywordtype}{bool} \&found, \textcolor{keywordtype}{bool} \&ended) \textcolor{keyword}{const};}
+\DoxyCodeLine{99         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{100         \textcolor{comment}{// post: iterative function to find the parent of this game object}}
+\DoxyCodeLine{101         \mbox{\hyperlink{class_n_tree}{NTree<GameObject>}} find\_i(\textcolor{keyword}{const} \mbox{\hyperlink{class_n_tree}{NTree<GameObject>}} \&a, \textcolor{keywordtype}{bool} \&found, \textcolor{keyword}{const} \textcolor{keywordtype}{string} \&name) \textcolor{keyword}{const};}
+\DoxyCodeLine{102         \textcolor{comment}{// pre:  true}}
+\DoxyCodeLine{103         \textcolor{comment}{// post: iterative function to find a game object of name 'name'}}
+\DoxyCodeLine{104 \};}
+\DoxyCodeLine{105 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

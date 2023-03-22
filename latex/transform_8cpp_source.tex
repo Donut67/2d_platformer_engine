@@ -1,0 +1,74 @@
+\hypertarget{transform_8cpp_source}{}\doxysection{transform.\+cpp}
+\mbox{\hyperlink{transform_8cpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00001}00001 \textcolor{preprocessor}{\#include "{}include/raylib.h"{}}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00002}00002 \textcolor{preprocessor}{\#include "{}include/Transform.h"{}}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00003}00003 \textcolor{preprocessor}{\#include <cstdlib>}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00004}00004 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00005}00005 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00006}00006 \textcolor{keyword}{using namespace }std;}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00007}00007 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00008}00008 \textcolor{keywordtype}{void} TransformComp::findThis\_i(\textcolor{keyword}{const} \mbox{\hyperlink{class_n_tree}{NTree<GameObject>}} \&a, \mbox{\hyperlink{struct_vector2}{Vector2}} \&vec, \textcolor{keywordtype}{bool} \&ended)\textcolor{keyword}{ const}\{}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00009}00009     \textcolor{keywordflow}{if}(a.\mbox{\hyperlink{class_n_tree_a4b26c68f62fedcba6c3f0c877a45ef2b}{content}}() != NULL) \{}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00010}00010         \mbox{\hyperlink{struct_vector2}{Vector2}} this\_pos = (*a.\mbox{\hyperlink{class_n_tree_a4b26c68f62fedcba6c3f0c877a45ef2b}{content}}())[\mbox{\hyperlink{class_transform_comp_aca998d3d30bc5ffb4f789fbbec82dbf9}{TransformComp}}()]-\/>getPosition();}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00011}00011         vec = \mbox{\hyperlink{struct_vector2}{Vector2}}\{vec.\mbox{\hyperlink{struct_vector2_a046bb8d17a876acc49415128dc0502f2}{x}} + this\_pos.\mbox{\hyperlink{struct_vector2_a046bb8d17a876acc49415128dc0502f2}{x}}, vec.\mbox{\hyperlink{struct_vector2_a0e07bad05f01ed811b909a2eef97f9e2}{y}} + this\_pos.\mbox{\hyperlink{struct_vector2_a0e07bad05f01ed811b909a2eef97f9e2}{y}}\};}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00012}00012         findThis\_i(a.\mbox{\hyperlink{class_n_tree_a4b26c68f62fedcba6c3f0c877a45ef2b}{content}}()-\/>getParent(), vec, ended);}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00013}00013     \}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00014}00014 \}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00015}00015 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00016}00016 \mbox{\hyperlink{struct_vector2}{Vector2}} TransformComp::findThis()\textcolor{keyword}{ const}\{}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00017}00017     \mbox{\hyperlink{struct_vector2}{Vector2}} vec = \_position;}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00018}00018     \textcolor{keywordtype}{bool} found = \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00019}00019     }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00020}00020     findThis\_i(\_gameObject-\/>getParent(), vec, found);}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00021}00021 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00022}00022     \textcolor{keywordflow}{return} vec;}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00023}00023 \}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00024}00024 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00025}\mbox{\hyperlink{class_transform_comp_aca998d3d30bc5ffb4f789fbbec82dbf9}{00025}} \mbox{\hyperlink{class_transform_comp_aca998d3d30bc5ffb4f789fbbec82dbf9}{TransformComp::TransformComp}}()\{}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00026}00026 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00027}00027 \}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00028}00028 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00029}\mbox{\hyperlink{class_transform_comp_ad2dd9b5b95dd10fda027b7e7dac4dcfc}{00029}} \mbox{\hyperlink{class_transform_comp_aca998d3d30bc5ffb4f789fbbec82dbf9}{TransformComp::TransformComp}}(\mbox{\hyperlink{struct_vector2}{Vector2}} pos, \mbox{\hyperlink{struct_vector2}{Vector2}} scale)\{}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00030}00030     \_position = pos;}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00031}00031     \_scale = scale;}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00032}00032 \}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00033}00033 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00034}00034 \textcolor{comment}{// DESTRUCTORS}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00035}00035 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00036}00036 \textcolor{comment}{// MODIFIERS}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00037}\mbox{\hyperlink{class_transform_comp_a0f65b568a5f038c29cf916c76bd7a3a0}{00037}} \textcolor{keywordtype}{void} \mbox{\hyperlink{class_transform_comp_a0f65b568a5f038c29cf916c76bd7a3a0}{TransformComp::update}}()\{}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00038}00038     }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00039}00039 \}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00040}00040 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00041}\mbox{\hyperlink{class_transform_comp_a8efe7b1e5232803fad535785e5214810}{00041}} \textcolor{keywordtype}{void} \mbox{\hyperlink{class_transform_comp_a8efe7b1e5232803fad535785e5214810}{TransformComp::setPosition}}(\mbox{\hyperlink{struct_vector2}{Vector2}} pos)\{}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00042}00042     \_position = pos;}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00043}00043 \}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00044}00044 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00045}\mbox{\hyperlink{class_transform_comp_a3ffcbf29e0aa22d1cbbbae790d991d9b}{00045}} \textcolor{keywordtype}{void} \mbox{\hyperlink{class_transform_comp_a3ffcbf29e0aa22d1cbbbae790d991d9b}{TransformComp::setScale}}(\mbox{\hyperlink{struct_vector2}{Vector2}} scale)\{}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00046}00046     \_scale = scale;}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00047}00047 \}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00048}00048 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00049}\mbox{\hyperlink{class_transform_comp_a9083e237e46aa74b31581ee1883145b3}{00049}} \textcolor{keywordtype}{void} \mbox{\hyperlink{class_transform_comp_a9083e237e46aa74b31581ee1883145b3}{TransformComp::setGameObject}}(shared\_ptr<GameObject> go)\{}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00050}00050     \_gameObject = go;}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00051}00051 \}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00052}00052 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00053}00053 \textcolor{comment}{// CONSULTORS}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00054}\mbox{\hyperlink{class_transform_comp_a8892eb61be5aad239d6ae1290a0465a3}{00054}} \mbox{\hyperlink{struct_vector2}{Vector2}} \mbox{\hyperlink{class_transform_comp_a8892eb61be5aad239d6ae1290a0465a3}{TransformComp::getPosition}}()\textcolor{keyword}{ const}\{}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00055}00055     \textcolor{keywordflow}{return} \_position;}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00056}00056 \}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00057}00057 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00058}\mbox{\hyperlink{class_transform_comp_a1f00d72d15137385b779c399490a7081}{00058}} \mbox{\hyperlink{struct_vector2}{Vector2}} \mbox{\hyperlink{class_transform_comp_a1f00d72d15137385b779c399490a7081}{TransformComp::getGlobalPosition}}()\textcolor{keyword}{ const}\{}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00059}00059     \textcolor{keywordflow}{return} findThis();}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00060}00060 \}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00061}00061 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00062}\mbox{\hyperlink{class_transform_comp_a4d28010b6a4dc04bc228867a098c13d5}{00062}} \mbox{\hyperlink{struct_vector2}{Vector2}} \mbox{\hyperlink{class_transform_comp_a4d28010b6a4dc04bc228867a098c13d5}{TransformComp::getScale}}()\textcolor{keyword}{ const}\{}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00063}00063     \textcolor{keywordflow}{return} \_scale;}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00064}00064 \}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00065}00065 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00066}00066 \textcolor{comment}{// DRAW}}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00067}\mbox{\hyperlink{class_transform_comp_a57f3d1be904876d86ef3569b30792e38}{00067}} \textcolor{keywordtype}{void} \mbox{\hyperlink{class_transform_comp_a57f3d1be904876d86ef3569b30792e38}{TransformComp::draw}}()\{}
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00068}00068 }
+\DoxyCodeLine{\Hypertarget{transform_8cpp_source_l00069}00069 \}}
+
+\end{DoxyCode}

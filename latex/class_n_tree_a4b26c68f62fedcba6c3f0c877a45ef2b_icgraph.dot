@@ -1,0 +1,12 @@
+digraph "NTree::content"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="RL";
+  Node1 [label="NTree::content",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node2 [label="MenuController::update",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_menu_controller.html#a013dd12a0c8fa12a95f06ac181a63b36",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node3 [label="SettingsContent::update",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_settings_content.html#a1d3e739a38aff6a34d0a6371088313c6",tooltip=" "];
+}

@@ -1,0 +1,47 @@
+\hypertarget{player_controller_8h_source}{}\doxysection{player\+Controller.\+h}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef \_\_PLAYER\_CONTROLLER\_H\_\_}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define \_\_PLAYER\_CONTROLLER\_H\_\_}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}raylib.h"{}}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include "{}gameObject.h"{}}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include "{}monoBehavior.h"{}}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include <cstdlib>}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10 \textcolor{keyword}{using namespace }std;}
+\DoxyCodeLine{11 }
+\DoxyCodeLine{12 \textcolor{keyword}{class }\mbox{\hyperlink{class_game_object}{GameObject}};}
+\DoxyCodeLine{13 \textcolor{keyword}{class }\mbox{\hyperlink{class_mono_behavior}{MonoBehavior}};}
+\DoxyCodeLine{14 }
+\DoxyCodeLine{15 \textcolor{keyword}{class }\mbox{\hyperlink{class_player_controller}{PlayerController}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_mono_behavior}{MonoBehavior}}\{}
+\DoxyCodeLine{16     \textcolor{keyword}{public}:}
+\DoxyCodeLine{17         \textcolor{comment}{// CONSTRUCTORS}}
+\DoxyCodeLine{18         \mbox{\hyperlink{class_player_controller}{PlayerController}}();}
+\DoxyCodeLine{19 }
+\DoxyCodeLine{20         \textcolor{comment}{// DESTRUCTORS}}
+\DoxyCodeLine{21 }
+\DoxyCodeLine{22         \textcolor{comment}{// MODIFIERS}}
+\DoxyCodeLine{23         \textcolor{keywordtype}{void} setGameObject(shared\_ptr<GameObject> go);}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{25         \textcolor{keywordtype}{void} update();}
+\DoxyCodeLine{26 }
+\DoxyCodeLine{27         \textcolor{comment}{// CONSULTORS}}
+\DoxyCodeLine{28         \textcolor{keywordtype}{float} getStartJump() \textcolor{keyword}{const};}
+\DoxyCodeLine{29         \mbox{\hyperlink{struct_vector2}{Vector2}} getSpeed() \textcolor{keyword}{const};}
+\DoxyCodeLine{30 }
+\DoxyCodeLine{31         \textcolor{keywordtype}{void} draw();}
+\DoxyCodeLine{32 }
+\DoxyCodeLine{33     \textcolor{keyword}{private}:}
+\DoxyCodeLine{34         \textcolor{keywordtype}{bool} \_jumping, \_falling, \_wallSlide, \_jumpOnWallSlide, \_bottom, \_back, \_front, \_top, \_animation;}
+\DoxyCodeLine{35         \textcolor{keywordtype}{float} \_startJump, \_jumpOnWallSlideCoolDown, \_movementSpeed;}
+\DoxyCodeLine{36         \mbox{\hyperlink{struct_vector2}{Vector2}} \_speed;}
+\DoxyCodeLine{37 }
+\DoxyCodeLine{38         shared\_ptr<GameObject> \_gameObject;}
+\DoxyCodeLine{39 }
+\DoxyCodeLine{40 }
+\DoxyCodeLine{41 \};}
+\DoxyCodeLine{42 \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

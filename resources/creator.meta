@@ -1,0 +1,395 @@
+scenario1:
+    components:
+        transform: 0.0 0.0,0.0 0.0
+    end
+    objects:
+        tileMap1:
+            components:
+                transform: 0.0 0.0,0.0 0.0
+                tilemap: tilemap2.png,tileset2.meta,6.0 4.0,5.0,tilemap1.meta
+            end
+            objects:
+                mapHitBox:
+                    components:
+                        transform: 0.0 0.0,0.0 0.0
+                    end
+                    objects:
+                        hitbox1:
+                            components:
+                                transform: 0.0 0.0,675.0 45.0
+                                aabb: true,false
+                            end
+                        end
+                        hitbox2:
+                            components:
+                                transform: 675.0 45.0,1200.0 80.0
+                                aabb: true,false
+                            end
+                        end
+                        hitbox3:
+                            components:
+                                transform: 675.0 125.0,650.0 80.0
+                                aabb: true,false
+                            end
+                        end
+                        hitbox4:
+                            components:
+                                transform: 0.0 45.0,45.0 640.0
+                                aabb: true,false
+                            end
+                        end
+                        hitbox5:
+                            components:
+                                transform: 45.0 355.0,400.0 90.0
+                                aabb: true,false
+                            end
+                        end
+                        hitbox6:
+                            components:
+                                transform: 0.0 915.0,995.0 45.0
+                                aabb: true,false
+                            end
+                        end
+                        hitbox7:
+                            components:
+                                transform: 995.0 835.0,925.0 80.0
+                                aabb: true,false
+                            end
+                        end
+                        hitbox8:
+                            components:
+                                transform: 755.0 205.0,490.0 80.0
+                                aabb: true,false
+                            end
+                        end
+                        hitbox9:
+                            components:
+                                transform: 755.0 285.0,410.0 80.0
+                                aabb: true,false
+                            end
+                        end
+                        hitbox10:
+                            components:
+                                transform: 1875.0 125.0,45.0 480.0
+                                aabb: true,false
+                            end
+                        end
+                        hitbox11:
+                            components:
+                                transform: -45.0 685.0,45.0 230.0
+                                aabb: true,false
+                            end
+                        end
+                        hitbox12:
+                            components:
+                                transform: 1920.0 605.0,45.0 230.0
+                                aabb: true,false
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        tileMap2:
+            components:
+                transform: 1920.0 0.0,0.0 0.0
+                tilemap: tilemap2.png,tileset2.meta,6.0 4.0,5.0,tilemap1.meta
+            end
+        end
+        player:
+            components:
+                transform: 160.0 130.0,0.0 0.0
+                animatedsprite: initial2.png,3.5,player_animation_map.meta,0.2
+                rigidbody:
+                playercontroller:
+            end
+            objects:
+                playerCamera:
+                    components:
+                        transform: 896.0 476.0,0.0 0.0
+                        camera:
+                    end
+                end
+                playerHitBox:
+                    components:
+                        transform: 70.0 60.0,90.0 165.0
+                        aabb: false,false
+                    end
+                end
+                topPlayerHitbox:
+                    components:
+                        transform: 70.0 55.0,90.0 5.0
+                        aabb: false,true
+                    end
+                end
+                rightPlayerHitbox:
+                    components:
+                        transform: 160.0 60.0,5.0 165.0
+                        aabb: false,true
+                    end
+                end
+                bottomPlayerHitbox:
+                    components:
+                        transform: 70.0 225.0,90.0 5.0
+                        aabb: false,true
+                    end
+                end
+                leftPlayerHitbox:
+                    components:
+                        transform: 65.0 60.0,5.0 165.0
+                        aabb: false,true
+                    end
+                end
+            end
+        end
+    end
+end
+canvas:
+    components:
+        transform: 0.0 0.0,0.0 0.0
+        menucontroller:
+    end
+    objects:
+        escapemenu1:
+            components:
+                transform: 0.0 10.0,0.0 0.0
+                animation: escapemenu_animation.meta
+            end
+            objects:
+                menubackground1:
+                    components:
+                        transform: 0.0 0.0,1900.0 970.0
+                        mosaic: background_menu.png,5.0
+                    end
+                end
+                inventorytab:
+                    components:
+                        transform: 10.0 10.0,0.0 0.0
+                    end
+                    objects:
+                        inventorycontent:
+                            components:
+                                transform: 0.0 0.0,0.0 0.0
+                            end
+                            objects:
+                                inventorycontent1:
+                                    components:
+                                        transform: 0.0 60.0,1880.0 890.0
+                                        paint: 0 0 0 122
+                                    end
+                                end
+                                inventorycontent2:
+                                    components:
+                                        transform: 0.0 0.0,470.0 60.0
+                                        paint: 0 0 0 122
+                                    end
+                                end
+                            end
+                        end
+                        inventorybutton:
+                            components:
+                                transform: 0.0 0.0,470.0 60.0
+                                button: 255 255 255 0,255 255 255 0
+                                paint: 255 255 255 0
+                                animation: tabhover_animation.meta
+                                label: INVENTORY,fixedsys-ligatures.ttf,c,56,255 255 255 255
+                                tabbuttonbehavior:
+                            end
+                        end
+                    end
+                end
+                skillstab:
+                    components:
+                        transform: 10.0 10.0,0.0 0.0
+                    end
+                    objects:
+                        skillscontent:
+                            components:
+                                transform: 0.0 0.0,0.0 0.0
+                            end
+                            objects:
+                                skillscontent1:
+                                    components:
+                                        transform: 0.0 60.0,1880.0 890.0
+                                        paint: 0 0 0 122
+                                    end
+                                end
+                                skillscontent2:
+                                    components:
+                                        transform: 470.0 0.0,470.0 60.0
+                                        paint: 0 0 0 122
+                                    end
+                                end
+                            end
+                        end
+                        skillsbutton:
+                            components:
+                                transform: 470.0 0.0,470.0 60.0
+                                button: 255 255 255 0,255 255 255 0
+                                paint: 255 255 255 0
+                                animation: tabhover_animation.meta
+                                label: SKILLS,fixedsys-ligatures.ttf,c,56,255 255 255 255
+                                tabbuttonbehavior:
+                            end
+                        end
+                    end
+                end
+                maptab:
+                    components:
+                        transform: 10.0 10.0,0.0 0.0
+                    end
+                    objects:
+                        mapcontent:
+                            components:
+                                transform: 0.0 0.0,0.0 0.0
+                            end
+                            objects:
+                                mapcontent1:
+                                    components:
+                                        transform: 0.0 60.0,1880.0 890.0
+                                        paint: 0 0 0 122
+                                    end
+                                end
+                                mapcontent2:
+                                    components:
+                                        transform: 940.0 0.0,470.0 60.0
+                                        paint: 0 0 0 122
+                                    end
+                                end
+                            end
+                        end
+                        mapbutton:
+                            components:
+                                transform: 940.0 0.0,470.0 60.0
+                                button: 255 255 255 0,255 255 255 0
+                                paint: 255 255 255 0
+                                animation: tabhover_animation.meta
+                                label: MAP,fixedsys-ligatures.ttf,c,56,255 255 255 255
+                                tabbuttonbehavior:
+                            end
+                        end
+                    end
+                end
+                settingstab:
+                    components:
+                        transform: 10.0 10.0,0.0 0.0
+                    end
+                    objects:
+                        settingscontent:
+                            components:
+                                transform: 0.0 0.0,0.0 0.0
+                                settingscontent:
+                            end
+                            objects:
+                                settingscontent1:
+                                    components:
+                                        transform: 0.0 60.0,1880.0 890.0
+                                        paint: 0 0 0 122
+                                    end
+                                end
+                                settingscontent2:
+                                    components:
+                                        transform: 1410.0 0.0,470.0 60.0
+                                        paint: 0 0 0 122
+                                    end
+                                end
+                                screensettingscontent:
+                                    components:
+                                        transform: 360.0 115.0,1400.0 700.0
+                                        mosaic: background_menu.png,5.0
+                                    end
+                                    objects:
+                                        resolution:
+                                            components:
+                                                transform: 20.0 20.0,1380.0 50.0
+                                                label: RESOLUTION,fixedsys-ligatures.ttf,l,48,255 255 255 255
+                                            end
+                                        end
+                                        resolutionselector:
+                                            components:
+                                                transform: 800.0 20.0,250.0 50.0
+                                                button: 255 255 255 0,255 255 255 0
+                                                paint: 122 122 122 122
+                                                label: 1920x1080,fixedsys-ligatures.ttf,l,48,255 255 255 255
+                                                selector:
+                                            end
+                                            objects:
+                                                1280720:
+                                                    components:
+                                                        transform: 0.0 50.0,250.0 50.0
+                                                        button: 255 255 255 0,255 255 255 0
+                                                        paint: 122 122 122 122
+                                                        label: 1280x720,fixedsys-ligatures.ttf,l,48,255 255 255 255
+                                                    end
+                                                end
+                                                19201080:
+                                                    components:
+                                                        transform: 0.0 100.0,250.0 50.0
+                                                        button: 255 255 255 0,255 255 255 0
+                                                        paint: 122 122 122 122
+                                                        label: 1920x1080,fixedsys-ligatures.ttf,l,48,255 255 255 255
+                                                    end
+                                                end
+                                                25601440:
+                                                    components:
+                                                        transform: 0.0 150.0,250.0 50.0
+                                                        button: 255 255 255 0,255 255 255 0
+                                                        paint: 122 122 122 122
+                                                        label: 2560x1440,fixedsys-ligatures.ttf,l,48,255 255 255 255
+                                                    end
+                                                end
+                                            end
+                                        end
+                                    end
+                                end
+                                screensettingsbutton:
+                                    components: 
+                                        transform: 100.0 120.0,260.0 50.0
+                                        button: 255 255 255 0,255 255 255 0
+                                        paint: 255 255 255 0
+                                        animation: tabhover_animation.meta
+                                        label: SCREEN,fixedsys-ligatures.ttf,c,48,255 255 255 255
+                                        tabbuttonbehavior:
+                                    end
+                                end
+                                controlssettingscontent:
+                                    components:
+                                        transform: 360.0 115.0,1400.0 700.0
+                                        mosaic: background_menu.png,5.0
+                                    end
+                                end
+                                controlssettingsbutton:
+                                    components: 
+                                        transform: 100.0 220.0,260.0 50.0
+                                        button: 255 255 255 0,255 255 255 0
+                                        paint: 255 255 255 0
+                                        animation: tabhover_animation.meta
+                                        label: CONTROLS,fixedsys-ligatures.ttf,c,48,255 255 255 255
+                                        tabbuttonbehavior:
+                                    end
+                                end
+                                quitButton1:
+                                    components:
+                                        transform: 830.0 880.0,240.0 60.0
+                                        button: 0 0 0 255,255 255 255 255
+                                        label: QUIT,fixedsys-ligatures.ttf,c,52,255 255 255 255
+                                    end
+                                end
+                            end
+                        end
+                        settingsbutton:
+                            components:
+                                transform: 1410.0 0.0,470.0 60.0
+                                button: 255 255 255 0,255 255 255 0
+                                paint: 255 255 255 0
+                                animation: tabhover_animation.meta
+                                label: SETTINGS,fixedsys-ligatures.ttf,c,56,255 255 255 255
+                                tabbuttonbehavior:
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
