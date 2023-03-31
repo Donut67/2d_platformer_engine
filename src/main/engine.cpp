@@ -1,5 +1,7 @@
 #include "raylib.h"
-#include "../include/scene.h"
+#include "../include/engineScene.h"
+#include "../include/tracker.h"
+#include "../include/viewTransform.h"
 #include <cstdlib>
 #include <iostream>
 #include <memory>
@@ -13,8 +15,13 @@ int main(){
     SetExitKey(KEY_NULL);
     MaximizeWindow();
     
-    Scene manager(vector<string>{"creator.meta"}, 0);
+    EngineScene manager(vector<string>{"creator.meta"}, 0);
     // bool exitWindow = false;
+
+    Tracker t;
+    shared_ptr<Observer> view = make_shared<ViewTransform>("View Transorm");
+    t.setObserver(view);
+    int actual = 0;
 
     SetTargetFPS(144);
 
@@ -25,7 +32,12 @@ int main(){
         BeginDrawing();
             ClearBackground(GRAY);
             manager.draw();
-            DrawText((to_string(GetFPS()) + " FPS").c_str(), 10, 10, 36, GREEN);
+            if(GetKeyPressed() == KEY_TAB) {
+                t.setGameObject(manager.getNthGameObject(actual));
+                actual ++;
+            }
+            t.notify();
+            DrawText((to_string(GetFPS()) + " FPS").c_str(), GetScreenWidth() - 100, 10, 36, GREEN);
         EndDrawing();
     }
 

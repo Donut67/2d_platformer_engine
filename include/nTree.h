@@ -104,7 +104,7 @@ class NTree {
 
         NTree child(int n) const{
         // pre:  n >= 0 (error: tree empty)
-        // post: returns the i son of the root, empty tree if there are less sons
+        // post: returns the i child of the root, empty tree if there are less childs
             NTree value;
 
             if (!isEmpty()) {

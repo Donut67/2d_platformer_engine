@@ -46,7 +46,7 @@ class Scene : public enable_shared_from_this<Scene>{
         // pre:  true
         // post: draws every enabled gameobject of the current NTree
 
-    private:
+    protected:
         bool _shouldClose;
         int _actual;
 
