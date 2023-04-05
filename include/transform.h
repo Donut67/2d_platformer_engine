@@ -32,6 +32,7 @@ class TransformComp : public Component{
         Vector2 getPosition() const;
         Vector2 getGlobalPosition() const;
         Vector2 getScale() const;
+        Vector2 getSize() const;
 
         void draw();
 

@@ -91,9 +91,7 @@ bool AABB::getTransparent() const{
 }
 
 void AABB::draw(){
-    Vector2 pos  = (*_gameObject)[TransformComp()]->getGlobalPosition();
-    Vector2 size = (*_gameObject)[TransformComp()]->getScale();
-    DrawRectangle(pos.x, pos.y, size.x, size.y, LIME);
+    
 }
 
 Vector2 AABB::xAABB(const AABB &ref) const{

@@ -9,11 +9,15 @@ Tracker::Tracker(const shared_ptr<GameObject>& go) {
 }
 
 void Tracker::setObserver(const shared_ptr<Observer>& o){
-    _observers.insert(o);
+    _observers.push_back(o);
 }
 
 void Tracker::remObserver(const shared_ptr<Observer>& o){
-    _observers.erase(o);
+    // _observers.erase(o);
+}
+
+void Tracker::clearObservers() {
+    _observers.clear();
 }
 
 void Tracker::setGameObject(const shared_ptr<GameObject>& go) {
@@ -21,12 +25,15 @@ void Tracker::setGameObject(const shared_ptr<GameObject>& go) {
 }
 
 void Tracker::notify(){
-    Data data;
     if(_go != nullptr) {
-        data.name = _go->name();
-        // data.position = _comp.getPosition();
-        // data.scale = _comp.getScale();
+        float top = 0;
+        for(auto o : _observers) {
+            top += 10;
+            o->update((*_go), top);
 
-        for(auto o : _observers) o->update(data);
+            if(dynamic_pointer_cast<ViewGameobject>(o) != nullptr) top += 50;
+            if(dynamic_pointer_cast<ViewTransform>(o) != nullptr)  top += 110;
+            if(dynamic_pointer_cast<ViewAnimatedSprite>(o) != nullptr)  top += 110;
+        }
     }
 }

@@ -13,9 +13,10 @@ AnimatedSprite::AnimatedSprite(){
 
 }
 
-AnimatedSprite::AnimatedSprite(shared_ptr<Texture2D> texture, float scale, string mapMeta, float timeForFrame){
+AnimatedSprite::AnimatedSprite(string filename, shared_ptr<Texture2D> texture, float scale, string mapMeta, float timeForFrame){
     _texture = texture;
     _scale = scale;
+    _filename = filename;
 
     string line;
     ifstream file("resources/" + mapMeta);

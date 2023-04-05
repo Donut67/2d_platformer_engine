@@ -6,6 +6,7 @@
 
 using namespace std;
 
+string ftostr(float f, int precision);
 unsigned char stouc(const string &source);
 string slice(string source, char divider, int &pos);
 vector<string> splice(string source, char divider);

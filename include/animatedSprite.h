@@ -20,7 +20,7 @@ class AnimatedSprite : public Component{
     public:
         // CONSTRUCTORS
         AnimatedSprite();
-        AnimatedSprite(shared_ptr<Texture2D> texture, float scale, string mapMeta, float timeForFrame);
+        AnimatedSprite(string filename, shared_ptr<Texture2D> texture, float scale, string mapMeta, float timeForFrame);
 
         // DESTRUCTOR
         ~AnimatedSprite();

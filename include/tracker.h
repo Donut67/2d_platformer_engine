@@ -5,15 +5,21 @@
 #include "observer.h"
 // #include "component.h"
 #include "gameObject.h"
+#include "viewGameobject.h"
+#include "viewTransform.h"
+#include "viewTransform.h"
+#include "viewAnimatedsprite.h"
 
 #include <memory>
-#include <set>
+#include <vector>
 
 // class GameObject;
 
+const vector<int> heights{50};
+
 class Tracker : public Subject {
     private:
-        set<shared_ptr<Observer>> _observers;
+        vector<shared_ptr<Observer>> _observers;
         shared_ptr<GameObject> _go;
     
     public:
@@ -21,6 +27,7 @@ class Tracker : public Subject {
         Tracker(const shared_ptr<GameObject>& go);
         void setObserver(const shared_ptr<Observer>& o);
         void remObserver(const shared_ptr<Observer>& o);
+        void clearObservers();
         void setGameObject(const shared_ptr<GameObject>& go);
         void notify();
 };

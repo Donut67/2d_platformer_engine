@@ -2,6 +2,8 @@
 #include "../include/engineScene.h"
 #include "../include/tracker.h"
 #include "../include/viewTransform.h"
+#include "../include/viewGameobject.h"
+#include "../include/viewAnimatedsprite.h"
 #include <cstdlib>
 #include <iostream>
 #include <memory>
@@ -19,9 +21,9 @@ int main(){
     // bool exitWindow = false;
 
     Tracker t;
-    shared_ptr<Observer> view = make_shared<ViewTransform>("View Transorm");
-    t.setObserver(view);
-    int actual = 0;
+    shared_ptr<Observer> v_go = make_shared<ViewGameobject>();
+    shared_ptr<Observer> v_t  = make_shared<ViewTransform>();
+    shared_ptr<Observer> v_as  = make_shared<ViewAnimatedSprite>();
 
     SetTargetFPS(144);
 
@@ -32,9 +34,17 @@ int main(){
         BeginDrawing();
             ClearBackground(GRAY);
             manager.draw();
-            if(GetKeyPressed() == KEY_TAB) {
-                t.setGameObject(manager.getNthGameObject(actual));
-                actual ++;
+            if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                shared_ptr<GameObject> go = manager.findReversePre(GetMousePosition());
+                t.clearObservers();
+                if(go != nullptr) {
+                    t.setObserver(v_go);
+                    for(auto c : go->getComponents()){
+                        if(dynamic_pointer_cast<TransformComp>(c) != nullptr) t.setObserver(v_t);
+                        if(dynamic_pointer_cast<AnimatedSprite>(c) != nullptr) t.setObserver(v_as);
+                    }
+                    t.setGameObject(go);
+                }
             }
             t.notify();
             DrawText((to_string(GetFPS()) + " FPS").c_str(), GetScreenWidth() - 100, 10, 36, GREEN);

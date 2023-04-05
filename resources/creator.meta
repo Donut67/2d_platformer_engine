@@ -90,12 +90,6 @@ scenario1:
                 end
             end
         end
-        tileMap2:
-            components:
-                transform: 1920.0 0.0,0.0 0.0
-                tilemap: tilemap2.png,tileset2.meta,6.0 4.0,5.0,tilemap1.meta
-            end
-        end
         player:
             components:
                 transform: 160.0 130.0,0.0 0.0

@@ -1,8 +1,16 @@
 #include "myFunctions.h"
 #include <vector>
 #include <string>
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
+
+string ftostr(float f, int precision) {
+    stringstream stream;
+    stream << fixed << setprecision(precision) << f;
+    return stream.str();
+}
 
 unsigned char stouc(const string &source){
     return (unsigned char)stoi(source);

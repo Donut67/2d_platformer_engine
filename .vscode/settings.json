@@ -52,7 +52,9 @@
         "xmemory": "cpp",
         "xstddef": "cpp",
         "xtr1common": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "set": "cpp",
+        "sstream": "cpp"
     },
     "git.ignoreLimitWarning": true
 }

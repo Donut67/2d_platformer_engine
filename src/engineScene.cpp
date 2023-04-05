@@ -19,17 +19,46 @@ shared_ptr<GameObject> EngineScene::getNthGameObject(const int& n){
     return found? possible : nullptr;
 }
 
-shared_ptr<GameObject> EngineScene::findReversePre_i(const NTree<GameObject> &a, Vector2 position) {
-    for (int i = a.nChilds() - 1; i >= 0; i--) {
-        findReversePre_i(a.child(i), position);
-    }
-    std::cout << a.content()->name() << " ";
+shared_ptr<GameObject> EngineScene::findReversePre(Vector2 position) {
+    shared_ptr<GameObject> possible;
 
-    return nullptr;
+    bool found = false;
+    int i = _rootlist[_actual]->nBrothers();
+
+    while( i > 0 && !found) {
+        possible = findReversePre_i(_rootlist[_actual]->brother(i), position, found);
+        i--;
+    }
+
+    return possible;
+}
+
+shared_ptr<GameObject> EngineScene::findReversePre_i(const NTree<GameObject> &a, Vector2 position, bool &found) {
+    shared_ptr<GameObject> possible = nullptr;
+    
+    if(!a.isEmpty() && a.content()->isEnable() && !a.content()->isPaused()){
+        int i = a.nChilds();
+        while ( i > 0 && !found ) {
+            possible = findReversePre_i(a.child(i), position, found);
+            i--;
+        }
+
+        if(!found) {
+            Vector2 pos  = (*a.content())[TransformComp()]->getGlobalPosition();
+            Vector2 size = (*a.content())[TransformComp()]->getSize();
+
+            if(CheckCollisionPointRec(position, Rectangle{pos.x, pos.y, size.x, size.y})) {
+                found = true;
+                return a.content();
+            }   
+        }
+    }
+
+    return possible;
 }
 
 shared_ptr<GameObject> EngineScene::getNthGameObject_i(const NTree<GameObject> &a, int &n, bool &found){
-    shared_ptr<GameObject> possible;
+    shared_ptr<GameObject> possible = nullptr;
 
     if(!a.isEmpty() && a.content()->isEnable() && !a.content()->isPaused()){
         if(n == 0) {
@@ -37,12 +66,14 @@ shared_ptr<GameObject> EngineScene::getNthGameObject_i(const NTree<GameObject> &
             return a.content();
         }
         if(a.content()->WindowShouldClose()) _shouldClose = true;
-        for(int i = 1; i <= a.nChilds(); i++) {
+
+        int i = 0;
+        while( i <= _rootlist[_actual]->nBrothers() && !found) {
             n--;
             possible = getNthGameObject_i(a.child(i), n, found);
+            i++;
         }
-
-        return possible;
     }
-    return nullptr;
+
+    return possible;
 }

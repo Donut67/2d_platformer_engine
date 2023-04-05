@@ -63,7 +63,22 @@ Vector2 TransformComp::getScale() const{
     return _scale;
 }
 
+Vector2 TransformComp::getSize() const{
+    Vector2 size = _scale;
+    for(auto c : _gameObject->getComponents()) {
+        if(dynamic_pointer_cast<AnimatedSprite>(c) != nullptr) {
+            Vector2 aux1 = dynamic_pointer_cast<AnimatedSprite>(c)->getTileSize();
+            float aux2 = dynamic_pointer_cast<AnimatedSprite>(c)->getScale();
+            size = Vector2{aux1.x * aux2 > size.x? aux1.x * aux2 : size.x, aux1.y * aux2 > size.y? aux1.y * aux2 : size.y};
+        }
+    }
+
+    return size;
+}
+
 // DRAW
 void TransformComp::draw(){
-
+    Vector2 pos  = getGlobalPosition();
+    Vector2 size = getSize();
+    DrawRectangle(pos.x, pos.y, size.x, size.y, GOLD);
 }

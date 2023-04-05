@@ -1,20 +1,20 @@
-#ifndef __VIEW_TRANSFORM_H__
-#define __VIEW_TRANSFORM_H__
+#ifndef __VIEW_GAMEOBJECT_H__
+#define __VIEW_GAMEOBJECT_H__
 
 #include "viewer.h"
 #include "subject.h"
 #include "raylib.h"
 // #include "transform.h"
 
-class ViewTransform : public Viewer, public Observer {
+class ViewGameobject : public Viewer, public Observer {
     private:
         Font _font;
-        Vector2 _pos, _scale;
-        
+        string _name;
+
         float _top;
 
     public: 
-        ViewTransform() {
+        ViewGameobject() {
             _font = LoadFont("resources/monogram.ttf");
         }
         void show();

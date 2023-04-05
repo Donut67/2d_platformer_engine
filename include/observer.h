@@ -1,10 +1,10 @@
 #ifndef __OBSERVER_H__
 #define __OBSERVER_H__
 
-#include "data.h" 
+#include "gameObject.h" 
 
 class Observer { 
     public: 
-        virtual void update(const Data &data) = 0; 
+        virtual void update(const GameObject &go, const float &height) = 0; 
 };
 #endif

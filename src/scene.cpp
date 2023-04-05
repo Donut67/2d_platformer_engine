@@ -121,7 +121,7 @@ NTree<GameObject> Scene::getNextGameObject(ifstream &file, bool &end){
                         string map_meta = aux1_1[2];
                         float timeFrame = stof(aux1_1[3]);
 
-                        object->addComponent(make_shared<AnimatedSprite>(AnimatedSprite(tex, scale, map_meta, timeFrame)));
+                        object->addComponent(make_shared<AnimatedSprite>(AnimatedSprite(aux1_1[0], tex, scale, map_meta, timeFrame)));
                     }else if(comp == "aabb"){
                         vector<string> aux1_1 = splice(line, ',');
                         
