@@ -9,6 +9,8 @@
 #include "viewTransform.h"
 #include "viewTransform.h"
 #include "viewAnimatedsprite.h"
+#include "viewRigidbody.h"
+#include "viewAABB.h"
 
 #include <memory>
 #include <vector>

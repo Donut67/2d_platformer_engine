@@ -81,4 +81,5 @@ void TransformComp::draw(){
     Vector2 pos  = getGlobalPosition();
     Vector2 size = getSize();
     DrawRectangle(pos.x, pos.y, size.x, size.y, GOLD);
+    DrawRectangleLines(pos.x, pos.y, size.x, size.y, LIGHTGRAY);
 }

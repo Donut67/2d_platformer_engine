@@ -39,6 +39,10 @@ class Collision : public Component{
         // pre:
         // post: debugs the current collision
 
+        virtual bool getStatic() const = 0;
+        virtual bool getTransparent() const = 0;
+        virtual bool getActive() const = 0;
+
     protected:
         bool _isActive, _static, _transparent;
 

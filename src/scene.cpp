@@ -73,7 +73,7 @@ NTree<GameObject> Scene::getNextGameObject(ifstream &file, bool &end){
                         Vector2 position{stof(aux2_1[0]), stof(aux2_1[1])};
                         Vector2 scale{stof(aux2_2[0]), stof(aux2_2[1])};
                         
-                        object->addComponent(make_shared<TransformComp>(TransformComp(position, scale)));
+                        object->addComponent(make_shared<TransformComp>(position, scale));
                     }else if(comp == "tilemap"){
                         vector<string> aux1_1 = splice(line, ',');
                         vector<string> aux2_2 = splice(aux1_1[2], ' ');

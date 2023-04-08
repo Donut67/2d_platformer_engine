@@ -32,8 +32,10 @@ void Tracker::notify(){
             o->update((*_go), top);
 
             if(dynamic_pointer_cast<ViewGameobject>(o) != nullptr) top += 50;
-            if(dynamic_pointer_cast<ViewTransform>(o) != nullptr)  top += 110;
-            if(dynamic_pointer_cast<ViewAnimatedSprite>(o) != nullptr)  top += 110;
+            if(dynamic_pointer_cast<ViewTransform>(o) != nullptr) top += 110;
+            if(dynamic_pointer_cast<ViewAnimatedSprite>(o) != nullptr) top += 140;
+            if(dynamic_pointer_cast<ViewRigidBody>(o) != nullptr) top += 80;
+            if(dynamic_pointer_cast<ViewAABB>(o) != nullptr) top += 140;
         }
     }
 }

@@ -17,8 +17,8 @@ class Component{
         Component(){}
         virtual ~Component(){}
 
-        virtual void update(){cout<<"default update\n";}
-        virtual void draw(){cout<<"default draw\n";}
+        virtual void update() = 0;
+        virtual void draw() = 0;
         virtual void setGameObject(shared_ptr<GameObject> go){_gameObject = go;}
 
     protected:
