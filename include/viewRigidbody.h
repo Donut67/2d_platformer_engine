@@ -11,13 +11,13 @@ class ViewRigidBody : public Viewer, public Observer {
         Font _font;
         
         Vector2 _velocity;
-        float _top;
+        Vector2 _pos;
 
     public: 
         ViewRigidBody() {
             _font = LoadFont("resources/monogram.ttf");
         }
         void show();
-        void update(const GameObject& go, const float &height);
+        void update(const GameObject& go, const Vector2 &pos);
 };
 #endif

@@ -2,24 +2,25 @@
 #include "myFunctions.h"
 
 void ViewAABB::show(){
-    DrawRectangle(10, _top, 450, 140, LIGHTGRAY);
-    DrawTextEx(_font, "AABB COLLISION", Vector2{20.0f, _top + 10.0f}, 30, 1, WHITE);
-    DrawLine(10, _top + 40.0f, 460, _top + 40.0f, GRAY);
+    DrawRectangleRec(Rectangle{_pos.x + 2.0f, _pos.y + 1.0f, 446, 25.0f}, Color{80, 80, 80, 255});
+    DrawTextEx(_font, "AABB COLLISION", Vector2{_pos.x + 7.0f, _pos.y + 2.0f}, 24, 1, WHITE);
 
-    DrawTextEx(_font, "COLLIDING:", Vector2{20.0f, _top + 40.0f}, 30, 1, WHITE);
-    DrawTextEx(_font, _colliding? "true" : "false", Vector2{180.0f, _top + 40.0f}, 30, 1, WHITE);
+    DrawTextEx(_font, "COLLIDING:", Vector2{_pos.x + 7.0f, _pos.y + 25.0f}, 24, 1, WHITE);
+    DrawTextEx(_font, _colliding? "true" : "false", Vector2{_pos.x + 7.0f + 180.0f, _pos.y + 25.0f}, 24, 1, WHITE);
 
-    DrawTextEx(_font, "STATIC:", Vector2{20.0f, _top + 70.0f}, 30, 1, WHITE);
-    DrawTextEx(_font, _static? "true" : "false", Vector2{180.0f, _top + 70.0f}, 30, 1, WHITE);
+    DrawTextEx(_font, "STATIC:", Vector2{_pos.x + 7.0f, _pos.y + 50.0f}, 24, 1, WHITE);
+    DrawTextEx(_font, _static? "true" : "false", Vector2{_pos.x + 7.0f + 180.0f, _pos.y + 50.0f}, 24, 1, WHITE);
 
-    DrawTextEx(_font, "TRANSPAR.:", Vector2{20.0f, _top + 100.0f}, 30, 1, WHITE);
-    DrawTextEx(_font, _transparent? "true" : "false", Vector2{180.0f, _top + 100.0f}, 30, 1, WHITE);
+    DrawTextEx(_font, "TRANSPARENT:", Vector2{_pos.x + 7.0f, _pos.y + 75.0f}, 24, 1, WHITE);
+    DrawTextEx(_font, _transparent? "true" : "false", Vector2{_pos.x + 7.0f + 180.0f, _pos.y + 75.0f}, 24, 1, WHITE);
+
+    DrawLineEx(Vector2{_pos.x, _pos.y + 100.0f}, Vector2{_pos.x + 450, _pos.y + 100.0f}, 2, BLACK);
 }
 
-void ViewAABB::update(const GameObject& go, const float &height){
+void ViewAABB::update(const GameObject& go, const Vector2 &pos){
     _colliding = go[AABB()]->isColliding();
     _static = go[AABB()]->getStatic();
     _transparent = go[AABB()]->getTransparent();
-    _top = height;
+    _pos = pos;
     show();
 }

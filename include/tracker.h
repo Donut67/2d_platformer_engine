@@ -17,8 +17,6 @@
 
 // class GameObject;
 
-const vector<int> heights{50};
-
 class Tracker : public Subject {
     private:
         vector<shared_ptr<Observer>> _observers;
@@ -31,6 +29,6 @@ class Tracker : public Subject {
         void remObserver(const shared_ptr<Observer>& o);
         void clearObservers();
         void setGameObject(const shared_ptr<GameObject>& go);
-        void notify();
+        void notify(const Vector2 &pos);
 };
 #endif

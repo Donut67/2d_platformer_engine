@@ -261,6 +261,10 @@ bool Scene::WindowShouldClose() const{
     return _shouldClose;
 }
 
+NTree<GameObject> Scene::getTree() const{
+    return *_rootlist[_actual];
+}
+
 void Scene::draw(){
     for(int i = 1; i <= _rootlist[_actual]->nBrothers(); i++) drawPostorder(_rootlist[_actual]->brother(i));
 }

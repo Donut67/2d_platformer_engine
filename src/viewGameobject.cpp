@@ -1,12 +1,12 @@
 #include "../include/viewGameobject.h"
 
 void ViewGameobject::show() {
-    DrawRectangle(10, _top, 450, 50, LIGHTGRAY);
-    DrawTextEx(_font, _name.c_str(), Vector2{20.0f, _top + 10.0f}, 30, 1, WHITE);
+    DrawTextEx(_font, _name.c_str(), Vector2{_pos.x + 7.0f, _pos.y}, 24, 1, WHITE);
+    DrawLineEx(Vector2{_pos.x, _pos.y + 25.0f}, Vector2{_pos.x + 450, _pos.y + 25.0f}, 2, BLACK);
 }
 
-void ViewGameobject::update(const GameObject& go, const float &height) {
+void ViewGameobject::update(const GameObject& go, const Vector2 &pos) {
     _name = go.name();
-    _top = height;
+    _pos = pos;
     show();
 }

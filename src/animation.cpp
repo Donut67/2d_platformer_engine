@@ -53,7 +53,7 @@ void Animation::start(){
 }
 
 void Animation::restart(){
-    if(_tracks[_actual].conmponent == "transform"){
+    if(_tracks[_actual].component == "transform"){
         shared_ptr<TransformComp> trans = (*_gameObject)[TransformComp()];
         
         if(_tracks[_actual].part == "posx") {
@@ -73,7 +73,7 @@ void Animation::restart(){
             sca.y = _tracks[_actual].initial;
             trans->setScale(sca);
         }
-    }else if(_tracks[_actual].conmponent == "paint"){
+    }else if(_tracks[_actual].component == "paint"){
         shared_ptr<Paint> trans = (*_gameObject)[Paint()];
 
         Color c = trans->getColor();
@@ -97,7 +97,7 @@ void Animation::stop(){
 
 void Animation::update(){
     if(_started){
-        if(_tracks[_actual].conmponent == "transform"){
+        if(_tracks[_actual].component == "transform"){
             shared_ptr<TransformComp> trans = (*_gameObject)[TransformComp()];
             
             float aux = 0.0f;
@@ -122,7 +122,7 @@ void Animation::update(){
                 sca.y = aux;
                 trans->setScale(sca);
             }
-        }else if(_tracks[_actual].conmponent == "paint"){
+        }else if(_tracks[_actual].component == "paint"){
             shared_ptr<Paint> trans = (*_gameObject)[Paint()];
 
             Color c = trans->getColor();

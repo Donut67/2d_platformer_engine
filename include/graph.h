@@ -1,5 +1,5 @@
-#ifndef __LABELED_GRAPH_H__
-#define __LABELED_GRAPH_H__
+#ifndef __GRAPH_H__
+#define __GRAPH_H__
 
 #include "raylib.h"
 #include <cstdlib>

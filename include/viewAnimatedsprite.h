@@ -13,13 +13,13 @@ class ViewAnimatedSprite : public Viewer, public Observer {
         string _filename;
         Vector2 _tileSize;
         float _scale;
-        float _top;
+        Vector2 _pos;
 
     public: 
         ViewAnimatedSprite() {
             _font = LoadFont("resources/monogram.ttf");
         }
         void show();
-        void update(const GameObject& go, const float &height);
+        void update(const GameObject& go, const Vector2 &pos);
 };
 #endif

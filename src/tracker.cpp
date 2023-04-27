@@ -24,18 +24,17 @@ void Tracker::setGameObject(const shared_ptr<GameObject>& go) {
     _go = go;
 }
 
-void Tracker::notify(){
+void Tracker::notify(const Vector2 &pos){
     if(_go != nullptr) {
-        float top = 0;
+        Vector2 p = pos;
         for(auto o : _observers) {
-            top += 10;
-            o->update((*_go), top);
+            o->update((*_go), p);
 
-            if(dynamic_pointer_cast<ViewGameobject>(o) != nullptr) top += 50;
-            if(dynamic_pointer_cast<ViewTransform>(o) != nullptr) top += 110;
-            if(dynamic_pointer_cast<ViewAnimatedSprite>(o) != nullptr) top += 140;
-            if(dynamic_pointer_cast<ViewRigidBody>(o) != nullptr) top += 80;
-            if(dynamic_pointer_cast<ViewAABB>(o) != nullptr) top += 140;
+            if(dynamic_pointer_cast<ViewGameobject>(o) != nullptr) p.y += 25;
+            if(dynamic_pointer_cast<ViewTransform>(o) != nullptr) p.y += 75;
+            if(dynamic_pointer_cast<ViewAnimatedSprite>(o) != nullptr) p.y += 100;
+            if(dynamic_pointer_cast<ViewRigidBody>(o) != nullptr) p.y += 60;
+            if(dynamic_pointer_cast<ViewAABB>(o) != nullptr) p.y += 100;
         }
     }
 }

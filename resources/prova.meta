@@ -1,0 +1,46 @@
+scenario1:
+    components:
+        transform: 0.0 0.0,0.0 0.0
+    end
+    objects:
+        object1:
+            components:
+                transform: 0.0 0.0,0.0 0.0
+            end
+            objects:
+                inObject1:
+                    components:
+                        transform: 0.0 0.0,0.0 0.0
+                    end
+                end
+            end
+        end
+        object2:
+            components:
+                transform: 0.0 0.0,0.0 0.0
+            end
+        end
+        object4:
+            components:
+                transform: 0.0 0.0,0.0 0.0
+            end
+        end
+    end
+end
+scenario2:
+    components:
+        transform: 0.0 0.0,0.0 0.0
+    end
+    objects:
+        object3:
+            components:
+                transform: 0.0 0.0,0.0 0.0
+            end
+        end
+        object5:
+            components:
+                transform: 0.0 0.0,0.0 0.0
+            end
+        end
+    end
+end

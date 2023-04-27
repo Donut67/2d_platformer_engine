@@ -9,6 +9,6 @@ class Subject {
     public:
         virtual void setObserver(const shared_ptr<Observer>& o) = 0;
         virtual void remObserver(const shared_ptr<Observer>& o) = 0;
-        virtual void notify() = 0;
+        virtual void notify(const Vector2 &pos) = 0;
 };
 #endif

@@ -15,7 +15,7 @@ class Component;
 
 typedef struct animationTrack{
     float time;
-    string type, conmponent, part;
+    string type, component, part;
     float initial, ending;
 } animationTrack;
 

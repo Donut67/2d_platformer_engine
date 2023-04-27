@@ -1,5 +1,5 @@
-#ifndef __Labeled_GRAPH_H__
-#define __Labeled_GRAPH_H__
+#ifndef __LABELED_GRAPH_H__
+#define __LABELED_GRAPH_H__
 
 #include "raylib.h"
 #include "graph.h"
@@ -15,9 +15,6 @@ class LabeledGraph : public Graph<vertex> {
     public:
         LabeledGraph() {
             _first = nullptr;
-        }
-        LabeledGraph(const LabeledGraph &o){
-            _first = o._first;
         }
 
         void AddVertex(const vertex &v){
@@ -96,7 +93,7 @@ class LabeledGraph : public Graph<vertex> {
             return false;
         }
         
-        vector<vertex> getNodes() const{
+        vector<vertex> GetNodes() const{
             shared_ptr<node> aux = _first;
             vector<vertex> result;
 
@@ -107,7 +104,7 @@ class LabeledGraph : public Graph<vertex> {
 
             return result;
         }
-        vector<label> getEdges(const vertex &v) const {
+        vector<label> GetEdges(const vertex &v) const {
             shared_ptr<node> aux = findVertex(v);
             shared_ptr<Edge> edges = aux->edges;
             vector<label> result;
@@ -119,7 +116,7 @@ class LabeledGraph : public Graph<vertex> {
 
             return result;
         }
-        vertex getDestination(const vertex &v, const label &l) const{
+        vertex GetDestination(const vertex &v, const label &l) const{
             shared_ptr<node> aux = findVertex(v);
             shared_ptr<Edge> edges = aux->edges;
             bool found = false;
@@ -131,11 +128,11 @@ class LabeledGraph : public Graph<vertex> {
 
             return edges->dest->content;
         }
-        label getLabel(const vertex &v1, const vertex &v2) const{
+        label GetLabel(const vertex &v1, const vertex &v2) const{
             return findEdge(v1, v2)->lab;
         }
         
-    private:
+    protected:
         struct Edge; // oops!
         struct node {
             vertex content;

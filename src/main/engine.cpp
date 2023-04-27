@@ -6,6 +6,8 @@
 #include "../include/viewAnimatedsprite.h"
 #include "../include/viewRigidbody.h"
 #include "../include/viewAABB.h"
+#include "../include/inspector.h"
+#include "../include/hierarchy.h"
 #include <cstdlib>
 #include <iostream>
 #include <memory>
@@ -23,35 +25,51 @@ int main(){
     MaximizeWindow();
     
     EngineScene manager(vector<string>{"creator.meta"}, 0);
+    Inspector inspector(Vector2{GetScreenWidth() - 450.0f, 0.0f});
+    Hierarchy hierarchy(Vector2{0.0f, 0.0f}, manager);
     // bool exitWindow = false;
 
-    bool canUpdate, isPendingAprove, aprovingGO;
-    canUpdate = isPendingAprove = aprovingGO = false;
-    bool isSelecting = true;
-    Font font = LoadFont("resources/monogram.ttf");
-    shared_ptr<GameObject> go = nullptr;
+    // string engineState = "none";
 
-    Tracker t;
-    vector<shared_ptr<Observer>> observerList{
-        make_shared<ViewGameobject>(),
-        make_shared<ViewTransform>(),
-        make_shared<ViewAnimatedSprite>(),
-        make_shared<ViewRigidBody>(),
-        make_shared<ViewAABB>()
-    };
+    // bool canUpdate, isPendingAprove, aprovingGO;
+    // canUpdate = isPendingAprove = aprovingGO = false;
+    // bool isSelecting = true;
+    // Font font = LoadFont("resources/monogram.ttf");
+    // shared_ptr<GameObject> go = nullptr;
+
+    // Tracker t;
+    // vector<shared_ptr<Observer>> observerList{
+    //     make_shared<ViewGameobject>(),
+    //     make_shared<ViewTransform>(),
+    //     make_shared<ViewAnimatedSprite>(),
+    //     make_shared<ViewRigidBody>(),
+    //     make_shared<ViewAABB>()
+    // };
 
     SetTargetFPS(144);
 
     manager.update();
     while(!WindowShouldClose()){
-        if(canUpdate) manager.update();
+        // if(canUpdate) manager.update();
         // if(WindowShouldClose() || manager.WindowShouldClose()) exitWindow = true;
+        inspector.update();
+        hierarchy.update();
+
+        if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !inspector.isClicked() && !inspector.isMoving() && !hierarchy.isClicked() && !hierarchy.isMoving()) {
+            shared_ptr<GameObject> go = manager.findReversePre(GetMousePosition());
+            inspector.setObservers(go);
+        } else {
+            if(hierarchy.objectSelected()) inspector.setObservers(hierarchy.getSelected());
+        }
+
         BeginDrawing();
             // Draw Scene
             ClearBackground(GRAY);
             manager.draw();
+            inspector.draw();
+            hierarchy.draw();
 
-            if(isPendingAprove) {
+            /*if(isPendingAprove) {
                 // 
                 Vector2 pos{GetScreenWidth() / 2.0f - GetScreenWidth() / 4.0f, 300};
                 Vector2 size{GetScreenWidth() / 2.0f, 100};
@@ -102,7 +120,7 @@ int main(){
                 // Add Component button
                 DrawTextEx(font, "Add Component", Vector2{320, GetScreenHeight() - 27.0f}, 24, 1, GRAY);
                 DrawLine(485, GetScreenHeight() - 30, 485, GetScreenHeight(), GRAY);
-            }
+            }*/
 
             DrawFPS(GetScreenWidth() - 100, 10);
         EndDrawing();

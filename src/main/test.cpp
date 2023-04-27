@@ -1,4 +1,4 @@
-#include "../include/labeledGraph.h"
+#include "../include/conditionalGraph.h"
 #include <cstdlib>
 #include <iostream>
 #include <memory>
@@ -7,10 +7,10 @@
 
 using namespace std;
 
-void showGraph(const LabeledGraph<int, string> &lg);
+void showGraph(const ConditionalGraph<int, string> &lg);
 
 int main(){
-    LabeledGraph<int, string> lg;
+    ConditionalGraph<int, string> lg;
 
     lg.AddVertex(100);
     lg.AddVertex(200);
@@ -22,18 +22,27 @@ int main(){
     lg.AddEdge(100, 200, "third");
     lg.AddEdge(100,  50, "forth");
 
-    showGraph(lg);
+    cout << lg.Content() << "\n";
 
-    cout << lg.getDestination(100, "forth") << "\n";
+    for(auto i : lg.GetActualEdges()) {
+        if(i == "third") {
+            lg.GetDestination(i);
+            break;
+        }
+    }
+
+    cout << lg.Content() << "\n";
+
+    
 
     return 0;
 }
 
-void showGraph(const LabeledGraph<int, string> &lg){
-    vector<int> val = lg.getNodes();
+void showGraph(const ConditionalGraph<int, string> &lg){
+    vector<int> val = lg.GetNodes();
 
     for(int v : val) {
-        vector<string> labels = lg.getEdges(v);
+        vector<string> labels = lg.GetEdges(v);
         cout << v << ": ";
         for(string l : labels) cout << l << " ";
         cout << "\n";
