@@ -17,7 +17,7 @@ class Sprite : public Component{
     public:
         // CONSTRUCTORS
         Sprite();
-        Sprite(shared_ptr<Texture2D> texture, float scale);
+        Sprite(string filename, shared_ptr<Texture2D> texture, float scale);
 
         // DESTRUCTOR
         ~Sprite();
@@ -28,11 +28,15 @@ class Sprite : public Component{
         void update();
 
         // CONSULTORS
+        float scale() const;
+        string filename() const;
+        shared_ptr<Texture2D> texture() const;
 
         // DRAW
         void draw();
 
     private:
+        string _filename;
         shared_ptr<Texture2D> _texture;
         float _scale;
 

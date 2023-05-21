@@ -3,19 +3,21 @@
 
 #include "subject.h"
 #include "observer.h"
-// #include "component.h"
 #include "gameObject.h"
+
 #include "viewGameobject.h"
 #include "viewTransform.h"
 #include "viewTransform.h"
 #include "viewAnimatedsprite.h"
+#include "viewSprite.h"
 #include "viewRigidbody.h"
 #include "viewAABB.h"
+#include "viewButton.h"
+#include "viewLabel.h"
+#include "viewPaint.h"
 
 #include <memory>
 #include <vector>
-
-// class GameObject;
 
 class Tracker : public Subject {
     private:
@@ -29,6 +31,6 @@ class Tracker : public Subject {
         void remObserver(const shared_ptr<Observer>& o);
         void clearObservers();
         void setGameObject(const shared_ptr<GameObject>& go);
-        void notify(const Vector2 &pos);
+        void notify(Vector2 &pos);
 };
 #endif

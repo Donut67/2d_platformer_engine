@@ -94,8 +94,6 @@ scenario1:
             components:
                 transform: 160.0 130.0,0.0 0.0
                 animatedsprite: initial2.png,3.5,player_animation_map.meta,0.2
-                rigidbody:
-                playercontroller:
             end
             objects:
                 playerCamera:

@@ -1,21 +1,22 @@
-#ifndef __VIEW_RIGIDBODY_H__
-#define __VIEW_RIGIDBODY_H__
+#ifndef __VIEW_PAINT_H__
+#define __VIEW_PAINT_H__
 
 #include "viewer.h"
 #include "subject.h"
 #include "raylib.h"
-// #include "transform.h"
+#include "colorWheel.h"
 
-class ViewRigidBody : public Viewer, public Observer {
+class ViewPaint : public Viewer, public Observer {
     private:
         Font _font;
-        
-        Vector2 _velocity;
-        Vector2 _pos;
+        shared_ptr<Paint> _paint;
+        shared_ptr<ColorWheel> _cw;
         shared_ptr<GameObject> _go;
+        
+        Vector2 _pos;
 
     public: 
-        ViewRigidBody() {
+        ViewPaint() {
             _font = LoadFont("resources/monogram.ttf");
         }
         void show();

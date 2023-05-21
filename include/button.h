@@ -32,6 +32,7 @@ class Button : public Component{
         bool isHover() const;
         bool isPressed() const;
         Color getColor() const;
+        Color getHoverColor() const;
         
         void draw();
 

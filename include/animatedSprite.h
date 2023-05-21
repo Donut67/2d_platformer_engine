@@ -39,6 +39,7 @@ class AnimatedSprite : public Component{
 
         string getFileName() const{ return _filename; }
         string getMetaName() const{ return _metaname; }
+        shared_ptr<Texture2D> getTexture() const{ return _texture; }
 
         float getScale() const{ return _scale; }
         int getActual() const{ return _actual; }

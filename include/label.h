@@ -26,6 +26,8 @@ class Label : public Component{
         void setGameObject(shared_ptr<GameObject> go);
         void setText(string text);
         void setColor(Color color);
+        void setAlign(char align);
+        void setFontSize(int size);
 
         void update();
 

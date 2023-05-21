@@ -187,7 +187,7 @@ NTree<GameObject> Scene::getNextGameObject(ifstream &file, bool &end){
                             _texturelist.insert(pair<string, shared_ptr<Texture2D>>(aux1[0], tex));
                         }
 
-                        object->addComponent(make_shared<Sprite>(Sprite(tex, stof(aux1[1]))));
+                        object->addComponent(make_shared<Sprite>(Sprite(aux1[0], tex, stof(aux1[1]))));
                     }else if(comp == "animation"){
                         object->addComponent(make_shared<Animation>(Animation(line)));
                     }else if(comp == "rigidbody"){
@@ -261,8 +261,8 @@ bool Scene::WindowShouldClose() const{
     return _shouldClose;
 }
 
-NTree<GameObject> Scene::getTree() const{
-    return *_rootlist[_actual];
+shared_ptr<NTree<GameObject>> Scene::getTree() const{
+    return _rootlist[_actual];
 }
 
 void Scene::draw(){

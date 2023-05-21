@@ -36,9 +36,8 @@ void GameObject::setPaused(const bool &paused){
     _isPaused = paused;
 }
 
-void GameObject::addComponent(shared_ptr<Component> comp){
-    _compList.push_back(comp);
-    comp->setGameObject(shared_from_this());
+void GameObject::setName(const string &name){
+    _name = name;
 }
 
 void GameObject::update(){
@@ -99,16 +98,7 @@ NTree<GameObject> GameObject::getParent() const{
 }
 
 NTree<GameObject> GameObject::find_this() const{
-    NTree<GameObject> res;
-    int i = 1;
-    bool found = false;
-
-    while(!found && i <= _root->nBrothers()){
-        find_i(_root->brother(i), found, _name);
-        i++;
-    }
-    
-    return res;
+    return find(_name);
 }
 
 NTree<GameObject> GameObject::find(const string &name) const{

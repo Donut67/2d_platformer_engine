@@ -34,6 +34,14 @@ void Label::setColor(Color color){
     _color = color;
 }
 
+void Label::setAlign(char align){
+    _allign = align;
+}
+
+void Label::setFontSize(int size){
+    _fontSize = size;
+}
+
 void Label::update(){
 
 }

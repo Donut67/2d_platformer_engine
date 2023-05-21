@@ -32,7 +32,14 @@ class GameObject : public enable_shared_from_this<GameObject>{
         void closeWindow();
         // pre:  true
         // post: sets if the window should close
-        void addComponent(shared_ptr<Component> comp);
+        template<typename N>
+        void addComponent(shared_ptr<N> comp){
+            if((*this)[N()] == nullptr) {
+                _compList.push_back(comp);
+                comp->setGameObject(shared_from_this());
+            }
+        }
+
         // pre:  'comp' exists
         // post: adds 'comp' to the back of the list of components of the game object
         void setEnable(const bool &enable);
@@ -41,6 +48,37 @@ class GameObject : public enable_shared_from_this<GameObject>{
         void setPaused(const bool &paused);
         // pre:  'paused' exists
         // post: sets if the game object is paused by 'paused'
+        void setName(const string &name);
+        // pre:  'name' exists
+        // post: sets the name of the gameObject to 'name'
+        template<typename N>
+        void deleteComponent() {
+            int i = 0;
+            bool found = false;
+            while(i <= (int)_compList.size() && !found) {
+                if(auto j = dynamic_pointer_cast<N>(_compList[i])) found = true;
+                if(!found) i++;
+            }
+            if(found) _compList.erase(_compList.begin() + (i - 1));
+        }
+
+        template<typename N>
+        void moveComponentUp(){
+            // pre:  true
+            // post: reorders the list of components so the component of 'type' moves one position forward, 
+            //       if 'type' is the first in the list, does nothing
+            int i = findComponent<N>();
+            if(i != -1 && i > 1) swap(_compList[i], _compList[i - 1]);
+        }
+        template<typename N>
+        void moveComponentDown(){
+            // pre:  true
+            // post: reorders the list of components so the component of 'type' moves one position backwards, 
+            //       if 'type' is the last in the list, does nothing
+            int i = findComponent<N>();
+            if(i != -1 && i < (int)_compList.size() - 1) swap(_compList[i], _compList[i + 1]); 
+        }
+
         void update();
         // pre:  true
         // post: updates all the components of the game object in order
@@ -68,9 +106,15 @@ class GameObject : public enable_shared_from_this<GameObject>{
         shared_ptr<N> operator [](const N &type) const{
             // pre:  true
             // post: returns the first component that is of the type of 'type'
-            shared_ptr<N> ret = NULL;
             for(auto i : _compList) if(auto j = dynamic_pointer_cast<N>(i)) return j;
-            return ret;
+            return nullptr;
+        }
+        template<typename N>
+        shared_ptr<N> getComponent() const{
+            // pre:  true
+            // post: returns the first component that is of the type of 'N'
+            for(auto i : _compList) if(auto j = dynamic_pointer_cast<N>(i)) return j;
+            return nullptr;
         }
         shared_ptr<NTree<GameObject>> getRoot() const;
         // pre:  true
@@ -95,6 +139,16 @@ class GameObject : public enable_shared_from_this<GameObject>{
         vector<shared_ptr<Component>> _compList;
         shared_ptr<NTree<GameObject>> _root;
 
+        template<typename N>
+        int findComponent() const{
+            int i = 0;
+            bool found = false;
+            while(i < (int)_compList.size() && !found) {
+                if(auto j = dynamic_pointer_cast<N>(_compList[i])) found = true;
+                if(!found) i++;
+            }
+            return found? i : -1;
+        }
         NTree<GameObject> getParent_i(const NTree<GameObject> &a, bool &found, bool &ended) const;
         // pre:  true
         // post: iterative function to find the parent of this game object

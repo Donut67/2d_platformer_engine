@@ -42,7 +42,7 @@ class Scene : public enable_shared_from_this<Scene>{
         bool WindowShouldClose() const;
         // pre:  true
         // post: returns if the window should close
-        NTree<GameObject> getTree() const;
+        shared_ptr<NTree<GameObject>> getTree() const;
         // pre:  true
         // post: returns the root Tree of the current scene
         void draw();

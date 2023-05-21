@@ -9,6 +9,7 @@
 class ViewAABB : public Viewer, public Observer {
     private:
         Font _font;
+        shared_ptr<GameObject> _go;
         
         bool _colliding, _static, _transparent;
         Vector2 _pos;
@@ -18,6 +19,6 @@ class ViewAABB : public Viewer, public Observer {
             _font = LoadFont("resources/monogram.ttf");
         }
         void show();
-        void update(const GameObject& go, const Vector2 &pos);
+        void update(shared_ptr<GameObject> go, const Vector2 &pos);
 };
 #endif

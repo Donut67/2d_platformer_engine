@@ -94,13 +94,15 @@ bool AnimatedSprite::ended() const{
 }
 
 void AnimatedSprite::draw(){
-    Vector2 pos = (*_gameObject)[TransformComp()]->getGlobalPosition();
-    int i = _cicle[_actual] % (int)(_size.x), j = floor(_cicle[_actual] / (int)(_size.x));
-    Rectangle src = Rectangle{
-        i * _tileSize.x, 
-        j * _tileSize.y, 
-        (_fliph? -_tileSize.x : _tileSize.x), 
-        (_flipv? -_tileSize.y : _tileSize.y)};
-    Rectangle dst = Rectangle{pos.x, pos.y, _tileSize.x * _scale, _tileSize.y * _scale};
-    DrawTexturePro(*_texture, src, dst, Vector2{0.0f, 0.0f}, 0.0f, WHITE);
+    if(_texture != nullptr) {
+        Vector2 pos = (*_gameObject)[TransformComp()]->getGlobalPosition();
+        int i = _cicle[_actual] % (int)(_size.x), j = floor(_cicle[_actual] / (int)(_size.x));
+        Rectangle src = Rectangle{
+            i * _tileSize.x, 
+            j * _tileSize.y, 
+            (_fliph? -_tileSize.x : _tileSize.x), 
+            (_flipv? -_tileSize.y : _tileSize.y)};
+        Rectangle dst = Rectangle{pos.x, pos.y, _tileSize.x * _scale, _tileSize.y * _scale};
+        DrawTexturePro(*_texture, src, dst, Vector2{0.0f, 0.0f}, 0.0f, WHITE);
+    }
 }

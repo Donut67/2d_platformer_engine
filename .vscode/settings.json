@@ -54,7 +54,13 @@
         "xtr1common": "cpp",
         "algorithm": "cpp",
         "set": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "functional": "cpp",
+        "iomanip": "cpp",
+        "xhash": "cpp",
+        "xloctime": "cpp",
+        "unordered_map": "cpp",
+        "xlocmon": "cpp"
     },
     "git.ignoreLimitWarning": true
 }

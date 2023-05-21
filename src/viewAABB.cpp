@@ -14,13 +14,14 @@ void ViewAABB::show(){
     DrawTextEx(_font, "TRANSPARENT:", Vector2{_pos.x + 7.0f, _pos.y + 75.0f}, 24, 1, WHITE);
     DrawTextEx(_font, _transparent? "true" : "false", Vector2{_pos.x + 7.0f + 180.0f, _pos.y + 75.0f}, 24, 1, WHITE);
 
-    DrawLineEx(Vector2{_pos.x, _pos.y + 100.0f}, Vector2{_pos.x + 450, _pos.y + 100.0f}, 2, BLACK);
+    DrawLineEx(Vector2{_pos.x, _pos.y + 102.0f}, Vector2{_pos.x + 450, _pos.y + 102.0f}, 2, BLACK);
 }
 
-void ViewAABB::update(const GameObject& go, const Vector2 &pos){
-    _colliding = go[AABB()]->isColliding();
-    _static = go[AABB()]->getStatic();
-    _transparent = go[AABB()]->getTransparent();
+void ViewAABB::update(shared_ptr<GameObject> go, const Vector2 &pos){
+    _colliding = go->getComponent<AABB>()->isColliding();
+    _static = go->getComponent<AABB>()->getStatic();
+    _transparent = go->getComponent<AABB>()->getTransparent();
+    _go = go;
     _pos = pos;
     show();
 }

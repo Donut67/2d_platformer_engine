@@ -10,8 +10,9 @@ Sprite::Sprite(){
     
 }
 
-Sprite::Sprite(shared_ptr<Texture2D> texture, float scale){
+Sprite::Sprite(string filename, shared_ptr<Texture2D> texture, float scale){
     _texture = texture;
+    _filename = filename;
     _scale = scale;
 }
 
@@ -27,7 +28,21 @@ void Sprite::setGameObject(shared_ptr<GameObject> go){
     _gameObject = go;
 }
 
+float Sprite::scale() const {
+    return _scale;
+}
+
+string Sprite::filename() const {
+    return _filename;
+}
+
+shared_ptr<Texture2D> Sprite::texture() const {
+    return _texture;
+}
+
 void Sprite::draw(){
-    Vector2 pos = (*_gameObject)[TransformComp()]->getGlobalPosition();
-    DrawTextureEx(*_texture, pos, 0.0f, _scale, WHITE);
+    if(_texture != nullptr){
+        Vector2 pos = (*_gameObject)[TransformComp()]->getGlobalPosition();
+        DrawTextureEx(*_texture, pos, 0.0f, _scale, WHITE);
+    }
 }

@@ -5,6 +5,6 @@
 
 class Observer { 
     public: 
-        virtual void update(const GameObject &go, const Vector2 &pos) = 0; 
+        virtual void update(shared_ptr<GameObject> go, const Vector2 &pos) = 0; 
 };
 #endif
