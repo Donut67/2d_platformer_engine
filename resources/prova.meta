@@ -1,0 +1,19 @@
+Base: 0.0 0.0,0.0 0.0
+    behaviour:
+        tilemap: resources/tilemap2.png,resources/tileset2.meta,6.0 4.0,5.0,resources/tilemap1.meta
+    end
+end
+Text: 600.0 100.0,400.0 20.0
+    behaviour:
+        sprite: 30 30 30 255
+        label: This is a title,18,l,255 255 255 255
+    end
+    objects:
+        Other: 0.0 20.0,400.0 20.0
+            behaviour:
+                sprite: 30 30 30 255
+                label: This is another title,18,l,255 255 255 255
+            end
+        end
+    end
+end

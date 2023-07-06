@@ -1,67 +1,47 @@
 #include "raylib.h"
-#include "../include/engineScene.h"
-#include "../include/inspector.h"
-#include "../include/hierarchy.h"
+#include "../include/platformerEngineUI.h"
 #include <cstdlib>
 #include <iostream>
-#include <memory>
-#include <string>
-#include <vector>
+#include <functional>
 
 using namespace std;
-
-void reloadObservers(Tracker &t, shared_ptr<GameObject> go, vector<shared_ptr<Observer>> ol);
 
 int main(){
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(0, 0, "2D Platformer Engine");
     SetExitKey(KEY_NULL);
     MaximizeWindow();
+
+    // shared_ptr<string> text = make_shared<string>("This is an input text");
+    // shared_ptr<EngineObject> screen_object = make_shared<EngineInput<string>>(Vector2{0.0f, 0.0f}, Vector2{300.0f, 20.0f}, text);
     
-    EngineScene manager(vector<string>{"prova.meta"}, 0);
-    Inspector inspector(Vector2{GetScreenWidth() - 450.0f, 0.0f});
-    Hierarchy hierarchy(Vector2{0.0f, 0.0f}, manager);
+    Scene scene("resources/prova.meta");
+    EngineBaseEditor base_editor(scene);
+
+    // Nary<pair<bool, shared_ptr<GameObject>>> hierarchyTree = convertToNewTree(*scene.getRoot());
+    // vector<pair<float, pair<string, function<void()>>>> action_list = NaryToActionList(hierarchyTree);
+    // shared_ptr<EngineObject> screen_object = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{(float)GetScreenWidth(), (float)GetScreenHeight()}, Padding{0, 0, 0, 0}, 0, false);
+    // {
+    //     shared_ptr<EngineObject> new_object = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{300.0f, 0.0f}, Padding{1, -1, -1, 1}, -1);
+    //     screen_object->addObject(new_object);
+    //     new_object->addObject(EngineHierarchy::getInstance());
+    //     EngineHierarchy::getInstance()->setRoot(scene.getRoot());
+    // }
+    // {
+    //     shared_ptr<EngineObject> new_object = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{300.0f, 0.0f}, Padding{1, 1, -1, -1}, -1);
+    //     screen_object->addObject(new_object);
+    //     new_object->addObject(EngineInspector::getInstance());
+    // }
 
     SetTargetFPS(60);
 
-    manager.update();
     while(!WindowShouldClose()){
-        // if(canUpdate) manager.update();
-        // if(WindowShouldClose() || manager.WindowShouldClose()) exitWindow = true;
-        inspector.update();
-        hierarchy.update();
-
-        // if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !inspector.isClicked() && !inspector.isMoving() && !hierarchy.isClicked() && !hierarchy.isMoving()) {
-        //     shared_ptr<GameObject> go = manager.findReversePre(GetMousePosition());
-        //     inspector.setObservers(go);
-        // } else 
-        if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && hierarchy.objectSelected()) inspector.setObservers(hierarchy.getSelected());
-
+        base_editor.update();
         BeginDrawing();
-            // Draw Scene
             ClearBackground(GRAY);
-            manager.draw();
-            inspector.draw();
-            hierarchy.draw();
-
-            DrawFPS(GetScreenWidth() - 100, 10);
+            base_editor.draw();
         EndDrawing();
     }
 
     CloseWindow();
-    return 0;
-}
-
-void reloadObservers(Tracker &t, shared_ptr<GameObject> go, vector<shared_ptr<Observer>> ol){
-    t.clearObservers();
-    if(go != nullptr) {
-        t.setObserver(ol[0]);
-        for(auto c : go->getComponents()){
-            if(dynamic_pointer_cast<TransformComp>(c) != nullptr) t.setObserver(ol[1]);
-            if(dynamic_pointer_cast<AnimatedSprite>(c) != nullptr) t.setObserver(ol[2]);
-            if(dynamic_pointer_cast<RigidBody>(c) != nullptr) t.setObserver(ol[3]);
-            if(dynamic_pointer_cast<AABB>(c) != nullptr) t.setObserver(ol[4]);
-        }
-        t.setGameObject(go);
-    }
 }

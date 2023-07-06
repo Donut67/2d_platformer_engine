@@ -1,27 +1,13 @@
-#include "raylib.h"
-#include "../include/engineLabeledGraph.h"
-#include <cstdlib>
+#include <string>
 #include <iostream>
-#include <functional>
+#include <filesystem>
+namespace fs = std::filesystem;
 
-using namespace std;
-
-int main(){
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    InitWindow(0, 0, "2D Platformer Engine");
-    SetExitKey(KEY_NULL);
-    MaximizeWindow();
-
-    WindowLabeledGraph lg(Vector2{0.0, 0.0});
-    
-    SetTargetFPS(144);
-    while(!WindowShouldClose()){
-        lg.update();
-        BeginDrawing();
-            ClearBackground(GRAY);
-            lg.draw();
-        EndDrawing();
+int main() {
+    std::cout << fs::current_path() << '\n';
+    std::string path = fs::current_path().string() + "\\resources";
+    for (const auto & entry : fs::recursive_directory_iterator(path)){
+        std::string text = entry.path().string();
+        if(entry.path().extension() == ".meta") std::cout << text.substr(text.find("resources"), text.size()) << std::endl;
     }
-
-    CloseWindow();
 }

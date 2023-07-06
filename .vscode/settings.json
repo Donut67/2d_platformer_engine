@@ -60,7 +60,17 @@
         "xhash": "cpp",
         "xloctime": "cpp",
         "unordered_map": "cpp",
-        "xlocmon": "cpp"
+        "xlocmon": "cpp",
+        "filesystem": "cpp",
+        "charconv": "cpp",
+        "chrono": "cpp",
+        "format": "cpp",
+        "forward_list": "cpp",
+        "locale": "cpp",
+        "optional": "cpp",
+        "ratio": "cpp",
+        "xlocbuf": "cpp",
+        "xlocmes": "cpp"
     },
     "git.ignoreLimitWarning": true
 }
