@@ -726,7 +726,7 @@ void cr_set_temporary_path(cr_plugin &ctx, const std::string &path) {
 #define NOMB              // MB_* and MessageBox()
 #define NOMEMMGR          // GMEM_*, LMEM_*, GHND, LHND, associated routines
 #define NOMETAFILE        // typedef METAFILEPICT
-#define NOMINMAX          // Macros min(a,b) and max(a,b)
+// #define NOMINMAX          // Macros min(a,b) and max(a,b)
 #define NOMSG             // typedef MSG and associated routines
 #define NOOPENFILE        // OpenFile(), OemToAnsi, AnsiToOem, and OF_*
 #define NOSCROLL          // SB_* and scrolling routines
@@ -741,6 +741,18 @@ void cr_set_temporary_path(cr_plugin &ctx, const std::string &path) {
 #define NOPROFILER        // Profiler interface.
 #define NODEFERWINDOWPOS  // DeferWindowPos routines
 #define NOMCX             // Modem Configuration Extensions
+
+#define MMNODRV           // Installable driver support
+#define MMNOSOUND         // Sound support
+#define MMNOWAVE          // Waveform support
+#define MMNOMIDI          // MIDI support
+#define MMNOAUX           // Auxiliary audio support
+#define MMNOMIXER         // Mixer support
+#define MMNOTIMER         // Timer support
+#define MMNOJOY           // Joystick support
+#define MMNOMCI           // MCI support
+#define MMNOMMIO          // Multimedia file I/O support
+#define MMNOMMSYSTEM      // General MMSYSTEM functions
 
 /* Type required before windows.h inclusion  */
 typedef struct tagMSG *LPMSG;
