@@ -212,6 +212,22 @@ class EngineAnimatedSpriteFrame : public EngineButton {
         void draw();
 };
 
+class EngineAux : public EngineSprite {
+public:
+    EngineAux(string name, Vector2 offset, Vector2 size) : EngineSprite(offset, size, 1, BLUE){
+        addTitleObject(_size.x, "name");
+    }
+
+    void update() {
+        // if (CheckCollisionPointRec(GetMousePosition(), getAreaRect()))
+        if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
+            _position = GetMousePosition();
+        _position.x += 5.0f;
+        
+        EngineObject::update();
+    }
+};
+
 class EngineOptionList : public EngineFitter {
     // private:
     public:

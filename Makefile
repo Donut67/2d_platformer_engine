@@ -3,12 +3,12 @@ CXXFLAGS = -std=c++17 -O2 -Wall -Wno-missing-braces -L lib/ -lraylib -lopengl32 
 
 src = src/main/engine.cpp $(wildcard src/*.cpp)
 
-rtc = RuntimeCompiler/BuildTool.cpp RuntimeCompiler/Compiler_PlatformWindows.cpp RuntimeCompiler/FileChangeNotifier.cpp
-sfw = RuntimeCompiler/SimpleFileWatcher/FileWatcher.cpp RuntimeCompiler/SimpleFileWatcher/FileWatcherWin32.cpp
+rtc = #RuntimeCompiler/BuildTool.cpp RuntimeCompiler/Compiler_PlatformWindows.cpp RuntimeCompiler/FileChangeNotifier.cpp
+sfw = #RuntimeCompiler/SimpleFileWatcher/FileWatcher.cpp RuntimeCompiler/SimpleFileWatcher/FileWatcherWin32.cpp
 
-ros = RuntimeObjectSystem/ObjectInterfacePerModuleSource.cpp RuntimeObjectSystem/RuntimeObjectSystem.cpp RuntimeObjectSystem/RuntimeObjectSystem_PlatformWindows.cpp
-ofs = RuntimeObjectSystem/ObjectFactorySystem/ObjectFactorySystem.cpp
-osf = RuntimeObjectSystem/SimpleSerializer/SimpleSerializer.cpp
+ros = #RuntimeObjectSystem/ObjectInterfacePerModuleSource.cpp RuntimeObjectSystem/RuntimeObjectSystem.cpp RuntimeObjectSystem/RuntimeObjectSystem_PlatformWindows.cpp
+ofs = #RuntimeObjectSystem/ObjectFactorySystem/ObjectFactorySystem.cpp
+osf = #RuntimeObjectSystem/SimpleSerializer/SimpleSerializer.cpp
 
 inc = include/ #RuntimeCompiler/ RuntimeObjectSystem/ RuntimeCompiler/SimpleFileWatcher/ RuntimeObjectSystem/ RuntimeObjectSystem/ObjectFactorySystem/ RuntimeObjectSystem/SimpleSerializer/
 
