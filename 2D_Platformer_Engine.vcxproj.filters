@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="RuntimeCompiled">
+      <UniqueIdentifier>{109b7b8c-4722-49eb-bfdc-f755401ed5a9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="platformerEngineBasics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="platformerEngineUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdioLogSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RCCppMainLoop.cpp">
+      <Filter>RuntimeCompiled</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="RCCppMainLoop.h">
+      <Filter>RuntimeCompiled</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemTable.h">
+      <Filter>RuntimeCompiled</Filter>
+    </ClInclude>
+    <ClInclude Include="platformerEngineBasics.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="platformerEngineUI.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="raylib.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdioLogSystem.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
