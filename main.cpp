@@ -114,32 +114,33 @@ int main() {
     MaximizeWindow();
 
     // Initialize RCC++
-    // RCCppInit();
+    RCCppInit();
 
     // Initializing the base editor
-    //EngineBaseEditor* base_editor = new EngineBaseEditor();
-    shared_ptr<EngineObject> base = make_shared<EngineObject>(Vector2{0.0f, 0.0f}, Vector2{0.0f, 0.0f});
-    base->addObject(make_shared<EngineAux>("okay", Vector2{0.0f, 0.0f}, Vector2{55.0f, 20.0f}));
+    EngineBaseEditor* base_editor = new EngineBaseEditor();
+    // shared_ptr<EngineObject> base = make_shared<EngineObject>(Vector2{0.0f, 0.0f}, Vector2{0.0f, 0.0f});
+    // base->addObject(make_shared<EngineAux>("okay", Vector2{0.0f, 0.0f}, Vector2{55.0f, 20.0f}));
 
     // Setting the base editor in the system table
-    // g_SystemTable.pEBEditor = base_editor;
+    g_SystemTable.pEBEditor = base_editor;
 
-    SetTargetFPS(60);
+    SetTargetFPS(144);
 
     while (!WindowShouldClose()) {
-        // RCCppUpdate();
+        RCCppUpdate();
 
-        // g_SystemTable.pRCCppMainLoopI->MainLoop();
-
+        g_SystemTable.pRCCppMainLoopI->MainLoop();
+        /*
         base->update();
         BeginDrawing();
             ClearBackground(GRAY);
             base->draw();
         EndDrawing();
+        // */
     }
 
     // Cleaning up the closing
-    // RCCppCleanup();
+    RCCppCleanup();
     CloseWindow();
 }
 

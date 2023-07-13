@@ -60,12 +60,8 @@ EngineBaseEditor::EngineBaseEditor() : EngineObject(Vector2{0.0f, 0.0f}, Vector2
 
     shared_ptr<EngineObject> menu_bar = make_shared<EngineSprite>(Vector2{ 0.0f, 0.0f }, Vector2{ (float)GetScreenWidth(), 20.0f }, 1, Color{ 90, 90, 90, 255 });
 
-    shared_ptr<EngineObject> new_item = make_shared<EngineStackedItems>(Vector2{ 0.0f, 0.0f }, Vector2{ (float)GetScreenWidth(), 20.0f }, Padding(0), 0, false);
-    // menu_bar->addObject(new_item);
-    /*
-    new_item->addObject(make_shared<EngineButton>(Vector2{ 0.0f, 0.0f }, Vector2{ 60.0f, 20.0f }, "File", 18, Padding(5, 0), []() { cout << "clicked\n"; }));
-    new_item->addObject(make_shared<EngineButton>(Vector2{ 0.0f, 0.0f }, Vector2{ 60.0f, 20.0f }, "Edit", 18, Padding(5, 0), []() { cout << "clicked\n"; }));
-    // */
+    shared_ptr<EngineObject> new_item = make_shared<EngineStackedItems>(Vector2{ 0.0f, 0.0f }, Vector2{ (float)GetScreenWidth(), 20.0f }, Padding(2, 0), 5, false);
+    menu_bar->addObject(new_item);
 
     new_item->addObject(make_shared<EngineMenu>(Vector2{ 0.0f, 0.0f }, Vector2{ 60.0f, 20.0f }, "File", vector<pair<string, function<void()>>>{
         {"New Scene", []() { cout << "Creating new scene\n"; }},
@@ -78,55 +74,43 @@ EngineBaseEditor::EngineBaseEditor() : EngineObject(Vector2{0.0f, 0.0f}, Vector2
         {"Undo", []() { cout << "Undo\n"; }},
         {"Redo", []() { cout << "Redo\n"; }}
     }));
+    new_item->addObject(make_shared<EngineMenu>(Vector2{ 0.0f, 0.0f }, Vector2{ 60.0f, 20.0f }, "View", vector<pair<string, function<void()>>>{
+        {"Hierarchy", []() { cout << "Toggle hierarchy\n"; }},
+        {"Inspector", []() { cout << "Toggle inspector\n"; }},
+        {"Animation Editor", []() { cout << "Toggle Animation Editor\n"; }},
+        {"TileSet Editor", []() { cout << "Toggle TileSet Editor\n"; }}
+    }));
 
-    // /*
-    // */
-
-    // /*
     _screen = make_shared<EngineObject>(Vector2{0.0f, 0.0f}, Vector2{0.0f, 0.0f});
     _screen->addObject(menu_bar);
 
     _floating = make_shared<EngineObject>(Vector2{0.0f, 0.0f}, Vector2{0.0f, 0.0f});
 
-    _floating->addObject(make_shared<EngineAux>("aux", Vector2{ 0.0f, 200.0f }, Vector2{100.0f, 20.0f}));
+    shared_ptr<EngineObject> hierarchy_window = make_shared<EngineWindow>("Hierarchy", Vector2{ 0.0f, 20.0f }, Vector2{ 350.0f, 20.0f });
+    dynamic_pointer_cast<EngineWindow>(hierarchy_window)->setItemWidth(-1);
+    hierarchy_window->addObject(EngineHierarchy::getInstance());
+    _floating->addObject(hierarchy_window);
 
-    /*
+    shared_ptr<EngineObject> inspector_window = make_shared<EngineWindow>("Inspector", Vector2{ GetScreenWidth() - 350.0f, 20.0f }, Vector2{ 350.0f, 20.0f });
+    dynamic_pointer_cast<EngineWindow>(inspector_window)->setItemWidth(-1);
+    inspector_window->addObject(EngineInspector::getInstance());
+    _floating->addObject(inspector_window);
 
-    shared_ptr<EngineObject> top_layout = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{(float)GetScreenWidth(), (float)GetScreenHeight()}, Padding(), 0, false);
-    _screen->addObject(top_layout);
-    {
-        shared_ptr<EngineObject> new_object = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{300.0f, 0.0f}, Padding(1, -1, -1, 1), -1);
-        top_layout->addObject(new_object);
-        new_object->addObject(EngineHierarchy::getInstance());
-        EngineHierarchy::getInstance()->setRoot(_scene.getRoot());
-    }
-    {
-        shared_ptr<EngineObject> new_object = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{300.0f, 0.0f}, Padding(1, 1, -1, -1), -1);
-        top_layout->addObject(new_object);
-        new_object->addObject(EngineInspector::getInstance());
-    }
-    
-    shared_ptr<EngineObject> bottom_layout = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{(float)GetScreenWidth(), (float)GetScreenHeight()}, Padding(), 0, false);
-    _screen->addObject(bottom_layout);
-    {
-        shared_ptr<EngineObject> new_object = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{800.0f, 200.0f}, Padding(-1, -1, 1, 1), -1);
-        bottom_layout->addObject(new_object);
-        new_object->addObject(EngineAnimationEditor::getInstance());
-        EngineAnimationEditor::getInstance()->setBaseObject(_floating);
-    }
+    shared_ptr<EngineObject> animation_editor_window = make_shared<EngineWindow>("Animation Editor", Vector2{ 0.0f, GetScreenHeight() - 200.0f }, Vector2{ 650.0f, 20.0f });
+    dynamic_pointer_cast<EngineWindow>(animation_editor_window)->setItemWidth(-1);
+    animation_editor_window->addObject(EngineAnimationEditor::getInstance());
+    _floating->addObject(animation_editor_window);
+    EngineAnimationEditor::getInstance()->setBaseObject(_floating);
 
-    _floating->addObject(EngineTileSetEditor::getInstance());
+
+    shared_ptr<EngineObject> tileset_editor_window = make_shared<EngineWindow>("TileSet Editor", Vector2{ 850.0f, GetScreenHeight() - 500.0f }, Vector2{ 650.0f, 20.0f });
+    dynamic_pointer_cast<EngineWindow>(animation_editor_window)->setItemWidth(-1);
+    tileset_editor_window->addObject(EngineTileSetEditor::getInstance());
+    _floating->addObject(tileset_editor_window);
     EngineTileSetEditor::getInstance()->setBaseObject(_floating);
-
-    // */
-
 }
 
 void EngineBaseEditor::update() {
-    if(_scene_loaded) _scene.update(_position);
-    _screen->update();
-    _floating->update();
-
     if (IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON)) {
         if(CheckCollisionPointRec(GetMousePosition(), Rectangle{0.0f, 0.0f, (float)GetScreenWidth(), (float)GetScreenHeight()})) {
             _dragging = true;
@@ -139,6 +123,10 @@ void EngineBaseEditor::update() {
         _position = Vector2{_position.x - move.x, _position.y - move.y};
         _prev_mouse_position = GetMousePosition();
     }
+
+    if (_scene_loaded) _scene.update(_position);
+    _floating->update();
+    _screen->update();
 
     // EngineObject::update();
 }
@@ -153,8 +141,8 @@ void EngineBaseEditor::draw() {
         DrawLine((int)origin.x, i, (int)origin.x + GetScreenWidth() + 100, i, i == _position.y? RED : Color{255, 255, 255, 100});
 
     if (_scene_loaded) _scene.draw();
-    _screen->draw();
     _floating->draw();
+    _screen->draw();
 
     EngineObject::draw();
 }
@@ -167,18 +155,20 @@ void EngineBaseEditor::openFileExplorer() {
     shared_ptr<EngineWindow> new_window = make_shared<EngineWindow>("File Explorer '.scn'", Vector2{ 0.0f, 50.0f }, Vector2{300.0f, 300.0f});
     _floating->addObject(new_window);
 
-    // /*
     using placeholders::_1;
     new_window->addObject(make_shared<EngineFileSelector>(
         Vector2{ 0.0f, 0.0f }, Vector2{ 300.0f, 300.0f }, "\\resources", ".scn",
         bind(&EngineBaseEditor::setScene, this, _1)
     ));
-    // */
 }
 
 void EngineBaseEditor::setScene(string path) {
+    _scene_loaded = true;
     _scene = Scene(path);
 
+    EngineHierarchy::getInstance()->setRoot(_scene.getRoot());
+
+    // /*
     int i = 0;
     bool found = false;
     while (i < (int)_floating->_object_list.size() && !found) {
@@ -187,6 +177,7 @@ void EngineBaseEditor::setScene(string path) {
     }
 
     if (found) _floating->_object_list.erase(_floating->_object_list.begin() + i);
+    // */
 }
 
 // [ENGINE COLOR WHEEL]
@@ -194,12 +185,11 @@ void EngineColorWheel::update() {
     _cancel_hover = CheckCollisionPointRec(GetMousePosition(), Rectangle{_position.x + 160, _position.y + 150, 80, 20});
     _confirm_hover = CheckCollisionPointRec(GetMousePosition(), Rectangle{_position.x + 255, _position.y + 150, 80, 20});
 
-    if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-        if(_confirm_hover) {
-            _on_confirm(_current);
-            _close = true;
-        }
+    if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON) &&_confirm_hover) {
+        _on_confirm(_current);
+        _close = true;
     }
+
     if(IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
         if(CheckCollisionPointRec(GetMousePosition(), Rectangle{_position.x + 20, _position.y + 35, _size.x - 65.0f, 20}))
             _current.r = (unsigned char)((GetMousePosition().x - (_position.x + 20)) * 255.0f / (_size.x - 65.0f - 2));
@@ -289,6 +279,14 @@ void EngineStackedItems::addObject(shared_ptr<EngineObject> obj) {
     else _size.x = prev;
 }
 
+void EngineStackedItems::fitWidth(int width) {
+    for (shared_ptr<EngineObject> object : _object_list) object->_size.x = width;
+}
+
+void EngineStackedItems::fitHeight(int height) {
+    for (shared_ptr<EngineObject> object : _object_list) object->_size.y = height;
+}
+
 // [ENGINE FITTER]
 void EngineFitter::addObject(shared_ptr<EngineObject> obj) {
     EngineObject::addObject(obj);
@@ -320,12 +318,6 @@ void EngineFitter::addObject(shared_ptr<EngineObject> obj) {
 void EngineFitter::removeObject(shared_ptr<EngineObject> obj) {
 
 }
-
-// void EngineFitter::draw() {
-//     DrawRectangleLines(_position.x, _position.y, _size.x, _size.y, BLUE);
-
-//     EngineObject::draw();
-// }
 
 // [ENGINE WINDOW]
 EngineWindow::EngineWindow(string name, Vector2 offset, Vector2 size) : EngineStackedItems(offset, size, Padding(0), 0), _name(name) {
@@ -417,7 +409,7 @@ void EngineAnimatedSpriteFrame::draw() {
 // [ENGINE BUTTON]
 void EngineButton::update() {
     Rectangle rec{_position.x, _position.y, _size.x, _size.y - 1.0f};
-    _hover = CheckCollisionPointRec(GetMousePosition(), rec);
+    /*if(!_hovering) _hovering = */_hover = CheckCollisionPointRec(GetMousePosition(), rec);
 
     if(_hover && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) _on_click();
     if(_right_click && _hover && IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) _on_right_click();
@@ -465,9 +457,9 @@ void EngineColor::draw() {
 // [ENGINE INPUT]
 template<class T>
 void EngineInput<T>::selectInput() {
-    _hover = CheckCollisionPointRec(GetMousePosition(), Rectangle{_position.x, _position.y, _size.x, _size.y});
-    if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-        _selected   = _hover;
+    /*if (!_hovering) _hovering = */_hover = CheckCollisionPointRec(GetMousePosition(), Rectangle{_position.x, _position.y, _size.x, _size.y});
+    if(_hover && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        _selected   = true;
         _cursor_pos = (int)_text.size();
     }
 }
@@ -641,7 +633,7 @@ void EngineInput<T>::draw() {
 }
 
 // [ENGINE OPTION LIST]
-EngineOptionList::EngineOptionList(const Vector2& pos, const Vector2& size, const Vector2& itemDimensions, const vector<pair<string, function<void()>>>& items) : EngineStackedItems(pos, size, Padding(0), 0, false) {
+EngineOptionList::EngineOptionList(const Vector2& pos, const Vector2& size, const Vector2& itemDimensions, const vector<pair<string, function<void()>>>& items) : EngineObject(pos, size) {
     addObject(CreateInteractableList(_position, itemDimensions, items));
     _size = _object_list[0]->_size;
 }
@@ -654,7 +646,7 @@ void EngineOptionList::update() {
 // [ENGINE MENU]
 EngineMenu::EngineMenu(Vector2 offset, Vector2 size, string name, const vector<pair<string, function<void()>>>& items) : EngineStackedItems(offset, size, Padding(0), 0) {
     _opened = false;
-    addObject(make_shared<EngineButton>(Vector2{ 0.0f, 0.0f }, Vector2{ _size.x, 20.0f }, name, 18, Padding(5, 0), bind(&EngineMenu::click_button, this)));
+    addObject(make_shared<EngineButton>(Vector2{ 0.0f, 0.0f }, Vector2{ _size.x, 20.0f }, name, 18, Padding(15, 0), bind(&EngineMenu::click_button, this)));
     _option_list = make_shared<EngineOptionList>(Vector2{ 0.0f, 0.0f }, Vector2{ 100.0f, 20.0f }, Vector2{ 100.0f, 20.0f }, items);
 }
 
@@ -692,35 +684,34 @@ shared_ptr<EngineHierarchy> EngineHierarchy::getInstance() {
     return _instance;
 }
 
-EngineHierarchy::EngineHierarchy(Vector2 offset, Vector2 size) : EngineFitter(offset, size, Padding(0, -1, -1, 0), 1) {
-    addTitleObject(size.x, "Hierarchy");
+EngineHierarchy::EngineHierarchy(Vector2 offset, Vector2 size) : EngineSprite(offset, size, 1, Color{90, 90, 90, 255}) {
 }
 
-EngineHierarchy::EngineHierarchy(Vector2 offset, Vector2 size, shared_ptr<Nary<GameObject>> root) : EngineFitter(offset, size, Padding(0, -1, -1, 0), 1) {
+EngineHierarchy::EngineHierarchy(Vector2 offset, Vector2 size, shared_ptr<Nary<GameObject>> root) : EngineSprite(offset, size, 1, Color{ 90, 90, 90, 255 }) {
     setRoot(root);
 }
 
 void EngineHierarchy::setRoot(shared_ptr<Nary<GameObject>> root){
     _object_list.clear();
     _root = root;
-    addTitleObject(_size.x, "Hierarchy");
 
     _hierarchyTree = convertToNewTree(*_root);
 
     HierarchyActionList action_list = NaryToActionList(_hierarchyTree);
-    auto a = CreateHierarchyList(Vector2{ 0.0f, 0.0f }, Vector2{ _size.x, 20.0f }, action_list);
-    addObject(a);
+    addObject(CreateHierarchyList(Vector2{ 0.0f, 1.0f }, Vector2{ _size.x, 20.0f }, action_list));
+
+    _size.y = _object_list[0]->_size.y;
 }
 
 void EngineHierarchy::selectItem(shared_ptr<GameObject> go){
     _object_list.clear();
-    addTitleObject(_size.x, "Hierarchy");
 
     for(int i = 1; i <= _hierarchyTree.nBrothers(); i++) selectItem_i(_hierarchyTree.brother(i), go);
 
     HierarchyActionList action_list = NaryToActionList(_hierarchyTree);
-    auto a = CreateHierarchyList(Vector2{0.0f, 0.0f}, Vector2{_size.x, 20.0f}, action_list);
-    addObject(a);
+    addObject(CreateHierarchyList(Vector2{0.0f, 1.0f}, Vector2{_size.x, 20.0f}, action_list));
+
+    _size.y = _object_list[0]->_size.y;
 }
 
 void EngineHierarchy::selectItem_i(Nary<pair<bool, shared_ptr<GameObject>>> a, shared_ptr<GameObject> g) {
@@ -760,35 +751,42 @@ shared_ptr<EngineInspector>EngineInspector::getInstance() {
     return _instance;
 }
 
-EngineInspector::EngineInspector(Vector2 offset, Vector2 size) : EngineFitter(offset, size, Padding(0, -1, -1, 0), 5) {
-    addTitleObject(_size.x, "Inspector");
+EngineInspector::EngineInspector(Vector2 offset, Vector2 size) : EngineSprite(offset, size, 1, Color{90, 90, 90, 255}) {
 }
 
-EngineInspector::EngineInspector(Vector2 offset, Vector2 size, shared_ptr<GameObject> go) : EngineFitter(offset, size, Padding(0, -1, -1, 0), 5) {
+EngineInspector::EngineInspector(Vector2 offset, Vector2 size, shared_ptr<GameObject> go) : EngineSprite(offset, size, 1, Color{ 90, 90, 90, 255 }) {
     setGameObject(go);
 }
 
 void EngineInspector::setGameObject(shared_ptr<GameObject> go) {
     _object_list.clear();
     _game_object = go;
+    _size.y = 0.0f;
 
-    addTitleObject(_size.x, "Inspector");
+    shared_ptr<EngineStackedItems> items = make_shared<EngineStackedItems>(Vector2{ 0.0f, 0.0f }, Vector2{_size.x, 0.0f}, Padding(0, 2), 1);
+    items->setItemWidth(-1);
+
     if(_game_object != nullptr) {
-        addObject(make_shared<EngineGameObjectFacade>(Vector2{0.0f, 0.0f}, _size, _game_object));
+        items->addObject(make_shared<EngineGameObjectFacade>(Vector2{0.0f, 0.0f}, _size, _game_object));
 
+        // /*
         for(auto item : _game_object->getBehaviours()){
-            if(dynamic_pointer_cast<Label>(item) != nullptr) addObject(make_shared<EngineLabelFacade>(Vector2{0.0f, 0.0f}, _size, _game_object));
-            else if(dynamic_pointer_cast<Sprite>(item) != nullptr) addObject(make_shared<EngineSpriteFacade>(Vector2{0.0f, 0.0f}, _size, _game_object));
-            else if(dynamic_pointer_cast<AnimatedSprite>(item) != nullptr) addObject(make_shared<EngineAnimatedSpriteFacade>(Vector2{0.0f, 0.0f}, _size, _game_object));
-            else if(dynamic_pointer_cast<TileMap>(item) != nullptr) addObject(make_shared<EngineTileMapFacade>(Vector2{0.0f, 0.0f}, _size, _game_object));
+            if(dynamic_pointer_cast<Label>(item) != nullptr) items->addObject(make_shared<EngineLabelFacade>(Vector2{0.0f, 0.0f}, _size, _game_object));
+            else if(dynamic_pointer_cast<Sprite>(item) != nullptr) items->addObject(make_shared<EngineSpriteFacade>(Vector2{0.0f, 0.0f}, _size, _game_object));
+            else if(dynamic_pointer_cast<AnimatedSprite>(item) != nullptr) items->addObject(make_shared<EngineAnimatedSpriteFacade>(Vector2{0.0f, 0.0f}, _size, _game_object));
+            else if(dynamic_pointer_cast<TileMap>(item) != nullptr) items->addObject(make_shared<EngineTileMapFacade>(Vector2{0.0f, 0.0f}, _size, _game_object));
         }
+        // */
 
         shared_ptr<EngineObject> new_item = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{_size.x, 20.0f}, Padding(-1, 0), 0, false);
-        addObject(new_item);
+        items->addObject(new_item);
 
-        shared_ptr<EngineObject> new_button = make_shared<EngineButton>(Vector2{0.0f, 0.0f}, Vector2{_size.x / 4.0f * 3.0f, 20.0f}, "Add Behaviour", 18, Padding(0, -1, 0, 5), bind(&EngineInspector::openNewBehaviorOptions, this));
+        shared_ptr<EngineObject> new_button = make_shared<EngineButton>(Vector2{0.0f, 0.0f}, Vector2{_size.x / 4.0f * 3.0f, 20.0f}, "Add Behaviour", 18, Padding(30, 0), bind(&EngineInspector::openNewBehaviorOptions, this));
         new_item->addObject(new_button);
     }
+
+    addObject(items);
+    _size.y += items->_size.y + items->getPadding().top + items->getPadding().bottom;
 }
 
 void EngineInspector::openNewBehaviorOptions(){
@@ -809,33 +807,27 @@ shared_ptr<EngineAnimationEditor>EngineAnimationEditor::getInstance() {
     return _instance;
 }
 
-EngineAnimationEditor::EngineAnimationEditor(Vector2 offset, Vector2 size) : EngineFitter(offset, size, Padding(0, -1, -1, 0), 1) {
-    addTitleObject(_size.x, "Animation Editor");
+EngineAnimationEditor::EngineAnimationEditor(Vector2 offset, Vector2 size) : EngineSprite(offset, size, 1, Color{90, 90, 90, 255}) {
+    shared_ptr<EngineObject> new_item = make_shared<EngineStackedItems>(Vector2{ 0.0f, 0.0f }, _size, Padding(0, 1), 1);
+    addObject(new_item);
 
-    _options = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{_size.x, 20.0f}, Padding(0, -1, -1, 0), 1, false);
-    addObject(_options);
+    _options = make_shared<EngineStackedItems>(Vector2{0.0f, 0.0f}, Vector2{_size.x, 20.0f}, Padding(0), 1, false);
+    new_item->addObject(_options);
 
-    _sequences = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{_size.x, 100.0f}, Padding(0, -1, -1, 0), 0, false);
-    addObject(_sequences);
-    
-    shared_ptr<EngineObject> background_1 = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{200.0f, 100.0f}, Padding(0, -1, -1, 0), -1);
-    _selector = make_shared<EngineAnimationSelector>(Vector2{0.0f, 0.0f}, Vector2{199.f, 100.0f});
-    background_1->addObject(make_shared<EngineSprite>(Vector2{0.0f, 0.0f}, Vector2{199.f, 100.0f}, 1, Color{60, 60, 60, 255}));
-    background_1->addObject(_selector);
+    _selector = make_shared<EngineAnimationSelector>(Vector2{ 0.0f, 0.0f }, Vector2{ 199.f, 100.0f });
+    _sequence = make_shared<EngineAnimationSequence>(Vector2{ 0.0f, 0.0f }, Vector2{ _size.x - 201.f, 100.0f });
 
-    shared_ptr<EngineObject> background_2 = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{_size.x - 200.0f, 100.0f}, Padding(0, -1, -1, 0), -1);
-    _sequence = make_shared<EngineAnimationSequence>(Vector2{0.0f, 0.0f}, Vector2{_size.x - 201.f, 100.0f});
-    background_2->addObject(make_shared<EngineSprite>(Vector2{0.0f, 0.0f}, Vector2{_size.x - 201.f, 100.0f}, 1, Color{60, 60, 60, 255}));
-    background_2->addObject(_sequence);
-
-    _sequences->addObject(background_1);
-    _sequences->addObject(background_2);
-    
-    _options->addObject(make_shared<EngineButton>(Vector2{0.0f, 0.0f}, Vector2{120.f, 20.0f}, "New Animation", 18, Padding(5, 0), bind(&EngineAnimationEditor::addNewAnimation, this)));
-    _options->addObject(make_shared<EngineButton>(Vector2{0.0f, 0.0f}, Vector2{ 90.f, 20.0f}, "New Point", 18, Padding(5, 0), bind(&EngineAnimationSequence::addNewPoint, dynamic_pointer_cast<EngineAnimationSequence>(_sequence))));
+    _options->addObject(make_shared<EngineButton>(Vector2{ 0.0f, 0.0f }, Vector2{ 120.f, 20.0f }, "New Animation", 18, Padding(5, 0), bind(&EngineAnimationEditor::addNewAnimation, this)));
+    _options->addObject(make_shared<EngineButton>(Vector2{ 0.0f, 0.0f }, Vector2{  90.f, 20.0f }, "New Point", 18, Padding(5, 0), bind(&EngineAnimationSequence::addNewPoint, dynamic_pointer_cast<EngineAnimationSequence>(_sequence))));
     _options->addObject(make_shared<EngineButton>(Vector2{ 0.0f, 0.0f }, Vector2{ 125.f, 20.0f }, "Select TileSet", 18, Padding(5, 0), bind(&EngineAnimationEditor::selectTileSet, this)));
 
-    _object_list.insert(_object_list.begin(), make_shared<EngineSprite>(Vector2{0.0f, 0.0f}, _size, 1, Color{90, 90, 90, 255}));
+    _sequences = make_shared<EngineStackedItems>(Vector2{0.0f, 0.0f}, Vector2{_size.x, 100.0f}, Padding(0), 1, false);
+    new_item->addObject(_sequences);
+    
+    _sequences->addObject(_selector);
+    _sequences->addObject(_sequence);
+
+    _size.y = new_item->_size.y;
 }
 
 void EngineAnimationEditor::addNewAnimation() {
@@ -850,10 +842,12 @@ void EngineAnimationEditor::addNewAnimation() {
 }
 
 void EngineAnimationEditor::selectTileSet() {
-    using placeholders::_1;
+    shared_ptr<EngineWindow> new_window = make_shared<EngineWindow>("File Explorer '.tsd'", Vector2{ 0.0f, 50.0f }, Vector2{ 300.0f, 300.0f });
+    _obj->addObject(new_window);
 
-    _obj->addObject(make_shared<EngineFileSelector>(
-        Vector2{0.0f, 500.0f}, Vector2{_size.x, 400.0f}, "\\resources", ".tsd", 
+    using placeholders::_1;
+    new_window->addObject(make_shared<EngineFileSelector>(
+        Vector2{ 0.0f, 0.0f }, Vector2{ 300.0f, 300.0f }, "\\resources", ".tsd",
         bind(&EngineAnimationEditor::setTexture, this, _1)
     ));
 }
@@ -864,7 +858,7 @@ void EngineAnimationEditor::setTexture(string path) {
     int i = 0;
     bool found = false;
     while(i < (int)_obj->_object_list.size() && !found) {
-        if(auto j = dynamic_pointer_cast<EngineFileSelector>(_obj->_object_list[i])) found = true;
+        if(auto j = dynamic_pointer_cast<EngineWindow>(_obj->_object_list[i])) if (j->getName() == "File Explorer '.tsd'") found = true;
         else i++;
     }
 
@@ -934,20 +928,24 @@ void EngineAnimationSequence::setTexture(string path) {
 // [ENGINE TILE SET EDITOR]
 shared_ptr<EngineTileSetEditor>EngineTileSetEditor::_instance = nullptr;
 shared_ptr<EngineTileSetEditor>EngineTileSetEditor::getInstance() {
-    if(_instance == nullptr) _instance = make_shared<EngineTileSetEditor>(Vector2{(float)GetScreenWidth() - 500.0f, 500.0f}, Vector2{500.0f, 600.0f});
+    if(_instance == nullptr) _instance = make_shared<EngineTileSetEditor>(Vector2{0.0f, 0.0f}, Vector2{650.0f, 40.0f});
     return _instance;
 }
 
-EngineTileSetEditor::EngineTileSetEditor(Vector2 offset, Vector2 size) : EngineFitter(offset, size, Padding(0, -1, -1, 0), 1) {
-    addTitleObject(_size.x, "TileSet Editor");
+EngineTileSetEditor::EngineTileSetEditor(Vector2 offset, Vector2 size) : EngineSprite(offset, size, 1, Color{90, 90, 90, 255}) {
+    // /*
+    shared_ptr<EngineObject> base = make_shared<EngineStackedItems>(Vector2{0.0f, 0.0f}, Vector2{_size.x, 20.0f}, Padding(0), 0);
+    addObject(base);
+    shared_ptr<EngineObject> menu_bar = make_shared<EngineSprite>(Vector2{ 0.0f, 0.0f }, Vector2{ _size.x, 20.0f }, 1, Color{ 60, 60, 60, 255 });
+    base->addObject(menu_bar);
 
-    shared_ptr<EngineObject> options = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{_size.x, 20.0f}, Padding(0, -1, -1, 0), 1, false);
-    addObject(options);
+    shared_ptr<EngineObject> options  = make_shared<EngineStackedItems>(Vector2{ 0.0f, 0.0f }, Vector2{ _size.x, 20.0f }, Padding(2, 0), 2, false);
+    menu_bar->addObject(options);
 
+    // /*
     options->addObject(make_shared<EngineButton>(Vector2{0.0f, 0.0f}, Vector2{130.f, 20.0f}, "Select Texture", 18, Padding(5, 0), bind(&EngineTileSetEditor::selectTexture, this)));
     options->addObject(make_shared<EngineButton>(Vector2{0.0f, 0.0f}, Vector2{50.f, 20.0f}, "Save", 18, Padding(5, 0), bind(&EngineTileSetEditor::saveData, this)));
     
-
     using placeholders::_1;
     options->addObject(make_shared<EngineLabel>(Vector2{0.0f, 0.0f}, Vector2{55.0f, 20.0f}, " Rows:", 18, Padding(5, 0)));
     options->addObject(make_shared<EngineInput<int>>(Vector2{0.0f, 0.0f}, Vector2{20.0f, 20.0f}, 1, bind(&EngineTileSetEditor::setRows, this, _1)));
@@ -955,16 +953,18 @@ EngineTileSetEditor::EngineTileSetEditor(Vector2 offset, Vector2 size) : EngineF
     options->addObject(make_shared<EngineInput<int>>(Vector2{0.0f, 0.0f}, Vector2{20.0f, 20.0f}, 1, bind(&EngineTileSetEditor::setColumns, this, _1)));
     
     _sprite = make_shared<EngineTileSetView>(Vector2{0.0f, 0.0f}, Vector2{_size.x, 400.0f});
-    addObject(_sprite);
+    base->addObject(_sprite);
 
-    _object_list.insert(_object_list.begin(), make_shared<EngineSprite>(Vector2{0.0f, 0.0f}, _size, 1, Color{90, 90, 90, 255}));
+    // */
 }
 
 void EngineTileSetEditor::selectTexture() {
-    using placeholders::_1;
+    shared_ptr<EngineWindow> new_window = make_shared<EngineWindow>("File Explorer '.png'", Vector2{ 0.0f, 50.0f }, Vector2{ 300.0f, 300.0f });
+    _obj->addObject(new_window);
 
-    _obj->addObject(make_shared<EngineFileSelector>(
-        Vector2{0.0f, 500.0f}, Vector2{_size.x, 400.0f}, "\\resources", ".png", 
+    using placeholders::_1;
+    new_window->addObject(make_shared<EngineFileSelector>(
+        Vector2{ 0.0f, 0.0f }, Vector2{ 300.0f, 300.0f }, "\\resources", ".png",
         bind(&EngineTileSetEditor::setTexture, this, _1)
     ));
 }
@@ -977,7 +977,7 @@ void EngineTileSetEditor::setTexture(string path) {
     int i = 0;
     bool found = false;
     while(i < (int)_obj->_object_list.size() && !found) {
-        if(auto j = dynamic_pointer_cast<EngineFileSelector>(_obj->_object_list[i])) found = true;
+        if(auto j = dynamic_pointer_cast<EngineWindow>(_obj->_object_list[i])) if (j->getName() == "File Explorer '.png'") found = true;
         else i++;
     }
 
@@ -1043,23 +1043,27 @@ void EngineTileSetView::setColumns(int i){
 // [ENGINE FILE SELECTOR]
 EngineFileSelector::EngineFileSelector(Vector2 offset, Vector2 size, string path, string extension, function<void(string)> onclick) : EngineSprite(offset, size, 1, Color{ 90, 90, 90, 255 }) {
     // /*
+    float max_width = 0.0f;
     shared_ptr<EngineObject> v_item = make_shared<EngineStackedItems>(Vector2{0.0f, 2.0f}, _size, Padding(0), 0);
 
     std::string base_path = fs::current_path().string() + path;
     for (const auto & entry : fs::recursive_directory_iterator(base_path)){
         std::string text = entry.path().string();
-        if(entry.path().extension() == extension) 
+        if (entry.path().extension() == extension) {
             v_item->addObject(make_shared<EngineButton>(Vector2{0.0f, 0.0f}, Vector2{_size.x, 20.0f}, text.substr(text.find(path), text.size()), 18, Padding(5, 0), bind(onclick, text.substr(text.find(path) + 1, text.size()))));
+            max_width = v_item->_object_list.back()->_size.x > max_width ? v_item->_object_list.back()->_size.x : max_width;
+        }
     }
 
     addObject(v_item);
+    dynamic_pointer_cast<EngineStackedItems>(v_item)->fitWidth(max_width);
     // */
 
     // _object_list.insert(_object_list.begin(), make_shared<EngineSprite>(Vector2{0.0f, 0.0f}, _size, 1, Color{90, 90, 90, 255}));
 }
 
 // [ENGINE GAME OBJECT FACADE]
-EngineGameObjectFacade::EngineGameObjectFacade(Vector2 offset, Vector2 size, shared_ptr<GameObject> go) : EngineFitter(offset, size, Padding(0, 0, -1, 0), 1) {
+EngineGameObjectFacade::EngineGameObjectFacade(Vector2 offset, Vector2 size, shared_ptr<GameObject> go) : EngineStackedItems(offset, size, Padding(0), 1) {
     _game_object = go;
 
     {
@@ -1094,7 +1098,7 @@ EngineGameObjectFacade::EngineGameObjectFacade(Vector2 offset, Vector2 size, sha
 }
 
 // [ENGINE LABEL FACADE]
-EngineLabelFacade::EngineLabelFacade(Vector2 offset, Vector2 size, shared_ptr<GameObject> go) : EngineFitter(offset, size, Padding(0, 0, -1, 0), 1) {
+EngineLabelFacade::EngineLabelFacade(Vector2 offset, Vector2 size, shared_ptr<GameObject> go) : EngineStackedItems(offset, size, Padding(0), 1) {
     _label = go->getBehaviour<Label>();
 
     using placeholders::_1;
@@ -1115,9 +1119,9 @@ EngineLabelFacade::EngineLabelFacade(Vector2 offset, Vector2 size, shared_ptr<Ga
         shared_ptr<EngineObject> new_object = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{_size.x / 3 * 2, 20.0f}, Padding(0, -1, -1, 0), 15, false);
         new_item->addObject(new_object);
 
-        new_object->addObject(make_shared<EngineButton>(Vector2{0.0f, 0.0f}, Vector2{20.0f, 20.0f}, "l", 18, Padding(0, -1, -1, 5), bind(&Label::setAllign, _label, 'l')));
-        new_object->addObject(make_shared<EngineButton>(Vector2{0.0f, 0.0f}, Vector2{20.0f, 20.0f}, "c", 18, Padding(0, -1, -1, 5), bind(&Label::setAllign, _label, 'c')));
-        new_object->addObject(make_shared<EngineButton>(Vector2{0.0f, 0.0f}, Vector2{20.0f, 20.0f}, "r", 18, Padding(0, -1, -1, 5), bind(&Label::setAllign, _label, 'r')));
+        new_object->addObject(make_shared<EngineButton>(Vector2{0.0f, 0.0f}, Vector2{20.0f, 20.0f}, "l", 18, Padding(5, 0), bind(&Label::setAllign, _label, 'l')));
+        new_object->addObject(make_shared<EngineButton>(Vector2{0.0f, 0.0f}, Vector2{20.0f, 20.0f}, "c", 18, Padding(5, 0), bind(&Label::setAllign, _label, 'c')));
+        new_object->addObject(make_shared<EngineButton>(Vector2{0.0f, 0.0f}, Vector2{20.0f, 20.0f}, "r", 18, Padding(5, 0), bind(&Label::setAllign, _label, 'r')));
     }
     {
         shared_ptr<EngineObject> new_item = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{_size.x, 20.0f}, Padding(0, -1, -1, 0), 0, false);
@@ -1138,7 +1142,7 @@ EngineLabelFacade::EngineLabelFacade(Vector2 offset, Vector2 size, shared_ptr<Ga
 }
 
 // [ENGINE SPRITE FACADE]
-EngineSpriteFacade::EngineSpriteFacade(Vector2 offset, Vector2 size, shared_ptr<GameObject> go) : EngineFitter(offset, size, Padding(0, 0, -1, 0), 1) {
+EngineSpriteFacade::EngineSpriteFacade(Vector2 offset, Vector2 size, shared_ptr<GameObject> go) : EngineStackedItems(offset, size, Padding(0), 1) {
     _sprite = go->getBehaviour<Sprite>();
 
     using placeholders::_1;
@@ -1158,7 +1162,7 @@ EngineSpriteFacade::EngineSpriteFacade(Vector2 offset, Vector2 size, shared_ptr<
 }
 
 // [ENGINE ANIMATED SPRITE FACADE]
-EngineAnimatedSpriteFacade::EngineAnimatedSpriteFacade(Vector2 offset, Vector2 size, shared_ptr<GameObject> go) : EngineFitter(offset, size, Padding(0, 0, -1, 0), 1) {
+EngineAnimatedSpriteFacade::EngineAnimatedSpriteFacade(Vector2 offset, Vector2 size, shared_ptr<GameObject> go) : EngineStackedItems(offset, size, Padding(0), 1) {
     _animated_sprite = go->getBehaviour<AnimatedSprite>();
 
     addTitleObject(_size.x, "Animated Sprite");
@@ -1172,7 +1176,7 @@ EngineAnimatedSpriteFacade::EngineAnimatedSpriteFacade(Vector2 offset, Vector2 s
 }
 
 // [ENGINE TILE MAP FACADE]
-EngineTileMapFacade::EngineTileMapFacade(Vector2 offset, Vector2 size, shared_ptr<GameObject> go) : EngineFitter(offset, size, Padding(0, 0, -1, 0), 1) {
+EngineTileMapFacade::EngineTileMapFacade(Vector2 offset, Vector2 size, shared_ptr<GameObject> go) : EngineStackedItems(offset, size, Padding(0), 1) {
     _tile_map = go->getBehaviour<TileMap>();
 
     using placeholders::_1;
@@ -1207,20 +1211,20 @@ shared_ptr<EngineObject> CreateList(const Vector2 &offset, const Vector2 &itemDi
 }
 
 shared_ptr<EngineObject> CreateInteractableList(const Vector2 &offset, const Vector2 &itemDimensions, const vector<pair<string, function<void()>>> &items){
+    float max_width = 0.0f;
     shared_ptr<EngineObject> new_list = make_shared<EngineStackedItems>(offset, Vector2{itemDimensions.x, 0.0f}, Padding(0), 0);
 
     for(auto item : items) {
-        // shared_ptr<EngineObject> new_item = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, itemDimensions, Padding(0, 0, -1, 0), -1);
-        // new_list->addObject(new_item);
-
-        new_list->addObject(make_shared<EngineButton>(Vector2{0.0f, 0.0f}, itemDimensions, item.first, itemDimensions.y - 2.0f, Padding(0, 0, 0, 10), item.second));
+        new_list->addObject(make_shared<EngineButton>(Vector2{0.0f, 0.0f}, itemDimensions, item.first, itemDimensions.y - 2.0f, Padding(10, 0), item.second));
+        max_width = new_list->_object_list.back()->_size.x > max_width? new_list->_object_list.back()->_size.x : max_width;
     }
 
+    dynamic_pointer_cast<EngineStackedItems>(new_list)->fitWidth(max_width);
     return new_list;
 }
 
 shared_ptr<EngineObject> CreateHierarchyList(const Vector2 &offset, const Vector2 &itemDimensions, const HierarchyActionList &items){
-    shared_ptr<EngineObject> new_list = make_shared<EngineFitter>(offset, Vector2{itemDimensions.x, 0.0f}, Padding(0, 0, -1, 0), 1);
+    shared_ptr<EngineObject> new_list = make_shared<EngineStackedItems>(offset, Vector2{itemDimensions.x, 0.0f}, Padding(0), 1);
 
     for(auto item : items) {
         // shared_ptr<EngineObject> new_item = make_shared<EngineFitter>(Vector2{0.0f, 0.0f}, Vector2{0.0f, itemDimensions.y}, Padding{0, 0, -1, -1}, -1);
@@ -1228,8 +1232,8 @@ shared_ptr<EngineObject> CreateHierarchyList(const Vector2 &offset, const Vector
         new_list->addObject(new_item);
 
         // cout << item.first << " " << item.second.first << "\n";
-        new_item->addObject(make_shared<EngineButton>(Vector2{item.first.first - itemDimensions.y, 0.0f}, Vector2{itemDimensions.y, itemDimensions.y}, item.first.second? "|" : "-", itemDimensions.y - 2.0f, Padding(5, 0), get<0>(item.second.second)));
-        new_item->addObject(make_shared<EngineButton>(Vector2{item.first.first + 1.0f, 0.0f}, Vector2{itemDimensions.x - item.first.first - 1.0f, itemDimensions.y}, item.second.first, itemDimensions.y - 2.0f, Padding(10, 0), get<1>(item.second.second), get<2>(item.second.second)));
+        new_item->addObject(make_shared<EngineButton>(Vector2{item.first.first - itemDimensions.y, 0.0f}, Vector2{itemDimensions.y, itemDimensions.y}, item.first.second? "v" : ">", itemDimensions.y - 2.0f, Padding(5, 0), get<0>(item.second.second), false));
+        new_item->addObject(make_shared<EngineButton>(Vector2{item.first.first + 1.0f, 0.0f}, Vector2{itemDimensions.x - item.first.first - 1.0f, itemDimensions.y}, item.second.first, itemDimensions.y - 2.0f, Padding(10, 0), get<1>(item.second.second), get<2>(item.second.second), false));
     }
 
     return new_list;

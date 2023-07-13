@@ -51,6 +51,7 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
     }
 
     void MainLoop() override {
+        _hovering = _clicking = false;
         shared_ptr<EngineSprite> new_item = nullptr;
 
         // /*

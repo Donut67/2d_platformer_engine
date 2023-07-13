@@ -22,6 +22,10 @@ using namespace std;
 
 typedef vector<pair<pair<float, bool>, pair<string, tuple<function<void()>, function<void()>, function<void()>>>>> HierarchyActionList;
 
+static bool _hovering;
+static bool _clicking;
+
+
 class EngineObject : public Object {
     protected:
     public:
@@ -55,12 +59,12 @@ class EngineBaseEditor : public EngineObject{
 
         void addFileOptions();
         void openFileExplorer();
-        void setScene(string name);
     public:
         EngineBaseEditor();
 
         void update();
         void draw();
+        void setScene(string name);
 };
 
 class EngineColorWheel : public EngineObject {
@@ -136,9 +140,10 @@ class EngineLabel : public EngineObject {
 class EngineSprite : public EngineObject {
     private:
         shared_ptr<Texture2D> _texture;
-        float _scale;
         Color _color;
     public:
+        float _scale;
+
         EngineSprite(Vector2 offset, Vector2 size, float scale, Color color) : EngineObject(offset, size), _scale(scale), _color(color) {}
         EngineSprite(Vector2 offset, Vector2 size, shared_ptr<Texture2D> texture, float scale) : EngineObject(offset, size), _texture(texture), _scale(scale) {_color = WHITE;}
         EngineSprite(Vector2 offset, Vector2 size, shared_ptr<Texture2D> texture, float scale, Color color) : EngineObject(offset, size), _texture(texture), _scale(scale), _color(color) {}
@@ -168,28 +173,32 @@ class EngineButton : public EngineObject {
             _padding = Padding();
             _hover = _right_click = false;
         }
-        EngineButton(Vector2 offset, Vector2 size, string text, int fontSize, function<void()> on_click) : EngineObject(offset, size), _text(text), _font_size(fontSize) {
+        EngineButton(Vector2 offset, Vector2 size, string text, int fontSize, function<void()> on_click, bool fit = true) : EngineObject(offset, size), _text(text), _font_size(fontSize) {
             _font = *Resources::getInstance()->font("resources/monogram.ttf", true);
             _padding = Padding();
             _hover = _right_click = false;
             _on_click = on_click;
+            if (fit) _size.x = MeasureTextEx(_font, _text.c_str(), (float)_font_size, 0).x + _padding.left + _padding.right;
         }
-        EngineButton(Vector2 offset, Vector2 size, string text, int fontSize, Padding padding) : EngineObject(offset, size), _text(text), _font_size(fontSize), _padding(padding) {
+        EngineButton(Vector2 offset, Vector2 size, string text, int fontSize, Padding padding, bool fit = true) : EngineObject(offset, size), _text(text), _font_size(fontSize), _padding(padding) {
             _font = *Resources::getInstance()->font("resources/monogram.ttf", true);
             _hover = _right_click = false;
             _on_click = [](){};
+            if (fit) _size.x = MeasureTextEx(_font, _text.c_str(), (float)_font_size, 0).x + _padding.left + _padding.right;
         }
-        EngineButton(Vector2 offset, Vector2 size, string text, int fontSize, Padding padding, function<void()> on_click) : EngineObject(offset, size), _text(text), _font_size(fontSize), _padding(padding) {
+        EngineButton(Vector2 offset, Vector2 size, string text, int fontSize, Padding padding, function<void()> on_click, bool fit = true) : EngineObject(offset, size), _text(text), _font_size(fontSize), _padding(padding) {
             _font = *Resources::getInstance()->font("resources/monogram.ttf", true);
             _hover = _right_click = false;
             _on_click = on_click;
+            if (fit) _size.x = MeasureTextEx(_font, _text.c_str(), (float)_font_size, 0).x + _padding.left + _padding.right;
         }
-        EngineButton(Vector2 offset, Vector2 size, string text, int fontSize, Padding padding, function<void()> on_click, function<void()> on_right_click) : EngineObject(offset, size), _text(text), _font_size(fontSize), _padding(padding) {
+        EngineButton(Vector2 offset, Vector2 size, string text, int fontSize, Padding padding, function<void()> on_click, function<void()> on_right_click, bool fit = true) : EngineObject(offset, size), _text(text), _font_size(fontSize), _padding(padding) {
             _font = *Resources::getInstance()->font("resources/monogram.ttf", true);
             _hover = false;
             _on_click = on_click;
             _on_right_click = on_right_click;
             _right_click = true;
+            if (fit) _size.x = MeasureTextEx(_font, _text.c_str(), (float)_font_size, 0).x + _padding.left + _padding.right;
         }
 
         void update();
@@ -258,22 +267,10 @@ public:
     void addObject(shared_ptr<EngineObject> obj);
     void setItemWidth(int width);
     void setItemHeight(int height);
-};
 
-class EngineAux : public EngineSprite {
-public:
-    EngineAux(string name, Vector2 offset, Vector2 size) : EngineSprite(offset, size, 1, BLUE){
-        addTitleObject(_size.x, "name");
-    }
-
-    void update() {
-        // if (CheckCollisionPointRec(GetMousePosition(), getAreaRect()))
-        if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
-            _position = GetMousePosition();
-        _position.x += 5.0f;
-        
-        EngineObject::update();
-    }
+    Padding getPadding() const { return _padding; }
+    void fitWidth(int width);
+    void fitHeight(int height);
 };
 
 class EngineWindow : public EngineStackedItems {
@@ -288,16 +285,17 @@ class EngineWindow : public EngineStackedItems {
         string getName() const;
 };
 
-class EngineOptionList : public EngineStackedItems {
+class EngineOptionList : public EngineObject {
     // private:
     public:
         EngineOptionList(const Vector2 &pos, const Vector2 &size, const Vector2 &itemDimensions, const vector<pair<string, function<void()>>> &items);
 
         void update();
-};
 
-class EngineMenuBar : public EngineStackedItems {
-
+        void draw() {
+            DrawRectangleLinesEx(getAreaRect(), 1, RED);
+            EngineObject::draw();
+        }
 };
 
 class EngineMenu : public EngineStackedItems {
@@ -314,7 +312,7 @@ class EngineMenu : public EngineStackedItems {
         void update();
 };
 
-class EngineHierarchy : public EngineFitter {
+class EngineHierarchy : public EngineSprite {
     private:
         static shared_ptr<EngineHierarchy> _instance;
         shared_ptr<Nary<GameObject>> _root;
@@ -323,7 +321,6 @@ class EngineHierarchy : public EngineFitter {
         void selectItem_i(Nary<pair<bool, shared_ptr<GameObject>>> tree, shared_ptr<GameObject> g);
         void addGameObject(shared_ptr<GameObject> go);
     protected:
-        EngineHierarchy() : EngineFitter() {}
         EngineHierarchy(Vector2 offset, Vector2 size, shared_ptr<Nary<GameObject>> root);
     public:
         EngineHierarchy(Vector2 offset, Vector2 size);
@@ -334,7 +331,7 @@ class EngineHierarchy : public EngineFitter {
         void openGameObjectOptions(shared_ptr<GameObject> go);
 };
 
-class EngineInspector : public EngineFitter {
+class EngineInspector : public EngineSprite {
     private:
         static shared_ptr<EngineInspector> _instance;
         shared_ptr<GameObject> _game_object;
@@ -347,7 +344,6 @@ class EngineInspector : public EngineFitter {
             setGameObject(_game_object);
         }
     protected:
-        EngineInspector() : EngineFitter() {}
         EngineInspector(Vector2 offset, Vector2 size, shared_ptr<GameObject> go);
     public:
         EngineInspector(Vector2 offset, Vector2 size);
@@ -356,7 +352,7 @@ class EngineInspector : public EngineFitter {
         void setGameObject(shared_ptr<GameObject> go);
 };
 
-class EngineAnimationEditor : public EngineFitter {
+class EngineAnimationEditor : public EngineSprite {
     private:
         static shared_ptr<EngineAnimationEditor> _instance;
 
@@ -365,8 +361,6 @@ class EngineAnimationEditor : public EngineFitter {
         void addNewAnimation();
         void selectTileSet();
         void setTexture(string path);
-    protected:
-        EngineAnimationEditor() : EngineFitter() {}
     public:
         EngineAnimationEditor(Vector2 offset, Vector2 size);
         static shared_ptr<EngineAnimationEditor> getInstance();
@@ -397,7 +391,7 @@ class EngineAnimationSequence : public EngineFitter {
         void setTexture(string path);
 };
 
-class EngineTileSetEditor : public EngineFitter {
+class EngineTileSetEditor : public EngineSprite {
     private:
         static shared_ptr<EngineTileSetEditor> _instance;
 
@@ -435,41 +429,37 @@ class EngineFileSelector : public EngineSprite {
 
     public:
         EngineFileSelector(Vector2 offset, Vector2 size, string path, string extension, function<void(string)> onclick);
-
-        void draw() {
-            EngineSprite::draw();
-        }
 };
 
-class EngineGameObjectFacade : public EngineFitter {
+class EngineGameObjectFacade : public EngineStackedItems {
     private:
         shared_ptr<GameObject> _game_object;
     public:
         EngineGameObjectFacade(Vector2 offset, Vector2 size, shared_ptr<GameObject> go);
 };
 
-class EngineLabelFacade : public EngineFitter {
+class EngineLabelFacade : public EngineStackedItems {
     private:
         shared_ptr<Label> _label;
     public:
         EngineLabelFacade(Vector2 offset, Vector2 size, shared_ptr<GameObject> go);
 };
 
-class EngineSpriteFacade : public EngineFitter {
+class EngineSpriteFacade : public EngineStackedItems {
     private:
         shared_ptr<Sprite> _sprite;
     public:
         EngineSpriteFacade(Vector2 offset, Vector2 size, shared_ptr<GameObject> go);
 };
 
-class EngineAnimatedSpriteFacade : public EngineFitter {
+class EngineAnimatedSpriteFacade : public EngineStackedItems {
     private:
         shared_ptr<AnimatedSprite> _animated_sprite;
     public:
         EngineAnimatedSpriteFacade(Vector2 offset, Vector2 size, shared_ptr<GameObject> go);
 };
 
-class EngineTileMapFacade : public EngineFitter {
+class EngineTileMapFacade : public EngineStackedItems {
     private:
         shared_ptr<TileMap> _tile_map;
     public:
