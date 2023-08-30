@@ -49,5 +49,8 @@
     <ClInclude Include="StdioLogSystem.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\2D_Platformer_Engine\raygui.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

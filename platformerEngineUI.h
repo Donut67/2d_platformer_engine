@@ -23,8 +23,6 @@ using namespace std;
 typedef vector<pair<pair<float, bool>, pair<string, tuple<function<void()>, function<void()>, function<void()>>>>> HierarchyActionList;
 
 static bool _hovering;
-static bool _clicking;
-
 
 class EngineObject : public Object {
     protected:
@@ -34,6 +32,7 @@ class EngineObject : public Object {
         EngineObject(Vector2 offset, Vector2 size) : Object(offset, size) {}
         
         virtual void addObject(shared_ptr<EngineObject> obj);
+
         virtual void addTitleObject(const float &width, const string &title);
         virtual void addStackedObjects(const float &width, const vector<string> &texts);
 
@@ -44,9 +43,7 @@ class EngineObject : public Object {
         void draw();
 
         int getObjectListSize() const;
-        Rectangle getAreaRect() const {
-            return Rectangle{ _position.x, _position.y, _size.x, _size.y };
-        }
+        Rectangle getAreaRect() const { return Rectangle{ _position.x, _position.y, _size.x, _size.y }; }
         vector<shared_ptr<EngineObject>> object_list() const {return _object_list;}
 };
 
@@ -56,9 +53,18 @@ class EngineBaseEditor : public EngineObject{
         Scene _scene;
         Vector2 _prev_position, _prev_mouse_position;
         bool _dragging, _moving, _scene_loaded;
+        string _scene_path;
 
-        void addFileOptions();
+
         void openFileExplorer();
+        void saveScene();
+        void addFileOptions();
+        void setHierarchy(bool state);
+        void setInspector(bool state);
+        void setAnimationEditor(bool state);
+        void setTileSetEditor(bool state);
+
+        void removeWindow(string name);
     public:
         EngineBaseEditor();
 
@@ -166,12 +172,14 @@ class EngineButton : public EngineObject {
         int _font_size;
         Padding _padding;
         bool _hover, _right_click;
+        int _count;
     public:
         EngineButton() : EngineObject() {
             _font_size = 18;
             _font = *Resources::getInstance()->font("resources/monogram.ttf", true);
             _padding = Padding();
             _hover = _right_click = false;
+            _count = 10;
         }
         EngineButton(Vector2 offset, Vector2 size, string text, int fontSize, function<void()> on_click, bool fit = true) : EngineObject(offset, size), _text(text), _font_size(fontSize) {
             _font = *Resources::getInstance()->font("resources/monogram.ttf", true);
@@ -199,6 +207,46 @@ class EngineButton : public EngineObject {
             _on_right_click = on_right_click;
             _right_click = true;
             if (fit) _size.x = MeasureTextEx(_font, _text.c_str(), (float)_font_size, 0).x + _padding.left + _padding.right;
+        }
+
+        virtual void setWidth(float x) {
+            _size.x = x;
+            int n = nCharsSpace(_font, _text.c_str(), (float)_font_size, 0, x);
+            if (n < _text.length()) _text = _text.substr((size_t)0, (size_t)n - 4) + "...";
+        }
+
+        void update();
+        void draw();
+};
+
+class EngineCheckBox : public EngineObject {
+    private:
+    public:
+        function<void()> _on_select, _on_diselect;
+        Font _font;
+        bool _hover, _selected;
+        EngineCheckBox(Vector2 offset, Vector2 size, function<void()> on_select, function<void()> on_diselect) : EngineObject(offset, size) {
+            _font = *Resources::getInstance()->font("resources/monogram.ttf", true);
+            _hover = _selected = false;
+            _on_select = on_select;
+            _on_diselect = on_diselect;
+        }
+
+        void update();
+        void draw();
+};
+
+class EngineToggleButton : public EngineCheckBox {
+    private:
+        string _text;
+        Font _font;
+        int _font_size;
+        Padding _padding;
+    public:
+        EngineToggleButton(Vector2 offset, Vector2 size, string text, int fontSize, Padding padding, function<void()> on_select, function<void()> on_diselect) : EngineCheckBox(offset, size, on_select, on_diselect), _text(text), _font_size(fontSize) {
+            _font = *Resources::getInstance()->font("resources/monogram.ttf", true);
+            _padding = padding;
+            _size.x = MeasureTextEx(_font, _text.c_str(), (float)_font_size, 0).x + _padding.left + _padding.right;
         }
 
         void update();
@@ -229,7 +277,7 @@ class EngineInput : public EngineObject {
         string _text;
         Font _font;
         bool _hover, _selected, _decimal;
-        int _initial_pos, _cursor_pos;
+        int _initial_pos, _cursor_pos, _count;
 
         function<void(T)> _set_text;
 
@@ -242,6 +290,7 @@ class EngineInput : public EngineObject {
 
         void update();
         void draw();
+        void setItem(T item);
 };
 
 class EngineAnimatedSpriteFrame : public EngineButton {
@@ -257,20 +306,20 @@ class EngineAnimatedSpriteFrame : public EngineButton {
 };
 
 class EngineStackedItems : public EngineObject {
-private:
-    Padding _padding;
-    int _gap, _item_width, _item_height;
-    bool _vertical, _set_width, _set_height;
-public:
-    EngineStackedItems(Vector2 offset, Vector2 size, Padding padding, int gap, bool v = true);
+    private:
+        Padding _padding;
+        int _gap, _item_width, _item_height;
+        bool _vertical, _set_width, _set_height;
+    public:
+        EngineStackedItems(Vector2 offset, Vector2 size, Padding padding, int gap, bool v = true);
 
-    void addObject(shared_ptr<EngineObject> obj);
-    void setItemWidth(int width);
-    void setItemHeight(int height);
+        void addObject(shared_ptr<EngineObject> obj);
+        void setItemWidth(int width);
+        void setItemHeight(int height);
 
-    Padding getPadding() const { return _padding; }
-    void fitWidth(int width);
-    void fitHeight(int height);
+        Padding getPadding() const { return _padding; }
+        void setWidth(int width);
+        void setHeight(int height);
 };
 
 class EngineWindow : public EngineStackedItems {
@@ -283,23 +332,35 @@ class EngineWindow : public EngineStackedItems {
 
         void update();
         string getName() const;
+
+        void draw() {
+            EngineObject::draw();
+
+            Rectangle r = getAreaRect();
+            r.height = 0;
+            for(auto item : _object_list) r.height += item->_size.y;
+
+            DrawRectangleLinesEx(r, 1, Color{90, 90, 90, 255});
+        }
 };
 
 class EngineOptionList : public EngineObject {
-    // private:
+    private:
+        function<void()> _close;
     public:
-        EngineOptionList(const Vector2 &pos, const Vector2 &size, const Vector2 &itemDimensions, const vector<pair<string, function<void()>>> &items);
+        EngineOptionList(const Vector2& pos, const Vector2& size, const Vector2& itemDimensions, function<void()> close);
+        EngineOptionList(const Vector2& pos, const Vector2& size, const Vector2& itemDimensions, const vector<pair<string, function<void()>>>& items, function<void()> close);
+
+        void addObject(shared_ptr<EngineObject> obj);
+        void setWidth(int width);
 
         void update();
-
-        void draw() {
-            DrawRectangleLinesEx(getAreaRect(), 1, RED);
-            EngineObject::draw();
-        }
+        void draw();
 };
 
 class EngineMenu : public EngineStackedItems {
     private:
+        float _max_width;
         bool _opened;
         shared_ptr<EngineOptionList> _option_list;
 
@@ -307,9 +368,16 @@ class EngineMenu : public EngineStackedItems {
         void open();
         void close();
     public:
+        EngineMenu(Vector2 offset, Vector2 size, string name);
         EngineMenu(Vector2 offset, Vector2 size, string name, const vector<pair<string, function<void()>>>& items);
 
+        void addObject(shared_ptr<EngineObject> obj);
+
         void update();
+        void draw() {
+            EngineObject::draw();
+            if (_opened) DrawRectangleLinesEx(_option_list->getAreaRect(), 1, Color{90, 90, 90, 255});
+        }
 };
 
 class EngineHierarchy : public EngineSprite {
@@ -317,6 +385,8 @@ class EngineHierarchy : public EngineSprite {
         static shared_ptr<EngineHierarchy> _instance;
         shared_ptr<Nary<GameObject>> _root;
         Nary<pair<bool, shared_ptr<GameObject>>> _hierarchyTree;
+        shared_ptr<EngineObject> _screen, _option_list;
+        bool _opened;
 
         void selectItem_i(Nary<pair<bool, shared_ptr<GameObject>>> tree, shared_ptr<GameObject> g);
         void addGameObject(shared_ptr<GameObject> go);
@@ -329,12 +399,14 @@ class EngineHierarchy : public EngineSprite {
         void setRoot(shared_ptr<Nary<GameObject>> root);
         void selectItem(shared_ptr<GameObject> go);
         void openGameObjectOptions(shared_ptr<GameObject> go);
+        void setBaseObject(shared_ptr<EngineObject> obj);
 };
 
 class EngineInspector : public EngineSprite {
     private:
         static shared_ptr<EngineInspector> _instance;
         shared_ptr<GameObject> _game_object;
+        shared_ptr<EngineObject> _content;
 
         void openNewBehaviorOptions();
 
@@ -395,11 +467,17 @@ class EngineTileSetEditor : public EngineSprite {
     private:
         static shared_ptr<EngineTileSetEditor> _instance;
 
-        shared_ptr<EngineObject> _sprite, _obj;
+        shared_ptr<EngineObject> _sprite, _obj, _rows, _columns;
         shared_ptr<TileSetData> _data;
 
+        void createTileSet();
+
+        void selectTileSet();
         void selectTexture();
+
         void setTexture(string path);
+        void setTileSet(string path);
+
         void setRows(int i);
         void setColumns(int i);
         void saveData();
@@ -418,6 +496,7 @@ class EngineTileSetView : public EngineSprite {
         EngineTileSetView(Vector2 offset, Vector2 size);
 
         void setTexture(string path);
+        void setTexture(shared_ptr<Texture2D> texture);
         void draw();
 
         void setRows(int i);
@@ -467,7 +546,7 @@ class EngineTileMapFacade : public EngineStackedItems {
 };
 
 shared_ptr<EngineObject> CreateList(const Vector2 &offset, const Vector2 &itemDimensions, const vector<string> &items);
-shared_ptr<EngineObject> CreateInteractableList(const Vector2 &offset, const Vector2 &itemDimensions, const vector<pair<string, function<void()>>> &items);
+shared_ptr<EngineStackedItems> CreateInteractableList(const Vector2 &offset, const Vector2 &itemDimensions, const vector<pair<string, function<void()>>> &items);
 shared_ptr<EngineObject> CreateHierarchyList(const Vector2 &offset, const Vector2 &itemDimensions, const HierarchyActionList &items);
 
 Nary<pair<bool, shared_ptr<GameObject>>> convertToNewTree(Nary<GameObject> a);

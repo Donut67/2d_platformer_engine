@@ -168,6 +168,7 @@
     <ClCompile Include="StdioLogSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\2D_Platformer_Engine\raygui.h" />
     <ClInclude Include="platformerEngineBasics.h" />
     <ClInclude Include="platformerEngineUI.h" />
     <ClInclude Include="raylib.h" />

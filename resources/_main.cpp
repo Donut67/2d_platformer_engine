@@ -143,7 +143,7 @@ int main() {
     }
 
     // Cleaning up the closing
-    RCCppCleanup();
+    // RCCppCleanup();
     CloseWindow();
 }
 

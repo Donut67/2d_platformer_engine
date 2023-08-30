@@ -63,6 +63,13 @@ vector<string> splice(string source, char divider){
     return result;
 }
 
+int nCharsSpace(Font font, string text, float fontSize, float spacing, float width) {
+    int count = 1;
+    while (MeasureTextEx(font, text.substr(0, count).c_str(), (float)fontSize, spacing).x <= width && count < text.length()) count++;
+
+    return count;
+}
+
 // [TILESET]
 TileSet::TileSet(shared_ptr<Texture2D> texture, string meta){
     _texture = texture;
@@ -173,12 +180,13 @@ Object::Object() {
 
 Object::Object(Vector2 offset, Vector2 size){
     _id = ObjectID();
-    _position = _offset = offset;
+    _position = Vector2{ 0.0f, 0.0f };
+    _offset = offset;
     _size = size;
 }
 
 void Object::update(const Vector2 &offset) {
-    _position = Vector2{_offset.x + offset.x, _offset.y + offset.y};
+    _position = Vector2{ _offset.x + offset.x, _offset.y + offset.y };
 }
 
 // [BEHAVIOUR]

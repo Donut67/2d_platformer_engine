@@ -30,10 +30,11 @@ RUNTIME_COMPILER_SOURCEDEPENDENCY;
 using namespace std;
 
 string getNextWord(string &line, int &actual);
-string ftostr(float f, int precision);
+string ftostr(float f, int precision = 0);
 unsigned char stouc(const string &source);
 string slice(string source, char divider, int &pos);
 vector<string> splice(string source, char divider);
+int nCharsSpace(Font font, string text, float fontSize, float spacing, float width);
 
 class TileSetData;
 
@@ -198,7 +199,7 @@ class Object {
     protected:
         ObjectID _id; 
     public:
-        Vector2 _position, _offset ,_size; 
+        Vector2 _position, _offset, _size; 
 
         Object();
         Object(Vector2 offset, Vector2 size);
@@ -207,6 +208,9 @@ class Object {
         
         virtual void update() = 0;
         virtual void draw() = 0;
+
+        virtual void setWidth(float x) { _size.x = x; }
+        virtual void setHeight(float y) { _size.y = y; }
 };
 
 class GameObject;

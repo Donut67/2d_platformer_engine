@@ -1,6 +1,7 @@
 #include "RCCppMainLoop.h"
 
 #include "raylib.h"
+#include "raygui.h"
 #include "platformerEngineUI.h"
 
 #include "RuntimeLinkLibrary.h"
@@ -51,7 +52,6 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
     }
 
     void MainLoop() override {
-        _hovering = _clicking = false;
         shared_ptr<EngineSprite> new_item = nullptr;
 
         // /*
