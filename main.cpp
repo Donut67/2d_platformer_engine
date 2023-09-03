@@ -87,7 +87,7 @@ typedef struct tagBITMAPINFOHEADER {
 #endif
 
 #include "raylib.h"
-#include "platformerEngineUI.h"
+// #include "platformerEngineUI.h"
 #include <cstdlib>
 #include <iostream>
 
@@ -108,7 +108,7 @@ void RCCppUpdate();
 using namespace std;
 
 int main() {
-    // Initializing Window
+    // Create Window
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(0, 0, "2D Platformer Engine");
     SetExitKey(KEY_NULL);
@@ -117,29 +117,24 @@ int main() {
     // Initialize RCC++
     RCCppInit();
 
+    // Setup Gui context
+
     // Initializing the base editor
-    EngineBaseEditor* base_editor = new EngineBaseEditor();
-    /*
-    shared_ptr<EngineObject> base = make_shared<EngineObject>(Vector2{0.0f, 0.0f}, Vector2{0.0f, 0.0f});
-    base->addObject(make_shared<EngineAux>("okay", Vector2{0.0f, 0.0f}, Vector2{55.0f, 20.0f}));
-    // */
+    // EngineBaseEditor* base_editor = new EngineBaseEditor();
+    // shared_ptr<EngineObject> base = make_shared<EngineObject>(Vector2{0.0f, 0.0f}, Vector2{0.0f, 0.0f});
+    // base->addObject(make_shared<EngineAux>("okay", Vector2{0.0f, 0.0f}, Vector2{55.0f, 20.0f}));
 
     // Setting the base editor in the system table
-    g_SystemTable.pEBEditor = base_editor;
+    // g_SystemTable.pEBEditor   = base_editor;
 
-    SetTargetFPS(60);
+    // createFactoryContext();
 
-    while (!WindowShouldClose()) {
+    SetTargetFPS(144);
+
+    while (!WindowShouldClose() && !g_SystemTable.pRCCppMainLoopI->WindowShouldClose()) {
         RCCppUpdate();
 
         g_SystemTable.pRCCppMainLoopI->MainLoop();
-        /*
-        base_editor->update();
-        BeginDrawing();
-            ClearBackground(GRAY);
-            base_editor->draw();
-        EndDrawing();
-        // */
     }
 
     // Cleaning up the closing
@@ -150,12 +145,15 @@ int main() {
 bool RCCppInit()
 {
     g_SystemTable.pRuntimeObjectSystem = new RuntimeObjectSystem;
+    g_SystemTable.pLogger = &g_Logger;
     if (!g_SystemTable.pRuntimeObjectSystem->Initialise(&g_Logger, &g_SystemTable))
     {
         delete g_SystemTable.pRuntimeObjectSystem;
         g_SystemTable.pRuntimeObjectSystem = NULL;
         return false;
     }
+
+    g_SystemTable.pRuntimeObjectSystem->CleanObjectFiles();
 
     g_SystemTable.pRuntimeObjectSystem->SetAdditionalCompileOptions("/std:c++17");
 

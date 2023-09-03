@@ -1,0 +1,7 @@
+Player: 700.00000 700.00000,96.00000 96.00000
+behavior:
+animatedsprite: resources\03-soldierIdle.aon,0
+animator: resources\NewAnimationGraph1.aph,Idle
+playercontroller:
+end
+end

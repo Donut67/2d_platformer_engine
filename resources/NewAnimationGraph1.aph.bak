@@ -1,0 +1,7 @@
+end
+
+Idle;var1 > 0:WalkFront;var1 < 0:WalkBack;var2 > 0:WalkLeft;var2 < 0:WalkRight
+WalkFront;var1 == 0:Idle
+WalkBack;var1 == 0:Idle
+WalkLeft;var2 == 0:Idle
+WalkRight;var2 == 0:Idle

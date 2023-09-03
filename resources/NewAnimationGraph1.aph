@@ -1,0 +1,12 @@
+Idle;resources\03-soldierIdle.aon
+WalkBack;resources\03-soldierWalkBack.aon
+WalkFront;resources\03-soldierWalkFront.aon
+WalkLeft;resources\03-soldierWalkLeft.aon
+WalkRight;resources\03-soldierWalkRight.aon
+end
+var1 var2
+Idle;var1 > 0:WalkFront;var1 < 0:WalkBack;var2 > 0:WalkLeft;var2 < 0:WalkRight
+WalkFront;var1 == 0:Idle
+WalkBack;var1 == 0:Idle
+WalkLeft;var2 == 0:Idle
+WalkRight;var2 == 0:Idle

@@ -1,0 +1,5 @@
+Idle;speed.x != 0:Walk;speed.y > 0:Jump;speed.y < 0:Fall
+Walk;speed.x == 0:Idle;speed.y > 0:Jump;speed.y < 0:Fall
+Jump;speed.y <= 0:Fall
+Fall;speed.y == 0 and height > 50:FallRecover;speed.y == 0:Idle
+FallRecover;time <= 0:Idle

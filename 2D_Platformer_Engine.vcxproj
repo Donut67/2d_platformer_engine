@@ -163,17 +163,19 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="platformerEngineBasics.cpp" />
-    <ClCompile Include="platformerEngineUI.cpp" />
     <ClCompile Include="RCCppMainLoop.cpp" />
     <ClCompile Include="StdioLogSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\2D_Platformer_Engine\raygui.h" />
+    <ClInclude Include="Graph.h" />
+    <ClInclude Include="gui_draggable_window_box.h" />
+    <ClInclude Include="observer_pattern.h" />
     <ClInclude Include="platformerEngineBasics.h" />
-    <ClInclude Include="platformerEngineUI.h" />
+    <ClInclude Include="raygui.h" />
     <ClInclude Include="raylib.h" />
     <ClInclude Include="RCCppMainLoop.h" />
     <ClInclude Include="StdioLogSystem.h" />
+    <ClInclude Include="style_dark.h" />
     <ClInclude Include="SystemTable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

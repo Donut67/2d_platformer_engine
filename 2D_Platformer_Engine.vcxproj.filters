@@ -20,9 +20,6 @@
     <ClCompile Include="platformerEngineBasics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="platformerEngineUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StdioLogSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -40,16 +37,25 @@
     <ClInclude Include="platformerEngineBasics.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="platformerEngineUI.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="raylib.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="StdioLogSystem.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\2D_Platformer_Engine\raygui.h">
+    <ClInclude Include="raygui.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="style_dark.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_draggable_window_box.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="observer_pattern.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graph.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

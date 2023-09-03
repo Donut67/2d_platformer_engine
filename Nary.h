@@ -18,19 +18,40 @@ class Nary{
 
         shared_ptr<Node> _root;
 
-        Nary find_i(const Nary &a, bool &found, shared_ptr<element> e) const{
+        Nary find_i(const Nary& a, bool& found, shared_ptr<element> e) const {
             Nary aux;
-            if(!a.isEmpty() && a.content() != e){
+            if (!a.isEmpty() && a.content() != e) {
                 int i = 1;
-                while(!found && i <= a.nChilds()){
+                while (!found && i <= a.nChilds()) {
                     aux = find_i(a.child(i), found, e);
                     i++;
                 }
-            } else if(!a.isEmpty() && a.content() == e){
+            }
+            else if (!a.isEmpty() && a.content() == e) {
                 found = true;
                 aux = a;
             }
             return aux;
+        }
+        void removeNode_i(shared_ptr<Node>& node, shared_ptr<element> e) {
+            if (node == nullptr) return;
+
+            if (node->_child != nullptr && node->_child->_content == e) node->_child = node->_child->_brother;
+
+            shared_ptr<Node> currentChild = node->_child;
+            shared_ptr<Node> previousChild = nullptr;
+
+            while (currentChild != nullptr) {
+                if (currentChild->_content == e) {
+                    if (previousChild != nullptr) previousChild->_brother = currentChild->_brother;
+                    else node->_child = currentChild->_brother;
+                }
+                previousChild = currentChild;
+                currentChild = currentChild->_brother;
+            }
+
+            removeNode_i(node->_brother, e);
+            removeNode_i(node->_child, e);
         }
     public:
         Nary() {
@@ -63,10 +84,8 @@ class Nary{
                 actual = actual->_brother;
             }
 
-            if (previous == nullptr) {
-                _root = a._root;
-                // _root->_parent = a.root->_parent;
-            } else {
+            if (previous == nullptr) _root = a._root;
+            else {
                 previous->_brother = a._root;
                 previous->_brother->_parent = _root->_parent;
             }
@@ -87,7 +106,22 @@ class Nary{
                 previous->_brother = a._root;
                 previous->_brother->_parent = _root;
             }
-            // cout << "child setted\n";
+        }
+        void removeNode(shared_ptr<element> e) {
+            shared_ptr<Node> current = _root;
+            shared_ptr<Node> previous = nullptr;
+            bool found = false;
+
+            while (current != nullptr && !found) {
+                if (current->_content == e) {
+                    if (previous != nullptr) previous->_brother = current->_brother;
+                    else _root = current->_brother;
+                    found = true;
+                }
+                else removeNode_i(current, e);
+                previous = current;
+                current = current->_brother;
+            }
         }
 
         bool isEmpty() const {
@@ -137,11 +171,11 @@ class Nary{
             int i = 1;
             bool found = false;
 
-            while(!found && i <= nBrothers()){
+            while (!found && i <= nBrothers()) {
                 res = find_i(brother(i), found, e);
                 i++;
             }
-            
+
             return res;
         }
 

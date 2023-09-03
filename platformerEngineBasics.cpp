@@ -63,11 +63,13 @@ vector<string> splice(string source, char divider){
     return result;
 }
 
-int nCharsSpace(Font font, string text, float fontSize, float spacing, float width) {
-    int count = 1;
-    while (MeasureTextEx(font, text.substr(0, count).c_str(), (float)fontSize, spacing).x <= width && count < text.length()) count++;
-
-    return count;
+string str_toupper(string s) {
+    transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return toupper(c); });
+    return s;
+}
+string str_tolower(string s) {
+    transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return tolower(c); });
+    return s;
 }
 
 // [TILESET]
@@ -122,10 +124,18 @@ void Resources::addFont(const string &filename) {
     _font_list.insert(pair<string, shared_ptr<Font>>(filename, make_shared<Font>(LoadFont(cstr))));
 }
 
-void Resources::addTileset(const string &filename) {    
+void Resources::addTileset(const string& filename) {
     _tileset_list.insert(pair<string, shared_ptr<TileSetData>>(filename, make_shared<TileSetData>(filename)));
 }
+void Resources::addAnimation(const string& filename) {
+    _animation_list.insert(pair<string, shared_ptr<EngineAnimation>>(filename, make_shared<EngineAnimation>(filename)));
+}
 
+/*
+void Resources::addAnimationGraph(const string& filename) {
+    _tileset_list.insert(pair<string, shared_ptr<TileSetData>>(filename, make_shared<TileSetData>(filename)));
+}
+// */
 shared_ptr<Texture2D> Resources::texture(const string &filename, const bool &load = false) {
     auto search = _texture_list.find(filename);
     if(load && search == _texture_list.end()) {
@@ -153,11 +163,32 @@ shared_ptr<TileSetData> Resources::tileset(const string &filename, const bool &l
     return search == _tileset_list.end()? nullptr : search->second;
 }
 
+shared_ptr<EngineAnimation> Resources::animation(const string& filename, const bool& load) {
+    auto search = _animation_list.find(filename);
+    if (load && search == _animation_list.end()) {
+        addAnimation(filename);
+        search = _animation_list.find(filename);
+    }
+    return search == _animation_list.end() ? nullptr : search->second;
+}
+/*
+shared_ptr<EngineAnimationGraph> Resources::animation_graph(const string& filename, const bool& load) {
+    auto search = _animation_graph_list.find(filename);
+    if (load && search == _animation_graph_list.end()) {
+        addAnimationGraph(filename);
+        search = _animation_graph_list.find(filename);
+    }
+    return search == _animation_graph_list.end() ? nullptr : search->second;
+}
+// */
+
 // [OBJECT ID]
-ObjectID::ObjectID() {
+ObjectID::ObjectID(bool n = true) {
     _value = "";
-    for(int i = 0; i < 10; i++){
-        _value += to_string(rand() % 10);
+    if (n) {
+        for (int i = 0; i < 10; i++) {
+            _value += to_string(rand() % 10);
+        }
     }
 }
 
@@ -180,13 +211,12 @@ Object::Object() {
 
 Object::Object(Vector2 offset, Vector2 size){
     _id = ObjectID();
-    _position = Vector2{ 0.0f, 0.0f };
-    _offset = offset;
+    _position = _offset = offset;
     _size = size;
 }
 
 void Object::update(const Vector2 &offset) {
-    _position = Vector2{ _offset.x + offset.x, _offset.y + offset.y };
+    _position = Vector2{_offset.x + offset.x, _offset.y + offset.y};
 }
 
 // [BEHAVIOUR]
@@ -205,10 +235,8 @@ void Label::draw(){
         float length = _text.size() * ((float)_font_size * 8.0f / 16.5f);
         this_pos = Vector2{_go->_position.x + _go->_size.x - length, _go->_position.y};
     }
-    
+
     DrawTextEx(_font, _text.c_str(), Vector2{this_pos.x, this_pos.y}, (float)_font_size, 0, _text_color);
-    
-    // DrawTextRecEx(_font, _text->c_str(), Rectangle{position.x, position.y, size.x, size.y}, _font_size, 0, true, WHITE, 0, 0, WHITE, BLUE);
 }
 
 // [SPRITE]
@@ -221,114 +249,69 @@ void Sprite::draw() {
 }
 
 // [ANIMATED SPRITE]
-AnimatedSprite::AnimatedSprite() {
-    _texture = nullptr;
-}
-
-AnimatedSprite::AnimatedSprite(string filename, shared_ptr<Texture2D> texture, float timeforframe, string mapMeta) : _filename(filename), _texture(texture), _time_for_frame(timeforframe) {
-    string line;
-    ifstream file(mapMeta);
-    int anim = 0;
-    getline(file, line);
-    _size = Vector2{stof(line.substr(0, line.find(','))), stof(line.substr(line.find(',') + 1, line.size()))};
-
-    getline(file, line);
-    while(line != "-1"){
-        bool found = false;
-        int pos = 0;
-        string value = "";
-        vector<int> aux;
-
-        while(!found && pos < int(line.size())){
-            found = line[pos] == ',';
-            if(line[pos] == ' '){
-                aux.push_back(stoi(value));
-                value = "";
-            } else value += line[pos];
-            if(found) aux.push_back(stoi(value));
-            pos ++;
-        }
-        _animation_map[anim] = pair<vector<int>, bool>(aux, line.substr(pos) == " true");
-        anim ++;
-        getline(file, line);
-    }
-
-    _tileSize = Vector2{_texture->width / _size.x, _texture->height / _size.y};
-    _frame_time = _time_for_frame;
-    _actual = _animation = 0;
-    _fliph = _flipv = _ended = false;
-}
-
-void AnimatedSprite::update() {
-    if(_texture != nullptr){
-        map<int, pair<vector<int>, bool>>::iterator it = _animation_map.find(_animation);
-        if(it != _animation_map.end()) _cicle = it->second.first;
-        else _cicle = _cicle;
-        bool loop = it->second.second;
-
-        _frame_time -= GetFrameTime();
-        if(_frame_time <= 0){
-            _frame_time = _time_for_frame;
-            _actual ++;
-        }
-        _ended = _actual > (int)_cicle.size() - 1;
-
-        if(loop && _ended) _actual = 0;
-        else if(!loop && _ended) _actual = (int)_cicle.size() - 1; 
-    }
-}
-
 void AnimatedSprite::draw(){
-    if(_texture != nullptr) {
-        Vector2 pos = _go->_position;
-        int i = _cicle[_actual] % (int)(_size.x), j = (int)floor(_cicle[_actual] / (int)(_size.x));
-        Rectangle src = Rectangle{
-            i * _tileSize.x, 
-            j * _tileSize.y, 
-            (_fliph? -_tileSize.x : _tileSize.x), 
-            (_flipv? -_tileSize.y : _tileSize.y)};
-        Rectangle dst = Rectangle{pos.x, pos.y, _tileSize.x, _tileSize.y};
-        DrawTexturePro(*_texture, src, dst, Vector2{0.0f, 0.0f}, 0.0f, WHITE);
-    }
+    if (_animation) _animation->draw(_go->_position, _go->_size, _fliph, _flipv);
 }
 
 // [TILEMAP]
-TileMap::TileMap() {
-    _scale = 1.0f;
-    _tile_set_size = _tile_size = Vector2{ 0.0f, 0.0f };
-}
-
-TileMap::TileMap(TileSet set, Vector2 size, float scale, string mapMeta) : _scale(scale) {
-    _set = set; 
-    _tile_set_size = size;
-    _filename = mapMeta;
-
-    ifstream map(mapMeta);
-    int x, y;
-    map >> x >> y;
-
-    for(int i = 0; i < x; i++) for(int j = 0; j < y; j++) map >> _tile_map[pair<int, int>(j, i)];
-
-    _tile_size = Vector2{_set.getTexture()->width / _tile_set_size.x, _set.getTexture()->height / _tile_set_size.y};
-}
-
 void TileMap::draw() {
-    for(auto i : _tile_map){
-        if(i.second != -1){
-            Vector2 new_pos = Vector2{_go->_position.x + _tile_size.x * i.first.first * _scale, _go->_position.y + _tile_size.y * i.first.second * _scale};
-            Vector2 aux = _set[i.second];
-            Rectangle src = Rectangle{aux.x * _tile_size.x, aux.y * _tile_size.y, _tile_size.x, _tile_size.y};
-            Rectangle dst = Rectangle{new_pos.x, new_pos.y, _tile_size.x * _scale, _tile_size.y * _scale};
+    if(_set != nullptr){
+        for (auto item : _tile_map) {
+            for (int i = 0; i < _map_size.x; i++) {
+                for (int j = 0; j < _map_size.y; j++) {
+                    int val = item.second[j * _map_size.x + i];
+                    if (val != -1) {
+                        Vector2 new_pos = Vector2{ _go->_position.x + _set->_tileSize.x * j * _scale, _go->_position.y + _set->_tileSize.y * i * _scale };
+                        new_pos.x +=  item.first.first * _set->_tileSize.x * _scale * 24;
+                        new_pos.y += item.first.second * _set->_tileSize.y * _scale * 24;
 
-            DrawTexturePro(*_set.getTexture(), src, dst, Vector2{0.0f, 0.0f}, 0.0f, WHITE);
-            // DrawText(to_string(i.second).c_str(), dst.x + dst.width/2, dst.y, 48, WHITE);
+                        Vector2 aux = (*_set)[val];
+                        Rectangle src = Rectangle{ aux.x * _set->_tileSize.x, aux.y * _set->_tileSize.y, _set->_tileSize.x, _set->_tileSize.y };
+                        Rectangle dst = Rectangle{ new_pos.x, new_pos.y, _set->_tileSize.x * _scale, _set->_tileSize.y * _scale };
+
+                        DrawTexturePro(*_set->_texture, src, dst, Vector2{ 0.0f, 0.0f }, 0.0f, WHITE);
+                    }
+                }
+            }
         }
     }
+}
+
+// [BASEUI]
+void BaseUI::update() { 
+    _go->_position = { 0.0f, 0.0f }; 
+}
+
+// [ANIMATOR]
+void Animator::setGraph(string filename) {
+    _filename = filename;
+    _graph = EngineAnimationGraph(_filename);
+    _actual = _graph.graph.GetVertex()[0];
+    _go->getBehaviour<AnimatedSprite>()->setAnimation(_graph._animations[_actual]->_path);
+}
+
+void Animator::update() {
+    for (auto item : _graph.graph.GetEdges(_actual)) {
+        vector<string> aux = splice(item, ' ');
+        bool next = false;
+        // /*
+        if (aux[1] == ">") next = _graph._variables[aux[0]] > stoi(aux[2]);
+        else if (aux[1] == "<") next = _graph._variables[aux[0]] < stoi(aux[2]);
+        else if (aux[1] == "==") next = _graph._variables[aux[0]] == stoi(aux[2]);
+        else if (aux[1] == ">=") next = _graph._variables[aux[0]] >= stoi(aux[2]);
+        else if (aux[1] == "<=") next = _graph._variables[aux[0]] <= stoi(aux[2]);
+        // */
+        if (next) {
+            _actual = _graph.graph.GetNextVertex(_actual, item);
+            if(_go->getBehaviour<AnimatedSprite>() != nullptr) _go->getBehaviour<AnimatedSprite>()->setAnimation(_graph._animations[_actual]->_path);
+        }
+    }
+    // _animations[actual]->update();
 }
 
 // [GAME OBJECT]
 vector<shared_ptr<Behaviour>> GameObject::getBehaviours() const {
-    return _behaviour_list;
+    return _behavior_list;
 }
 
 void GameObject::setTree(shared_ptr<Nary<GameObject>> root) {
@@ -356,20 +339,24 @@ void GameObject::setName(const string &n){
 }
 
 void GameObject::update(const Vector2 &offset){
-    Object::update(offset);
+    _position = Vector2{ _offset.x + offset.x, _offset.y + offset.y };
     update();
 }
 
 void GameObject::update(){
-    for(auto i : _behaviour_list) i->update();
+    for(auto i : _behavior_list) i->update();
 }
 
 void GameObject::draw(){
-    for(auto i : _behaviour_list) i->draw();
+    for(auto i : _behavior_list) i->draw();
 }
 
 Vector2 GameObject::getPosition() const {
     return _position;
+}
+
+Vector2 GameObject::getOffset() const {
+    return _offset;
 }
 
 Vector2 GameObject::getSize() const {
@@ -380,20 +367,26 @@ string GameObject::name() const {
     return _name;
 }
 
+ObjectID GameObject::id() const {
+    return _id;
+}
+
 shared_ptr<Nary<GameObject>> GameObject::root() const{
     return _root;
 }
 
 // [SCENE]
 Scene::Scene() {
-    _root = nullptr;
+    _root = make_shared<Nary<GameObject>>();
+    _filename = "resources/NewScene.scn";
 }
 
 Scene::Scene(const string &filename) {
+    _filename = filename;
     _root = make_shared<Nary<GameObject>>();
     bool ended = false;
 
-    ifstream file(filename);
+    ifstream file(_filename);
     
     while(!ended) {
         Nary<GameObject> aux = getNextGameObject(file, ended);
@@ -407,20 +400,24 @@ Scene::Scene(shared_ptr<Nary<GameObject>> root) {
     _root = root;
 }
 
-void Scene::update(const Vector2 &offset) {
+void Scene::update(const Vector2& offset) {
     for(int i = 1; i <= _root->nBrothers(); i++) updatePostorder(_root->brother(i), offset);
-}
-
-void Scene::update() {
-    for(int i = 1; i <= _root->nBrothers(); i++) updatePostorder(_root->brother(i), Vector2{0.0f, 0.0f});
 }
 
 void Scene::draw() {
     for(int i = 1; i <= _root->nBrothers(); i++) drawPostorder(_root->brother(i));
 }
 
+void Scene::save() {
+    ofstream file(_filename);
+
+    for (int i = 1; i <= _root->nBrothers(); i++) savePostorder(_root->brother(i), file);
+
+    file.close();
+}
+
 Nary<GameObject> Scene::getNextGameObject(ifstream &file, bool &end){
-    Nary<GameObject> result, child;
+    Nary<GameObject> result;
     string line, objectName, part, comp;
     int pos;
     bool ended = false;
@@ -446,182 +443,18 @@ Nary<GameObject> Scene::getNextGameObject(ifstream &file, bool &end){
         part = getNextWord(line, pos);
 
         while(!ended){
-            if(part == "behaviour"){
+            if(part == "behavior"){
                 bool endComp = false;
                 while(!endComp){
                     getline(file, line);
                     comp = getNextWord(line, pos);
-                    if(comp == "label"){
-                        vector<string> aux = splice(line, ',');
-
-                        string text = aux[0];
-                        int fontSize = stoi(aux[1]);
-                        char allign = aux[2].c_str()[0];
-
-                        vector<string> aux1_2 = splice(aux[3], ' ');
-                        Color color{stouc(aux1_2[0]), stouc(aux1_2[1]), stouc(aux1_2[2]), stouc(aux1_2[3])};
-                        
-                        object->addBehaviour(make_shared<Label>(text, fontSize, allign, color));
-                    } else if (comp == "sprite") {
-                        vector<string> aux = splice(line, ',');
-                        vector<string> aux1_2 = splice(aux[0], ' ');
-                        shared_ptr<Texture2D> tex;
-
-                        if((int)aux.size() == 2) tex = Resources::getInstance()->texture(aux[1], true);
-                        Color color{stouc(aux1_2[0]), stouc(aux1_2[1]), stouc(aux1_2[2]), stouc(aux1_2[3])};
-
-                        if((int)aux.size() == 2) object->addBehaviour(make_shared<Sprite>(aux[1], tex, color));
-                        else object->addBehaviour(make_shared<Sprite>(color));
-                    } else if (comp == "animatedsprite") {
-                        vector<string> aux1_1 = splice(line, ',');
-
-                        float timeFrame = stof(aux1_1[1]);
-                        string map_meta = aux1_1[2];
-
-                        object->addBehaviour(make_shared<AnimatedSprite>(aux1_1[0], Resources::getInstance()->texture(aux1_1[0], true), timeFrame, map_meta));
-                    } else if (comp == "tilemap") {
-                        vector<string> aux1_1 = splice(line, ',');
-                        vector<string> aux2_2 = splice(aux1_1[2], ' ');
-                        
-                        shared_ptr<Texture2D> tex = Resources::getInstance()->texture(aux1_1[0], true);
-                        
-                        Vector2 tileMapSize{stof(aux2_2[0]), stof(aux2_2[1])};
-                        float tileMapScale = stof(aux1_1[3]);
-                        string tileMapMeta = aux1_1[4];
-
-                        object->addBehaviour(make_shared<TileMap>(TileSet(tex, aux1_1[1]), tileMapSize, tileMapScale, tileMapMeta));
-                    } else if(comp == "end") endComp = true;
-                    /* if(comp == "transform"){
-                        vector<string> aux1_1 = splice(line, ',');
-                        vector<string> aux2_1 = splice(aux1_1[0], ' ');
-                        vector<string> aux2_2 = splice(aux1_1[1], ' ');
-
-                        Vector2 position{stof(aux2_1[0]), stof(aux2_1[1])};
-                        Vector2 scale{stof(aux2_2[0]), stof(aux2_2[1])};
-                        
-                        object->addBehaviour(make_shared<TransformComp>(position, scale));
-                    }else if(comp == "tilemap"){
-                        vector<string> aux1_1 = splice(line, ',');
-                        vector<string> aux2_2 = splice(aux1_1[2], ' ');
-                        
-                        shared_ptr<Texture2D> tex;
-
-                        if(_texturelist.find(aux1_1[0]) != _texturelist.end()){
-                            tex = _texturelist.find(aux1_1[0])->second;
-                        }else{
-                            string str = "resources/" + aux1_1[0];
-                            char *cstr = new char[str.length() + 1];
-                            strcpy(cstr, str.c_str());
-                            tex = make_shared<Texture2D>(LoadTexture(cstr));
-                            _texturelist.insert(pair<string, shared_ptr<Texture2D>>(aux1_1[0], tex));
-                        }
-
-                        TileSet t = TileSet(tex, aux1_1[1]);
-                        
-                        Vector2 tileMapSize{stof(aux2_2[0]), stof(aux2_2[1])};
-                        float tileMapScale = stof(aux1_1[3]);
-                        string tileMapMeta = aux1_1[4];
-
-                        object->addBehaviour(make_shared<TileMap>(TileMap(t, tileMapSize, tileMapScale, tileMapMeta)));
-                    }else if(comp == "paint"){
-                        vector<string> aux = splice(line, ' ');
-                        Color color{stouc(aux[0]), stouc(aux[1]), stouc(aux[2]), stouc(aux[3])};
-
-                        object->addBehaviour(make_shared<Paint>(Paint(color)));
-                    }else if(comp == "animatedsprite"){
-                        vector<string> aux1_1 = splice(line, ',');
-
-                        shared_ptr<Texture2D> tex;
-
-                        if(_texturelist.find(aux1_1[0]) != _texturelist.end()){
-                            tex = _texturelist.find(aux1_1[0])->second;
-                        }else{
-                            string str = "resources/" + aux1_1[0];
-                            char *cstr = new char[str.length() + 1];
-                            strcpy(cstr, str.c_str());
-                            tex = make_shared<Texture2D>(LoadTexture(cstr));
-                            _texturelist.insert(pair<string, shared_ptr<Texture2D>>(aux1_1[0], tex));
-                        }
-
-                        float scale     = stof(aux1_1[1]);
-                        string map_meta = aux1_1[2];
-                        float timeFrame = stof(aux1_1[3]);
-
-                        object->addBehaviour(make_shared<AnimatedSprite>(AnimatedSprite(aux1_1[0], tex, scale, map_meta, timeFrame)));
-                    }else if(comp == "aabb"){
-                        vector<string> aux1_1 = splice(line, ',');
-                        
-                        object->addBehaviour(make_shared<AABB>(AABB(aux1_1[0] == "true", aux1_1[1] == "true")));
-                    }else if(comp == "button"){
-                        vector<string> aux1 = splice(line, ',');
-
-                        vector<string> aux2 = splice(aux1[0], ' ');
-                        Color color{stouc(aux2[0]), stouc(aux2[1]), stouc(aux2[2]), stouc(aux2[3])};
-                        if(aux1.size() > 1){
-                            vector<string> aux3 = splice(aux1[1], ' ');
-                            Color hover{stouc(aux3[0]), stouc(aux3[1]), stouc(aux3[2]), stouc(aux3[3])};
-                            object->addBehaviour(make_shared<Button>(Button(color, hover)));
-                        } else object->addBehaviour(make_shared<Button>(Button(color)));
-                    }else if(comp == "label"){
-                        vector<string> aux = splice(line, ',');
-
-                        // shared_ptr<Font> font;
-
-                        // if(_fontlist.find(aux[1]) != _fontlist.end()){
-                        //     font = _fontlist.find(aux[1])->second;
-                        // }else{
-                        //     string str = "resources/" + aux[1];
-                        //     char *cstr = new char[str.length() + 1];
-                        //     strcpy(cstr, str.c_str());
-                        //     font = make_shared<Font>(LoadFont(cstr));
-                        //     _fontlist.insert(pair<string, shared_ptr<Font>>(aux[1], font));
-                        // }
-
-                        string text = aux[0];
-                        // char allign = aux[2].c_str()[0];
-                        int fontSize = stoi(aux[1]);
-                        // vector<string> aux1_2 = splice(aux[4], ' ');
-                        // Color color{stouc(aux1_2[0]), stouc(aux1_2[1]), stouc(aux1_2[2]), stouc(aux1_2[3])};
-
-                        // object->addBehaviour(make_shared<Label>(text, font, allign, fontSize, color));
-                        object->addBehaviour(make_shared<Label>(text, fontSize));
-                    }else if(comp == "camera"){
-                        object->addBehaviour(make_shared<TrackCamera>(TrackCamera()));
-                    }else if(comp == "mosaic"){
-                        vector<string> aux1 = splice(line, ',');shared_ptr<Texture2D> tex;
-
-                        if(_texturelist.find(aux1[0]) != _texturelist.end()){
-                            tex = _texturelist.find(aux1[0])->second;
-                        }else{
-                            string str = "resources/" + aux1[0];
-                            char *cstr = new char[str.length() + 1];
-                            strcpy(cstr, str.c_str());
-                            tex = make_shared<Texture2D>(LoadTexture(cstr));
-                            _texturelist.insert(pair<string, shared_ptr<Texture2D>>(aux1[0], tex));
-                        }
-
-                        object->addBehaviour(make_shared<Mosaic>(Mosaic(tex, stof(aux1[1]))));
-                    }else if(comp == "sprite"){
-                        vector<string> aux1 = splice(line, ',');shared_ptr<Texture2D> tex;
-
-                        if(_texturelist.find(aux1[0]) != _texturelist.end()){
-                            tex = _texturelist.find(aux1[0])->second;
-                        }else{
-                            string str = "resources/" + aux1[0];
-                            char *cstr = new char[str.length() + 1];
-                            strcpy(cstr, str.c_str());
-                            tex = make_shared<Texture2D>(LoadTexture(cstr));
-                            _texturelist.insert(pair<string, shared_ptr<Texture2D>>(aux1[0], tex));
-                        }
-
-                        object->addBehaviour(make_shared<Sprite>(Sprite(aux1[0], tex, stof(aux1[1]))));
-                    }else if(comp == "animation"){
-                        object->addBehaviour(make_shared<Animation>(Animation(line)));
-                    }else if(comp == "rigidbody"){
-                        object->addBehaviour(make_shared<RigidBody>(RigidBody()));
-                    }else if(comp == "selector"){
-                        object->addBehaviour(make_shared<Selector>(Selector()));
-                    else serializeMonoBehavior(comp, object);*/
+                    if (comp == "baseui") object->addBehaviour(make_shared<BaseUI>());
+                    else if (comp == "label") object->addBehaviour(make_shared<Label>(line));
+                    else if (comp == "sprite") object->addBehaviour(make_shared<Sprite>(line));
+                    else if (comp == "animatedsprite") object->addBehaviour(make_shared<AnimatedSprite>(line));
+                    else if (comp == "animator") object->addBehaviour(make_shared<Animator>(line));
+                    else if (comp == "tilemap") object->addBehaviour(make_shared<TileMap>(line));
+                    else if(comp == "end") endComp = true;
                 }
             }else if(part == "objects") {
                 bool endObj = false;
@@ -648,6 +481,7 @@ shared_ptr<Nary<GameObject>> Scene::getRoot() const {
 
 void Scene::updatePostorder(const Nary<GameObject> &a, Vector2 offset){
     if(!a.isEmpty()) {
+        if (a.content()->getBehaviour<BaseUI>() != nullptr) offset = { 0.0f, 0.0f };
         a.content()->update(offset);
         offset = a.content()->_position;
         for(int i = 1; i <= a.nChilds(); i++) updatePostorder(a.child(i), offset);
@@ -659,4 +493,37 @@ void Scene::drawPostorder(const Nary<GameObject> &a){
         a.content()->draw();
         for(int i = 1; i <= a.nChilds(); i++) drawPostorder(a.child(i));
     }
+}
+
+void Scene::savePostorder(const Nary<GameObject>& a, ofstream& file) {
+    if (!a.isEmpty()) {
+        file << a.content()->name() << ": " << ftostr(a.content()->_offset.x, 5) << ' ' << ftostr(a.content()->_offset.y, 5) << ',' << ftostr(a.content()->_size.x, 5) << ' ' << ftostr(a.content()->_size.y, 5) << '\n';
+
+        if (a.content()->getBehaviours().size() > 0) {
+            file << "behavior:\n";
+            for (auto item : a.content()->getBehaviours()) file << item->dataToString() << '\n';
+            file << "end\n";
+        }
+        if (a.nChilds() > 0) {
+            file << "objects:\n";
+            for (int i = 1; i <= a.nChilds(); i++) savePostorder(a.child(i), file);
+            file << "end\n";
+        }
+        
+        file << "end\n";
+    }
+}
+
+Nary<pair<bool, shared_ptr<GameObject>>> convertToNewTree(Nary<GameObject> a) {
+    Nary<pair<bool, shared_ptr<GameObject>>> newTree;
+
+    for (int i = 1; i <= a.nBrothers(); i++) {
+        Nary<pair<bool, shared_ptr<GameObject>>> newChild(convertToNewTree(a.brother(i).child(0)));
+        Nary<pair<bool, shared_ptr<GameObject>>> newBrother(make_shared<pair<bool, shared_ptr<GameObject>>>(pair<bool, shared_ptr<GameObject>>(false, a.brother(i).content())));
+
+        if (!newChild.isEmpty()) newBrother.setChild(newChild);
+        newTree.setBrother(newBrother);
+    }
+
+    return newTree;
 }
