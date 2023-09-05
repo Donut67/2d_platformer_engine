@@ -55,7 +55,7 @@ typedef enum {
     RENDER_GRAPH_EDITTING_VERTEX,
     RENDER_GRAPH_EDITTING_EDGE,
     RENDER_GRAPH_EDITTING_DESTINATION
-} RenderGraphEdditingState;
+} RenderGraphEditingState;
 
 typedef enum {
     SCENE_EDITOR_STATE_PLAYING = 0,
@@ -102,7 +102,7 @@ typedef struct {
     int new_count;
 
     string begin, end, name;
-    RenderGraphEdditingState editting;
+    RenderGraphEditingState editting;
     bool setup;
 } GuiGraphRenderState;
 

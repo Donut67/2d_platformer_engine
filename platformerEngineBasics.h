@@ -49,26 +49,23 @@ class Resources {
         map<string, shared_ptr<Font>> _font_list;
         map<string, shared_ptr<TileSetData>> _tileset_list;
         map<string, shared_ptr<EngineAnimation>> _animation_list;
-        map<string, shared_ptr<EngineAnimationGraph>> _animation_graph_list;
-    protected:
-    public:
-        Resources() {}
-        static shared_ptr<Resources> getInstance();
+        // map<string, shared_ptr<EngineAnimationGraph>> _animation_graph_list;
 
         void addTexture(const string &filename);
         void addFont(const string &filename);
         void addTileset(const string& filename);
         void addAnimation(const string& filename);
-        /*
-        void addAnimationGraph(const string& filename);
-        //*/
-        shared_ptr<Texture2D> texture(const string &filename, const bool &load);
-        shared_ptr<Font> font(const string &filename, const bool &load);
-        shared_ptr<TileSetData> tileset(const string& filename, const bool& load);
-        shared_ptr<EngineAnimation> animation(const string& filename, const bool& load);
-        /*
-        shared_ptr<EngineAnimationGraph> animation_graph(const string& filename, const bool& load);
-        // */
+        // void addAnimationGraph(const string& filename);
+    protected:
+    public:
+        Resources() {}
+        static shared_ptr<Resources> getInstance();
+
+        shared_ptr<Texture2D> texture(const string &filename, const bool &load = true);
+        shared_ptr<Font> font(const string &filename, const bool &load = true);
+        shared_ptr<TileSetData> tileset(const string& filename, const bool& load = true);
+        shared_ptr<EngineAnimation> animation(const string& filename, const bool& load = true);
+        // shared_ptr<EngineAnimationGraph> animation_graph(const string& filename, const bool& load);
 };
 
 class TileSetData {
@@ -116,8 +113,6 @@ class TileSetData {
         }
         Vector2 operator [](const int& pos) const {
             Vector2 res{ 0 };
-            // cout << _path << "\n";
-            // cout << _nTiles.x << ' ' << _nTiles.y << "\n";
             res.x = int(pos % (int)_nTiles.x);
             res.y = int(pos / (int)_nTiles.x);
             return res;
@@ -313,29 +308,6 @@ typedef struct EngineAnimationGraph {
 
 } EngineAnimationGraph;
 
-struct Padding {
-    float top, right, bottom, left;
-    Padding() { top = right = bottom = left = 0.0f; }
-    Padding(float val) { top = right = bottom = left = val; }
-    Padding(float horizontal, float vertical) { top = bottom = vertical; right = left = horizontal; }
-    Padding(float t, float r, float b, float l) { top = t; right = r; bottom = b; left = l; }
-};
-
-class TileSet{
-    private:
-        shared_ptr<Texture2D> _texture;
-        map<int, Vector2> _map;
-        Vector2 _tileSize;
-    public:
-        TileSet() {
-            _tileSize = Vector2{ 0.0f, 0.0f };
-        }
-        TileSet(shared_ptr<Texture2D> texture, string meta);
-
-        Vector2 operator [](const int &pos) const;
-        shared_ptr<Texture2D> getTexture() const;
-};
-
 class ObjectID {
     private:
         string _value;
@@ -469,6 +441,7 @@ class Sprite : public Behaviour {
 
         string dataToString() {
             string data = "sprite: " + to_string(_color.r) + ' ' + to_string(_color.g) + ' ' + to_string(_color.b) + ' ' + to_string(_color.a);
+            if (_filename != "") data += ',' + _filename;
             return data;
         }
         std::shared_ptr<Behaviour> clone() const {

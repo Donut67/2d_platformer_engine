@@ -20,8 +20,7 @@
 // */
 
 #include "RuntimeLinkLibrary.h"
-RUNTIME_COMPILER_LINKLIBRARY("C:\\Users\\Usuario\\Documents\\Games\\vcpkg\\packages\\raylib_x64-windows\\lib\\raylib.lib");
-// RUNTIME_COMPILER_LINKLIBRARY("raylib.lib");
+RUNTIME_COMPILER_LINKLIBRARY("lib\\raylib.lib");
 
 #include "IObject.h"
 #include "SystemTable.h"
@@ -101,8 +100,8 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
     bool _animationgraph_editting_label_x = 0;
     bool _animationdata_sel               = false;
 
-    GuiDraggableWindowBoxState hierarchystate       = InitGuiDraggableWindowBox(Rectangle{ 0, 20, 408, 624 }, "Hierarchy");
-    GuiDraggableWindowBoxState inspectorstate       = InitGuiDraggableWindowBox(Rectangle{ GetScreenWidth() - 400.0f, 20, 400, 624 }, "Inspector");
+    GuiDraggableWindowBoxState hierarchystate       = InitGuiDraggableWindowBox(Rectangle{ 0, 20, 190, 600 }, "Hierarchy");
+    GuiDraggableWindowBoxState inspectorstate       = InitGuiDraggableWindowBox(Rectangle{ GetScreenWidth() - 330.0f, 20, 330, 300 }, "Inspector");
     GuiDraggableWindowBoxState tileseteditorstate   = InitGuiDraggableWindowBox(Rectangle{ 400.0f, 200, 400, 424 }, "TileSet Editor");
     GuiDraggableWindowBoxState animationeditorstate = InitGuiDraggableWindowBox(Rectangle{ 430.0f, 200, 1060, 454 }, "Animation Editor");
     GuiDraggableWindowBoxState animationgraphstate  = InitGuiDraggableWindowBox(Rectangle{ 50.0f, 200, 1200, 424 }, "Animation Graph Editor");
@@ -139,6 +138,8 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
         hierarchyTree = convertToNewTree(*scene->getRoot());
         _game_object = nullptr;
 
+        hierarchystate.active = false;
+        inspectorstate.active = false;
         fileexplorerstate.active = false;
         tileseteditorstate.active = false;
         animationeditorstate.active = false;
@@ -461,7 +462,7 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                     "Edit;#50#New Vertex;#174#New Edge"
                 };
                 if ((ActionBar002Result = GuiActionPane(h, ActionBar000Matrix, 2, &ActionBar002EditMode)) != -1) {
-                    RenderGraphEdditingState act = RENDER_GRAPH_STATE_NULL;
+                    RenderGraphEditingState act = RENDER_GRAPH_STATE_NULL;
                     if (ActionBar002EditMode == 0) {
                         if (ActionBar002Result == 0) {
                             animation_graph = EngineAnimationGraph();
@@ -510,7 +511,7 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                     fileExplorerListenerState = FILE_EXPLORER_NULL;
                 }
 
-                RenderGraphEdditingState editting = graphrenderstate.editting;
+                RenderGraphEditingState editting = graphrenderstate.editting;
 
                 h = moveRectangle(animationgraphstate.layoutRecs[0], animationgraphstate.anchor);
                 h = moveRectangle(h, { animationgraphstate.layoutRecs[0].width - 241 , RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT + 20 });

@@ -204,10 +204,12 @@ private:
 
     bool selecting_color, options;
 
-    string filename;
+    string filename, fileexplorerreturnpath, fileextension, fileexplorerpath;
     shared_ptr<Texture2D> texture;
     Color color;
     GuiDraggableWindowBoxState state;
+    GuiFileExplorerListener fileExplorerListenerState;
+    GuiDraggableWindowBoxState fileexplorerstate;
 
     Rectangle bounds;
 public:
@@ -217,6 +219,9 @@ public:
         filename = _sprite->filename();
 
         state  = InitGuiDraggableWindowBox(Rectangle{ GetScreenWidth() - 500.0f, 300, 205, 200 }, "Color Picker");
+        fileexplorerstate = InitGuiDraggableWindowBox(Rectangle{ 424, 400, 408, 184 }, "File Explorer");
+        options = fileexplorerstate.active = false;
+        fileExplorerListenerState = FILE_EXPLORER_NULL;
 
         color = _sprite->color();
 
@@ -233,7 +238,16 @@ public:
         Rectangle itemBounds = { bounds.x + 1, bounds.y, 85, bounds.height };
         GuiDrawText("Filename", GetTextBounds(DEFAULT, itemBounds), TEXT_ALIGN_LEFT, GetColor(GuiGetStyle(DEFAULT, TEXT_COLOR_NORMAL)));
         itemBounds = { itemBounds.x + itemBounds.width - 1, bounds.y, bounds.width - 86, bounds.height };
-        GuiDrawText(filename == ""? "No File Selected" : filename.c_str(), GetTextBounds(DEFAULT, itemBounds), TEXT_ALIGN_LEFT, GetColor(GuiGetStyle(DEFAULT, TEXT_COLOR_NORMAL)));
+
+        int align = GuiGetStyle(BUTTON, TEXT_ALIGNMENT);
+        GuiSetStyle(BUTTON, TEXT_ALIGNMENT, TEXT_ALIGN_LEFT);
+        if (GuiButton(itemBounds, _sprite->filename() == "" ? "No File Selected" : _sprite->filename().c_str())) {
+            fileExplorerListenerState = SELECT_ANIMATION;
+            fileexplorerstate.active = true;
+            fileextension = ".png";
+            fileexplorerpath = "/resources";
+        }
+        GuiSetStyle(BUTTON, TEXT_ALIGNMENT, align);
         bounds.y += bounds.height + 1;
 
         itemBounds = { bounds.x + 1, bounds.y, 85, bounds.height };
@@ -254,6 +268,40 @@ public:
             h.height -= 35;
             GuiColorPicker(h, NULL, &color);
             _sprite->setcolor(color);
+        }
+
+        if (fileExplorerListenerState == SELECT_ANIMATION && fileexplorerreturnpath != "") {
+            cout << fileexplorerpath << '\n';
+            _sprite->settexture(Resources::getInstance()->texture(fileexplorerreturnpath));
+            _sprite->setfilename(fileexplorerreturnpath);
+            fileexplorerreturnpath = "";
+            fileExplorerListenerState = FILE_EXPLORER_NULL;
+            fileexplorerstate.active = false;
+        }
+
+        if (GuiDraggableWindowBox(&fileexplorerstate)) {
+            Rectangle h = moveRectangle(fileexplorerstate.layoutRecs[0], fileexplorerstate.anchor);
+            h = moveRectangle(h, { 1, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT });
+            h.height = 20;
+            h.width -= 2;
+            int i = GuiGetStyle(BUTTON, TEXT_ALIGNMENT);
+            int j = GuiGetStyle(BUTTON, BORDER_WIDTH);
+            GuiSetStyle(BUTTON, TEXT_ALIGNMENT, TEXT_ALIGN_LEFT);
+            GuiSetStyle(BUTTON, BORDER_WIDTH, 0);
+
+            std::string base_path = fs::current_path().string() + fileexplorerpath;
+            for (const auto& entry : fs::recursive_directory_iterator(base_path)) {
+                std::string text = entry.path().string();
+                if (entry.path().extension() == fileextension) {
+                    if (GuiButton(h, text.substr(text.find(fileexplorerpath), text.size()).c_str())) {
+                        fileexplorerreturnpath = text.substr(text.find(fileexplorerpath) + 1, text.size());
+                        fileexplorerstate.active = false;
+                    }
+                    h.y += h.height + 1;
+                }
+            }
+            GuiSetStyle(BUTTON, TEXT_ALIGNMENT, i);
+            GuiSetStyle(BUTTON, BORDER_WIDTH, j);
         }
 
         bounds.y += bounds.height + 1;
@@ -479,7 +527,7 @@ public:
             fileExplorerListenerState = SELECT_ANIMATION;
             fileexplorerstate.active = true;
             fileextension = ".tsd";
-            fileexplorerpath = "/";
+            fileexplorerpath = "/resources";
         }
         GuiSetStyle(BUTTON, TEXT_ALIGNMENT, align);
         bounds.y += bounds.height + 1;

@@ -72,34 +72,6 @@ string str_tolower(string s) {
     return s;
 }
 
-// [TILESET]
-TileSet::TileSet(shared_ptr<Texture2D> texture, string meta){
-    _texture = texture;
-
-    ifstream map(meta);
-    string line;
-    int i = 0;
-
-    while(getline(map, line)){
-        vector<string> aux = splice(line, ' ');
-        for(int j = 0; j < (int)aux.size(); j++){
-            Vector2 pos{(float)j, (float)i};
-            _map.insert(pair<int, Vector2>(stoi(aux[j]), pos));
-        }
-        i++;
-    }
-}
-
-Vector2 TileSet::operator [](const int &pos) const{
-    map<int, Vector2>::const_iterator found = _map.find(pos);
-    if(found != _map.end()) return found->second;
-    return Vector2{-1.0f, -1.0f};
-}
-
-shared_ptr<Texture2D> TileSet::getTexture() const{
-    return _texture;
-}
-
 // [RESOURCES]
 shared_ptr<Resources> Resources::_instance = nullptr;
 shared_ptr<Resources> Resources::getInstance() {
@@ -127,6 +99,7 @@ void Resources::addFont(const string &filename) {
 void Resources::addTileset(const string& filename) {
     _tileset_list.insert(pair<string, shared_ptr<TileSetData>>(filename, make_shared<TileSetData>(filename)));
 }
+
 void Resources::addAnimation(const string& filename) {
     _animation_list.insert(pair<string, shared_ptr<EngineAnimation>>(filename, make_shared<EngineAnimation>(filename)));
 }
@@ -136,7 +109,7 @@ void Resources::addAnimationGraph(const string& filename) {
     _tileset_list.insert(pair<string, shared_ptr<TileSetData>>(filename, make_shared<TileSetData>(filename)));
 }
 // */
-shared_ptr<Texture2D> Resources::texture(const string &filename, const bool &load = false) {
+shared_ptr<Texture2D> Resources::texture(const string &filename, const bool &load) {
     auto search = _texture_list.find(filename);
     if(load && search == _texture_list.end()) {
         addTexture(filename);
@@ -145,7 +118,7 @@ shared_ptr<Texture2D> Resources::texture(const string &filename, const bool &loa
     return search == _texture_list.end()? nullptr : search->second;    
 }
 
-shared_ptr<Font> Resources::font(const string &filename, const bool &load = false) {
+shared_ptr<Font> Resources::font(const string &filename, const bool &load) {
     auto search = _font_list.find(filename);
     if(load && search == _font_list.end()) {
         addFont(filename);
@@ -154,7 +127,7 @@ shared_ptr<Font> Resources::font(const string &filename, const bool &load = fals
     return search == _font_list.end()? nullptr : search->second;
 }
 
-shared_ptr<TileSetData> Resources::tileset(const string &filename, const bool &load = false) {
+shared_ptr<TileSetData> Resources::tileset(const string &filename, const bool &load) {
     auto search = _tileset_list.find(filename);
     if(load && search == _tileset_list.end()) {
         addTileset(filename);
@@ -241,11 +214,8 @@ void Label::draw(){
 
 // [SPRITE]
 void Sprite::draw() {
-    Vector2 position = _go->getPosition();
-    Vector2 size = _go->getSize();
-
-    if(_texture != nullptr) DrawTextureEx(*_texture, position, 0.0f, 1, _color);
-    else DrawRectangle((int)position.x, (int)position.y, (int)size.x, (int)size.y, _color);
+    if(_texture != nullptr) DrawTexturePro(*_texture, { 0.0f, 0.0f, (float)_texture->width, (float)_texture->height }, { _go->_position.x, _go->_position.y, _go->_size.x, _go->_size.y }, { 0.0f, 0.0f }, 0, _color);
+    else DrawRectangle((int)_go->_position.x, (int)_go->_position.y, (int)_go->_size.x, (int)_go->_size.y, _color);
 }
 
 // [ANIMATED SPRITE]

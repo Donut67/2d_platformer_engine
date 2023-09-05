@@ -19,7 +19,6 @@ public:
 	virtual bool ExistsVertex(const vertex& v) const = 0; 
 	// virtual bool ExistsEdge(const vertex& v1, const vertex& v2) const = 0;
 	virtual bool isEmpty() const = 0; 
-	virtual bool isWhole() const = 0;
 };
 
 template <class vertex, class edge> 
@@ -254,9 +253,6 @@ public:
 
 	bool isEmpty() const {
 		return begin == NULL;
-	}
-	bool isWhole() const {
-		return false;
 	}
 };
 #endif // !GRAPH_H

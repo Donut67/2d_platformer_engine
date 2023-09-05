@@ -26,7 +26,7 @@ end
 end
 end
 end
-Player: 300.00000 680.00000,200.00000 200.00000
+Player: 311.87646 657.64032,200.00000 200.00000
 behavior:
 animatedsprite: resources\initial2.aon,0
 end
@@ -35,16 +35,25 @@ end
 end
 UI: 0.00000 0.00000,0.00000 0.00000
 objects:
-Text 1: 600.00000 100.00000,400.00000 20.00000
+Heath and points: 0.00000 0.00000,10.00000 10.00000
+objects:
+Health: 0.00000 0.00000,400.00000 64.00000
 behavior:
-sprite: 30 30 30 255
-label: This is a title,18,l,255 255 255 255
+sprite: 251 251 251 255
 end
 end
-Text 2: 600.00000 120.00000,400.00000 20.00000
+Points: 20.00000 64.00000,48.00000 48.00000
 behavior:
-sprite: 30 30 30 255
-label: This is another title,18,l,255 255 255 255
+animatedsprite: resources\coin.aon,0
+end
+objects:
+New GameObject: 48.00000 0.00000,48.00000 48.00000
+behavior:
+label: x4,48,l,255 255 255 255
+end
+end
+end
+end
 end
 end
 end
