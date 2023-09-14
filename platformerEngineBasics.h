@@ -678,6 +678,7 @@ class Scene {
         void draw();
 
         void save();
+        void set_filename(string f) { _filename = f; }
 
         shared_ptr<Nary<GameObject>> getRoot() const;
 };

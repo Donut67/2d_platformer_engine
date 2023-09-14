@@ -35,17 +35,25 @@
 #include "RuntimeSourceDependency.h"
 RUNTIME_MODIFIABLE_INCLUDE; //recompile runtime files when this changes
 
+namespace fs = std::filesystem;
+
 typedef enum {
     FILE_EXPLORER_NULL = 0,
     OPEN_SCENE,
-    NEW_TILESET,
     OPEN_TILESET,
-    SELECT_TILESET,
     OPEN_ANIMATION,
-    SELECT_ANIMATION,
     OPEN_ANIMATION_GRAPH,
-    SELECT_ANIMATION_VERTEX
+    NEW_TILESET,
+    SELECT_TILESET,
+    SELECT_ANIMATION,
+    SELECT_ANIMATION_VERTEX,
+    SAVE_SCENE
 } GuiFileExplorerListener;
+
+typedef enum {
+    OPEN_FILE = 0,
+    CREATE_FILE
+} GuiFileExplorerState;
 
 typedef enum {
     RENDER_GRAPH_STATE_NULL = 0,
@@ -67,10 +75,20 @@ typedef struct {
     const char* title;
     bool active, dragging, resizehover, resizeing;
 
-    Rectangle layoutRecs[1];
+    Rectangle bounds;
     Vector2 anchor, prev;
 
 } GuiDraggableWindowBoxState;
+
+typedef struct {
+    GuiFileExplorerListener listener;
+    GuiFileExplorerState state;
+
+    string extension, base_path, return_path;
+    char text[100];
+
+    bool close, editting;
+} GuiFileExplorer;
 
 typedef struct {
     shared_ptr<TileMap> _tilemap;
@@ -126,6 +144,7 @@ typedef struct {
 // Module Functions Declaration
 //----------------------------------------------------------------------------------
 GuiDraggableWindowBoxState  InitGuiDraggableWindowBox(Rectangle bounds, const char* title);
+GuiFileExplorer             InitGuiFileExplorer(GuiFileExplorerListener listener, GuiFileExplorerState state, string extension, string base_path);
 GuiInputVector2State        InitGuiInputVector2(const char* title, Vector2 values);
 GuiInputStringState         InitGuiInputString(const char* title, string value);
 GuiGraphRenderState         InitGuiGraphRenderState(LabeledGraph<string, string> graph, Rectangle rec);
@@ -189,7 +208,7 @@ GuiDraggableWindowBoxState InitGuiDraggableWindowBox(Rectangle bounds, const cha
 
     state.prev = { 0, 0 };
 
-    state.layoutRecs[0] = Rectangle{ 0, 0, bounds.width, bounds.height };
+    state.bounds = Rectangle{ 0, 0, bounds.width, bounds.height };
     state.title = title;
 
     state.anchor = { bounds.x, bounds.y };
@@ -197,6 +216,20 @@ GuiDraggableWindowBoxState InitGuiDraggableWindowBox(Rectangle bounds, const cha
     // Custom variables initialization
 
     return state;
+}
+
+GuiFileExplorer InitGuiFileExplorer(GuiFileExplorerListener listener, GuiFileExplorerState state, string extension, string base_path) {
+    GuiFileExplorer result;
+
+    result.listener  = listener;
+    result.state     = state;
+    result.extension = extension;
+    result.base_path = base_path;
+    strcpy(result.text, "");
+
+    if (state == CREATE_FILE) result.editting = false;
+
+    return result;
 }
 
 GuiInputVector2State InitGuiInputVector2(const char* title, Vector2 values) {
@@ -264,7 +297,7 @@ bool GuiDraggableWindowBox(GuiDraggableWindowBoxState* state) {
         #define RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT        24
         #endif
 
-        Rectangle statusBar = moveRectangle(state->layoutRecs[0], state->anchor);
+        Rectangle statusBar = moveRectangle(state->bounds, state->anchor);
         statusBar.height = RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT;
 
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), statusBar)) {
@@ -279,7 +312,7 @@ bool GuiDraggableWindowBox(GuiDraggableWindowBoxState* state) {
             state->prev = GetMousePosition();
         }
 
-        state->resizehover = CheckCollisionPointRec(GetMousePosition(), Rectangle{ statusBar.x + state->layoutRecs[0].width - 5, statusBar.y + state->layoutRecs[0].height - 5 , 5 ,5 });
+        state->resizehover = CheckCollisionPointRec(GetMousePosition(), Rectangle{ statusBar.x + state->bounds.width - 5, statusBar.y + state->bounds.height - 5 , 5 ,5 });
         if (state->resizehover && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             state->resizeing = true;
             state->prev = GetMousePosition();
@@ -288,19 +321,58 @@ bool GuiDraggableWindowBox(GuiDraggableWindowBoxState* state) {
 
         if (state->resizeing) {
             Vector2 move{ state->prev.x - GetMousePosition().x, state->prev.y - GetMousePosition().y };
-            state->layoutRecs[0].width = state->layoutRecs[0].width - move.x < 190 ? 190 : state->layoutRecs[0].width - move.x;
-            state->layoutRecs[0].height = state->layoutRecs[0].height - move.y < 48 ? 48 : state->layoutRecs[0].height - move.y;
+            state->bounds.width = state->bounds.width - move.x < 190 ? 190 : state->bounds.width - move.x;
+            state->bounds.height = state->bounds.height - move.y < 48 ? 48 : state->bounds.height - move.y;
             state->prev = GetMousePosition();
         }
 
         //--------------------------------------------------------------------
         // Draw control
         //--------------------------------------------------------------------
-        state->active = !GuiWindowBox(moveRectangle(state->layoutRecs[0], state->anchor), state->title);
-        if (state->resizehover || state->resizeing) GuiDrawIcon(187, statusBar.x + state->layoutRecs[0].width - 32, statusBar.y + state->layoutRecs[0].height - 32, 2, GetColor(GuiGetStyle(STATUSBAR, TEXT_COLOR_NORMAL)));
+        state->active = !GuiWindowBox(moveRectangle(state->bounds, state->anchor), state->title);
+        if (state->resizehover || state->resizeing) GuiDrawIcon(187, statusBar.x + state->bounds.width - 32, statusBar.y + state->bounds.height - 32, 2, GetColor(GuiGetStyle(STATUSBAR, TEXT_COLOR_NORMAL)));
     }
 
     return state->active;
+}
+
+void GuiDrawFileExplorer(GuiFileExplorer* state, Rectangle bounds) {
+    state->close = false;
+    Rectangle h = bounds;
+    h = moveRectangle(h, { 1, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT });
+    h.height = 20;
+    h.width -= 2;
+    int i = GuiGetStyle(BUTTON, TEXT_ALIGNMENT);
+    int j = GuiGetStyle(BUTTON, BORDER_WIDTH);
+    GuiSetStyle(BUTTON, TEXT_ALIGNMENT, TEXT_ALIGN_LEFT);
+    GuiSetStyle(BUTTON, BORDER_WIDTH, 0);
+
+    std::string base_path = fs::current_path().string() + state->base_path;
+    for (const auto& entry : fs::recursive_directory_iterator(base_path)) {
+        if (entry.path().extension() == state->extension && h.y + h.height < bounds.y + bounds.height - h.height) {
+            std::string text = entry.path().string();
+            if (GuiButton(h, text.substr(text.find(state->base_path), text.size()).c_str())) {
+                state->return_path = text.substr(text.find(state->base_path) + 1, text.size());
+                if (state->state == OPEN_FILE) state->close = true;
+                else strcpy(state->text, state->return_path.c_str());
+            }
+            h.y += h.height + 1;
+        }
+    }
+    GuiSetStyle(BUTTON, TEXT_ALIGNMENT, i);
+    GuiSetStyle(BUTTON, BORDER_WIDTH, j);
+
+    if (state->state == CREATE_FILE){
+        if (GuiTextBox({ bounds.x, bounds.y + bounds.height - 20.0f, bounds.width - 20.0f, 20.0f }, state->text, 100, state->editting)) {
+            state->editting = !state->editting;
+            if (!state->editting) state->return_path = state->text;
+        }
+        Rectangle b{ bounds.x + bounds.width - 20.0f, bounds.y + bounds.height - 20.0f, 20.0f, 20.0f };
+        GuiState prev = guiState;
+        guiState = state->return_path == ""? STATE_DISABLED : prev;
+        if (GuiButton(b, "#119#")) state->close = true;
+        guiState = prev;
+    }
 }
 
 void GuiGraphRender(GuiGraphRenderState* state) {

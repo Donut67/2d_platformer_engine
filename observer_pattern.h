@@ -179,7 +179,7 @@ public:
         GuiDrawRectangle(itemBounds, 0, GetColor(GuiGetStyle(TEXTBOX, BORDER + (STATE_DISABLED * 3))), BLACK);
 
         if (GuiDraggableWindowBox(&state)) {
-            Rectangle h = moveRectangle(state.layoutRecs[0], state.anchor);
+            Rectangle h = moveRectangle(state.bounds, state.anchor);
             h = moveRectangle(h, { 5, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT + 5 });
             h.width  -= 35;
             h.height -= 35;
@@ -262,7 +262,7 @@ public:
         GuiDrawRectangle(itemBounds, 0, GetColor(GuiGetStyle(TEXTBOX, BORDER + (STATE_DISABLED * 3))), BLACK);
 
         if (GuiDraggableWindowBox(&state)) {
-            Rectangle h = moveRectangle(state.layoutRecs[0], state.anchor);
+            Rectangle h = moveRectangle(state.bounds, state.anchor);
             h = moveRectangle(h, { 5, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT + 5 });
             h.width -= 35;
             h.height -= 35;
@@ -280,7 +280,7 @@ public:
         }
 
         if (GuiDraggableWindowBox(&fileexplorerstate)) {
-            Rectangle h = moveRectangle(fileexplorerstate.layoutRecs[0], fileexplorerstate.anchor);
+            Rectangle h = moveRectangle(fileexplorerstate.bounds, fileexplorerstate.anchor);
             h = moveRectangle(h, { 1, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT });
             h.height = 20;
             h.width -= 2;
@@ -377,7 +377,7 @@ public:
         }
 
         if (GuiDraggableWindowBox(&fileexplorerstate)) {
-            Rectangle h = moveRectangle(fileexplorerstate.layoutRecs[0], fileexplorerstate.anchor);
+            Rectangle h = moveRectangle(fileexplorerstate.bounds, fileexplorerstate.anchor);
             h = moveRectangle(h, { 1, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT });
             h.height = 20;
             h.width -= 2;
@@ -455,7 +455,7 @@ public:
         }
 
         if (GuiDraggableWindowBox(&fileexplorerstate)) {
-            Rectangle h = moveRectangle(fileexplorerstate.layoutRecs[0], fileexplorerstate.anchor);
+            Rectangle h = moveRectangle(fileexplorerstate.bounds, fileexplorerstate.anchor);
             h = moveRectangle(h, { 1, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT });
             h.height = 20;
             h.width -= 2;
@@ -558,7 +558,7 @@ public:
         }
 
         if (GuiDraggableWindowBox(&fileexplorerstate)) {
-            Rectangle h = moveRectangle(fileexplorerstate.layoutRecs[0], fileexplorerstate.anchor);
+            Rectangle h = moveRectangle(fileexplorerstate.bounds, fileexplorerstate.anchor);
             h = moveRectangle(h, { 1, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT });
             h.height = 20;
             h.width -= 2;

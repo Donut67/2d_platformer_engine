@@ -117,23 +117,10 @@ int main() {
     // Initialize RCC++
     RCCppInit();
 
-    // Setup Gui context
-
-    // Initializing the base editor
-    // EngineBaseEditor* base_editor = new EngineBaseEditor();
-    // shared_ptr<EngineObject> base = make_shared<EngineObject>(Vector2{0.0f, 0.0f}, Vector2{0.0f, 0.0f});
-    // base->addObject(make_shared<EngineAux>("okay", Vector2{0.0f, 0.0f}, Vector2{55.0f, 20.0f}));
-
-    // Setting the base editor in the system table
-    // g_SystemTable.pEBEditor   = base_editor;
-
-    // createFactoryContext();
-
     SetTargetFPS(144);
 
     while (!WindowShouldClose() && !g_SystemTable.pRCCppMainLoopI->WindowShouldClose()) {
         RCCppUpdate();
-
         g_SystemTable.pRCCppMainLoopI->MainLoop();
     }
 

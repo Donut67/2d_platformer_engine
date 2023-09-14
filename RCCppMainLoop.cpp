@@ -69,7 +69,6 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
     bool ActionDropdown000EditMode = false;
     bool Spinner002EditMode = false;
     bool Spinner003EditMode = false;
-    bool openSceneFilePath = false;
     bool openTileSetFilePath = false;
     bool windowShouldClose = false;
 
@@ -84,11 +83,8 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
     shared_ptr<GameObject> _game_object;
     Rastreator *rastreator;
 
-    GuiDraggableWindowBoxState fileexplorerstate = InitGuiDraggableWindowBox(Rectangle{ 424, 400, 408, 184 }, "File Explorer");
-
-    string fileextension = ".png";
-    string fileexplorerpath = "\\resources";
-    string fileexplorerreturnpath;
+    GuiDraggableWindowBoxState fileexplorerwindow = InitGuiDraggableWindowBox(Rectangle{ 424, 400, 408, 184 }, "File Explorer");
+    GuiFileExplorer fileexplorerstate = InitGuiFileExplorer(FILE_EXPLORER_NULL, OPEN_FILE, ".scn", "\\resources");
 
     shared_ptr<TileSetData> _tilesetdata;
     shared_ptr<EngineAnimation> _animationdata;
@@ -113,7 +109,6 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
 
     GuiTileMapEdittingState tilemapedittingstate;
 
-    GuiFileExplorerListener fileExplorerListenerState;
     int scenestate = SCENE_EDITOR_STATE_PLAYING;
 
     // data for compiling window
@@ -140,7 +135,7 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
 
         hierarchystate.active = false;
         inspectorstate.active = false;
-        fileexplorerstate.active = false;
+        fileexplorerwindow.active = false;
         tileseteditorstate.active = false;
         animationeditorstate.active = false;
         animationgraphstate.active = false;
@@ -159,7 +154,7 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
         SERIALIZE( hierarchyTree );
         // SERIALIZE( rastreator );
         
-        SERIALIZE( fileexplorerstate );
+        SERIALIZE( fileexplorerwindow );
         SERIALIZE( hierarchystate );
         SERIALIZE( inspectorstate );
         SERIALIZE( tileseteditorstate );
@@ -168,13 +163,15 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
         SERIALIZE( graphrenderstate );
         
         SERIALIZE( _game_object );
-        SERIALIZE( fileExplorerListenerState );
+        SERIALIZE( fileexplorerstate );
         SERIALIZE( scenestate );
         SERIALIZE( _tilesetdata );
         SERIALIZE( _animationdata );
         SERIALIZE( animationedittingvalues );
 
         SERIALIZE( initial );
+        SERIALIZE( tileSetcolumns );
+        SERIALIZE( tileSetrows );
     }
 
     void MainLoop() override {
@@ -183,19 +180,39 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
 
         // Update
         //----------------------------------------------------------------------------------
-        if (fileExplorerListenerState == OPEN_SCENE && fileexplorerreturnpath != "") {
-            scene = new Scene(fileexplorerreturnpath);
-            hierarchyTree = convertToNewTree(*scene->getRoot());
-            fileexplorerreturnpath = "";
-            openSceneFilePath = false;
-        }
-        else if (fileExplorerListenerState == OPEN_ANIMATION_GRAPH && fileexplorerreturnpath != "") {
-            animation_graph = EngineAnimationGraph(fileexplorerreturnpath);
-            fileexplorerreturnpath = "";
-            graphrenderstate.graph.graph = animation_graph.graph;
-            graphrenderstate.editting = RENDER_GRAPH_STATE_NULL;
-            graphrenderstate.begin = graphrenderstate.end = graphrenderstate.name = "";
-            openSceneFilePath = false;
+        if (fileexplorerstate.listener != FILE_EXPLORER_NULL && fileexplorerstate.close) {
+            if (fileexplorerstate.listener == OPEN_SCENE) {
+                struct stat buffer;
+                if (stat(fileexplorerstate.return_path.c_str(), &buffer) == 0) scene = new Scene(fileexplorerstate.return_path);
+                else {
+                    scene = new Scene();
+                    scene->set_filename(fileexplorerstate.return_path);
+                }
+                hierarchyTree = convertToNewTree(*scene->getRoot());
+                _game_object = nullptr;
+            }
+            else if (fileexplorerstate.listener == SAVE_SCENE && scene) {
+                scene->set_filename(fileexplorerstate.return_path);
+                scene->save();
+            }
+            else if (fileexplorerstate.listener == OPEN_ANIMATION_GRAPH) {
+                animation_graph = EngineAnimationGraph(fileexplorerstate.return_path);
+                graphrenderstate.graph.graph = animation_graph.graph;
+                graphrenderstate.editting = RENDER_GRAPH_STATE_NULL;
+                graphrenderstate.begin = graphrenderstate.end = graphrenderstate.name = "";
+            }
+            else if (fileexplorerstate.listener == OPEN_TILESET) {
+                _tilesetdata = Resources::getInstance()->tileset(fileexplorerstate.return_path, true);
+                tileSetcolumns = (int)_tilesetdata->_nTiles.x;
+                tileSetrows    = (int)_tilesetdata->_nTiles.y;
+            }
+            else if (fileexplorerstate.listener == NEW_TILESET) {
+                _tilesetdata = make_shared<TileSetData>();
+                _tilesetdata->setTexture(fileexplorerstate.return_path);
+                tileSetcolumns = (int)_tilesetdata->_nTiles.x;
+                tileSetrows    = (int)_tilesetdata->_nTiles.y;
+            }
+            fileexplorerstate.return_path = "";
         }
 
         if (scene && scenestate == SCENE_EDITOR_STATE_PLAYING) {
@@ -224,7 +241,7 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
 
             // /*
             if (GuiDraggableWindowBox(&hierarchystate)) {
-                Rectangle h = moveRectangle(hierarchystate.layoutRecs[0], hierarchystate.anchor);
+                Rectangle h = moveRectangle(hierarchystate.bounds, hierarchystate.anchor);
                 h.height -= RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT;
                 h.width -= 1;
                 h = moveRectangle(h, { 1, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT });
@@ -239,7 +256,7 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
             }
 
             if (GuiDraggableWindowBox(&inspectorstate)) {
-                Rectangle h = moveRectangle(inspectorstate.layoutRecs[0], inspectorstate.anchor);
+                Rectangle h = moveRectangle(inspectorstate.bounds, inspectorstate.anchor);
                 h = moveRectangle(h, { 1, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT });
                 h.height = 20;
                 h.width -= 2;
@@ -253,7 +270,7 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                     #define RAYGUI_GRID_ALPHA    0.15f
                     #endif
 
-                    Rectangle h = moveRectangle(tileseteditorstate.layoutRecs[0], tileseteditorstate.anchor);
+                    Rectangle h = moveRectangle(tileseteditorstate.bounds, tileseteditorstate.anchor);
                     h = moveRectangle(h, { 0, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT + 20 });
                     h.height = h.height - RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT - 41;
 
@@ -264,25 +281,17 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
 
                     DrawTextureEx(*_tilesetdata->_texture, { h.x, h.y }, 0.0f, scale, WHITE);
 
-                    h = Rectangle{ h.x, h.y, _tilesetdata->_texture->width * scale, _tilesetdata->_texture->height * scale };
-                    /*
-                    if (CheckCollisionPointRec(GetMousePosition(), h)) {
-                        Vector2 result{ GetMousePosition().x - h.x, GetMousePosition().y - h.y };
-                        result.x = (int)(result.x / (_tilesetdata->_tileSize.x * scale)) * (_tilesetdata->_tileSize.x * scale);
-                        result.y = (int)(result.y / (_tilesetdata->_tileSize.y * scale)) * (_tilesetdata->_tileSize.y * scale);
-                        GuiDrawRectangle({ result.x + h.x, result.y + h.y, _tilesetdata->_tileSize.x * scale, _tilesetdata->_tileSize.y * scale }, 0, GetColor(GuiGetStyle(DROPDOWNBOX, BORDER)), Color{ 255, 255, 255, 100 });
-                    }
-                    // */
-                    int linesV = h.width / tileSetcolumns + 1;
-                    int linesH = h.height / tileSetrows + 1;
+                    h = Rectangle{ h.x, h.y, (float)_tilesetdata->_texture->width * scale, (float)_tilesetdata->_texture->height * scale };
+                    int linesV = ( h.width / tileSetcolumns ) + 1;
+                    int linesH = ( h.height / tileSetrows ) + 1;
 
-                    for (int i = 1; i < tileSetcolumns; i++) DrawLine(h.x + linesV * i, h.y, h.x + linesV * i, h.y + h.height, GetColor(GuiGetStyle(DEFAULT, LINE_COLOR)));
+                    for (int i = 1; i < tileSetcolumns; i++) DrawLine(h.x + i * linesV, h.y, h.x + i * linesV, h.y + h.height, GetColor(GuiGetStyle(DEFAULT, LINE_COLOR)));
                     for (int i = 1; i < tileSetrows; i++) DrawLine(h.x, h.y + linesH * i, h.x + h.width, h.y + linesH * i, GetColor(GuiGetStyle(DEFAULT, LINE_COLOR)));
 
                     DrawRectangleLinesEx(h, 1, GetColor(GuiGetStyle(DEFAULT, LINE_COLOR)));
                 }
 
-                Rectangle h = moveRectangle(tileseteditorstate.layoutRecs[0], tileseteditorstate.anchor);
+                Rectangle h = moveRectangle(tileseteditorstate.bounds, tileseteditorstate.anchor);
                 h = moveRectangle(h, { 1, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT });
                 h.height = 20;
                 h.width -= 2;
@@ -293,16 +302,12 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                 if (GuiActionDropDown(h, "File;#08#New TileSet;#05#Open TileSet;#02#Save TileSet", &ActionDropdown000EditMode, &selected)) {
                     ActionDropdown000EditMode = !ActionDropdown000EditMode;
                     if (selected == 1) {
-                        fileExplorerListenerState = NEW_TILESET;
-                        fileexplorerstate.active = true;
-                        fileextension = ".png";
-                        fileexplorerpath = "\\resources";
+                        fileexplorerstate = InitGuiFileExplorer(NEW_TILESET, OPEN_FILE, ".png", "\\resources");
+                        fileexplorerwindow.active = true;
                     }
                     else if (selected == 2) {
-                        fileExplorerListenerState = OPEN_TILESET;
-                        fileexplorerstate.active = true;
-                        fileextension = ".tsd";
-                        fileexplorerpath = "\\resources";
+                        fileexplorerstate = InitGuiFileExplorer(OPEN_TILESET, OPEN_FILE, ".tsd", "\\resources");
+                        fileexplorerwindow.active = true;
                     }
                     else if (selected == 3 && _tilesetdata != nullptr) _tilesetdata->save();
                 }
@@ -319,28 +324,10 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                 }
 
                 GuiUnlock();
-
-                if (fileExplorerListenerState == OPEN_TILESET && fileexplorerreturnpath != "") {
-                    _tilesetdata = Resources::getInstance()->tileset(fileexplorerreturnpath, true);
-                    fileexplorerreturnpath = "";
-                    openTileSetFilePath = false;
-                    tileSetcolumns = (int)_tilesetdata->_nTiles.x;
-                    tileSetrows    = (int)_tilesetdata->_nTiles.y;
-                }
-
-                if (fileExplorerListenerState == NEW_TILESET && fileexplorerreturnpath != "") {
-                    _tilesetdata = make_shared<TileSetData>();
-                    _tilesetdata->setTexture(fileexplorerreturnpath);
-                    tileSetcolumns = (int)_tilesetdata->_nTiles.x;
-                    tileSetrows    = (int)_tilesetdata->_nTiles.y;
-                    fileexplorerreturnpath = "";
-                    openTileSetFilePath = false;
-                }
-
             }
 
             if (GuiDraggableWindowBox(&animationeditorstate)) {
-                Rectangle h = moveRectangle(animationeditorstate.layoutRecs[0], animationeditorstate.anchor);
+                Rectangle h = moveRectangle(animationeditorstate.bounds, animationeditorstate.anchor);
                 h = moveRectangle(h, { 1, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT });
                 h.height = 20;
                 h.width -= 2;
@@ -404,19 +391,15 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                             _animationdata = make_shared<EngineAnimation>();
                         }
                         else if (ActionBar001Result == 1) {
-                            fileExplorerListenerState = OPEN_ANIMATION;
-                            fileexplorerstate.active = true;
-                            fileextension = ".aon";
-                            fileexplorerpath = "\\resources";
+                            fileexplorerstate = InitGuiFileExplorer(OPEN_ANIMATION, OPEN_FILE, ".aon", "\\resources");
+                            fileexplorerwindow.active = true;
                         }
                         else if (ActionBar001Result == 2) _animationdata->save();
                     }
                     else if (ActionBar001EditMode == 1) {
                         if (ActionBar001Result == 0) {
-                            fileExplorerListenerState = SELECT_TILESET;
-                            fileexplorerstate.active = true;
-                            fileextension = ".tsd";
-                            fileexplorerpath = "\\resources";
+                            fileexplorerstate = InitGuiFileExplorer(SELECT_TILESET, OPEN_FILE, ".tsd", "\\resources");
+                            fileexplorerwindow.active = true;
                         }
                         else if (ActionBar001Result == 1 && _animationdata != nullptr) {
                             _animationdata->addPoint(-1, 0.5f);
@@ -426,23 +409,23 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                     ActionBar001EditMode = -1;
                 }
 
-                if (fileExplorerListenerState == SELECT_TILESET && fileexplorerreturnpath != "") {
-                    _animationdata = make_shared<EngineAnimation>(Resources::getInstance()->tileset(fileexplorerreturnpath, true));
-                    fileexplorerreturnpath = "";
+                if (fileexplorerstate.listener == SELECT_TILESET && fileexplorerstate.return_path != "") {
+                    _animationdata = make_shared<EngineAnimation>(Resources::getInstance()->tileset(fileexplorerstate.return_path, true));
+                    fileexplorerstate.return_path = "";
                     openTileSetFilePath = false;
                 }
-                if (fileExplorerListenerState == OPEN_ANIMATION && fileexplorerreturnpath != "") {
-                    _animationdata = Resources::getInstance()->animation(fileexplorerreturnpath, true);
+                if (fileexplorerstate.listener == OPEN_ANIMATION && fileexplorerstate.return_path != "") {
+                    _animationdata = Resources::getInstance()->animation(fileexplorerstate.return_path, true);
                     strcpy(animationnameinputstate.value, _animationdata->_name.c_str());
                     for (auto i : _animationdata->_sequence) animationedittingvalues.push_back(InitGuiInputString("", ftostr(i.second, 3).c_str()));
 
-                    fileexplorerreturnpath = "";
+                    fileexplorerstate.return_path = "";
                     openTileSetFilePath = false;
                 }
             }
 
             if (GuiDraggableWindowBox(&animationgraphstate)) {
-                Rectangle h = moveRectangle(animationgraphstate.layoutRecs[0], animationgraphstate.anchor);
+                Rectangle h = moveRectangle(animationgraphstate.bounds, animationgraphstate.anchor);
                 h = moveRectangle(h, { 1, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT });
                 h.width -= 240;
                 h.height -= RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT - 20;
@@ -452,7 +435,7 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                 graphrenderstate.layout = h;
                 GuiGraphRender(&graphrenderstate);
 
-                h = moveRectangle(animationgraphstate.layoutRecs[0], animationgraphstate.anchor);
+                h = moveRectangle(animationgraphstate.bounds, animationgraphstate.anchor);
                 h = moveRectangle(h, { 1, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT });
                 h.height = 20;
                 h.width -= 2;
@@ -471,10 +454,8 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                             graphrenderstate.begin = graphrenderstate.end = graphrenderstate.name = "";
                         }
                         else if (ActionBar002Result == 1) {
-                            fileExplorerListenerState = OPEN_ANIMATION_GRAPH;
-                            fileexplorerstate.active = true;
-                            fileextension = ".aph";
-                            fileexplorerpath = "\\resources";
+                            fileexplorerstate = InitGuiFileExplorer(OPEN_ANIMATION_GRAPH, OPEN_FILE, ".aph", "\\resources");
+                            fileexplorerwindow.active = true;
                         }
                         else if (ActionBar002Result == 2) {
                             animation_graph = graphrenderstate.graph;
@@ -483,11 +464,8 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                     }
                     else if (ActionBar002EditMode == 1) {
                         if (ActionBar002Result == 0) {
-                            fileExplorerListenerState = SELECT_ANIMATION_VERTEX;
-                            fileexplorerstate.active = true;
-                            fileextension = ".aon";
-                            fileexplorerpath = "\\resources";
-                            fileexplorerreturnpath = "";
+                            fileexplorerstate = InitGuiFileExplorer(SELECT_ANIMATION_VERTEX, OPEN_FILE, ".aon", "\\resources");
+                            fileexplorerwindow.active = true;
                         }
                         else if (ActionBar002Result == 1) {
                             graphrenderstate.editting = RENDER_GRAPH_EXPECTING_FIRST;
@@ -498,23 +476,23 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                     ActionBar002EditMode = -1;
                 }
 
-                if (fileExplorerListenerState == SELECT_ANIMATION_VERTEX && fileexplorerreturnpath != "") {
-                    shared_ptr<EngineAnimation> anim = Resources::getInstance()->animation(fileexplorerreturnpath, true);
+                if (fileexplorerstate.listener == SELECT_ANIMATION_VERTEX && fileexplorerstate.return_path != "") {
+                    shared_ptr<EngineAnimation> anim = Resources::getInstance()->animation(fileexplorerstate.return_path, true);
                     graphrenderstate.graph.graph.AddVertex(anim->_name.c_str());
                     graphrenderstate.graph._animations[anim->_name] = Resources::getInstance()->animation(anim->_path, true);
 
                     for (auto i : graphrenderstate.graph._animations) cout << i.first << ' ';
                     cout << '\n';
 
-                    fileexplorerreturnpath = "";
+                    fileexplorerstate.return_path = "";
                     openTileSetFilePath = false;
-                    fileExplorerListenerState = FILE_EXPLORER_NULL;
+                    fileexplorerstate.listener = FILE_EXPLORER_NULL;
                 }
 
                 RenderGraphEditingState editting = graphrenderstate.editting;
 
-                h = moveRectangle(animationgraphstate.layoutRecs[0], animationgraphstate.anchor);
-                h = moveRectangle(h, { animationgraphstate.layoutRecs[0].width - 241 , RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT + 20 });
+                h = moveRectangle(animationgraphstate.bounds, animationgraphstate.anchor);
+                h = moveRectangle(h, { animationgraphstate.bounds.width - 241 , RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT + 20 });
                 h.width   = 240;
                 h.height -= RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT + 21;
                 GuiDrawRectangle(h, 0, GetColor(GuiGetStyle(DROPDOWNBOX, BORDER)), GetColor(GuiGetStyle(DROPDOWNBOX, BASE)));
@@ -590,8 +568,8 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                     h.y += 21;
                 }
 
-                h = moveRectangle(animationgraphstate.layoutRecs[0], animationgraphstate.anchor);
-                h = moveRectangle(h, { animationgraphstate.layoutRecs[0].width - 231 , animationgraphstate.layoutRecs[0].height - 25 });
+                h = moveRectangle(animationgraphstate.bounds, animationgraphstate.anchor);
+                h = moveRectangle(h, { animationgraphstate.bounds.width - 231 , animationgraphstate.bounds.height - 25 });
                 h.width = 220;
                 h.height = 20;
 
@@ -612,33 +590,12 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                 }
             }
 
-            if (GuiDraggableWindowBox(&fileexplorerstate)) {
-                Rectangle h = moveRectangle(fileexplorerstate.layoutRecs[0], fileexplorerstate.anchor);
-                h = moveRectangle(h, { 1, RAYGUI_WINDOWBOX_STATUSBAR_HEIGHT });
-                h.height = 20;
-                h.width -= 2;
-                int i = GuiGetStyle(BUTTON, TEXT_ALIGNMENT);
-                int j = GuiGetStyle(BUTTON, BORDER_WIDTH);
-                GuiSetStyle(BUTTON, TEXT_ALIGNMENT, TEXT_ALIGN_LEFT);
-                GuiSetStyle(BUTTON, BORDER_WIDTH, 0);
-
-                std::string base_path = fs::current_path().string() + fileexplorerpath;
-                for (const auto& entry : fs::recursive_directory_iterator(base_path)) {
-                    std::string text = entry.path().string();
-                    if (entry.path().extension() == fileextension) {
-                        if (GuiButton(h, text.substr(text.find(fileexplorerpath), text.size()).c_str())) {
-                            fileexplorerreturnpath = text.substr(text.find(fileexplorerpath) + 1, text.size());
-                            fileexplorerstate.active = false;
-                        }
-                        h.y += h.height + 1;
-                    }
-                }
-                GuiSetStyle(BUTTON, TEXT_ALIGNMENT, i);
-                GuiSetStyle(BUTTON, BORDER_WIDTH, j);
+            if (GuiDraggableWindowBox(&fileexplorerwindow)) {
+                GuiDrawFileExplorer(&fileexplorerstate, moveRectangle(fileexplorerwindow.bounds, fileexplorerwindow.anchor));
             }
 
             const char* ActionBar000Matrix[3] = {
-                "File;#08#New Scene;#05#Open Scene;#02#Save Scene;#159#Exit",
+                "File;#05#Open Scene;#02#Save Scene;#02#Save Scen As;#159#Exit",
                 "Edit;#162#New GameObject;#17#Cut;#16#Copy;#18#Paste",
                 "Window;#198#Hierarchy;#198#Inspector;#198#Tileset Editor;#198#Animation Editor;#198#Animation Graph Editor"
             };
@@ -646,17 +603,14 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
             if ((ActionBar000Result = GuiActionPane({ 0.0f, 0.0f, (float)GetScreenWidth(), 20.0f }, ActionBar000Matrix, 3, &ActionBar000EditMode)) != -1) {
                 if (ActionBar000EditMode == 0) {
                     if (ActionBar000Result == 0) {
-                        scene = new Scene();
-                        hierarchyTree = convertToNewTree(*scene->getRoot());
-                        _game_object = nullptr;
+                        fileexplorerstate = InitGuiFileExplorer(OPEN_SCENE, CREATE_FILE, ".scn", "\\resources");
+                        fileexplorerwindow.active = true;
                     }
-                    else if (ActionBar000Result == 1) {
-                        fileExplorerListenerState = OPEN_SCENE;
-                        fileexplorerstate.active = true;
-                        fileextension = ".scn";
-                        fileexplorerpath = "\\resources";
+                    else if (ActionBar000Result == 1 && scene != nullptr) scene->save();
+                    else if (ActionBar000Result == 2) {
+                        fileexplorerstate = InitGuiFileExplorer(SAVE_SCENE, OPEN_FILE, ".scn", "\\resources");
+                        fileexplorerwindow.active = true;
                     }
-                    else if (ActionBar000Result == 2 && scene != nullptr) scene->save();
                     else if (ActionBar000Result == 3) windowShouldClose = true; 
                 }
                 else if (ActionBar000EditMode == 1){
@@ -707,19 +661,12 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                 }
 
                 bool bCompileOk = g_pSys->pRuntimeObjectSystem->GetLastLoadModuleSuccess();
-
-                Color windowBgCol = GREEN;
-                if (!bCompiling) {
-                    if (bCompileOk) windowBgCol = GREEN;
-                    else windowBgCol = RED;
-                }
                 char text[80];
 
                 if (bCompiling) sprintf(text, "#16#Compiling... time %.2fs", (float)(time - compileStartTime));
-                else {
-                    if (bCompileOk) sprintf(text, "#112#Compiling... time %.2fs. SUCCEED", (float)(compileEndTime - compileStartTime));
-                    else sprintf(text, "#113#Compiling... time %.2fs. FAILED", (float)(compileEndTime - compileStartTime));
-                }
+                else if (bCompileOk) sprintf(text, "#112#Compiling... time %.2fs. SUCCEED", (float)(compileEndTime - compileStartTime));
+                else sprintf(text, "#113#Compiling... time %.2fs. FAILED", (float)(compileEndTime - compileStartTime));
+
                 GuiLabel({ GetScreenWidth() - 230.0f, GetScreenHeight() - 20.0f, 230.0f, 20.0f }, text);
             }
         EndDrawing();
