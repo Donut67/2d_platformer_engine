@@ -67,6 +67,7 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
     int ActionBar002Result = -1;
 
     bool ActionDropdown000EditMode = false;
+    bool ActionDropdown001EditMode = false;
     bool Spinner002EditMode = false;
     bool Spinner003EditMode = false;
     bool openTileSetFilePath = false;
@@ -196,10 +197,33 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                 scene->save();
             }
             else if (fileexplorerstate.listener == OPEN_ANIMATION_GRAPH) {
-                animation_graph = EngineAnimationGraph(fileexplorerstate.return_path);
-                graphrenderstate.graph.graph = animation_graph.graph;
-                graphrenderstate.editting = RENDER_GRAPH_STATE_NULL;
-                graphrenderstate.begin = graphrenderstate.end = graphrenderstate.name = "";
+                struct stat buffer;
+                if (stat(fileexplorerstate.return_path.c_str(), &buffer) == 0) {
+                    animation_graph = EngineAnimationGraph(fileexplorerstate.return_path);
+                    graphrenderstate.graph.graph = animation_graph.graph;
+                    graphrenderstate.editting = RENDER_GRAPH_STATE_NULL;
+                    graphrenderstate.begin = graphrenderstate.end = graphrenderstate.name = "";
+                }
+                else {
+                    animation_graph = EngineAnimationGraph();
+                    graphrenderstate.graph = animation_graph;
+                    graphrenderstate.editting = RENDER_GRAPH_STATE_NULL;
+                    graphrenderstate.begin = graphrenderstate.end = graphrenderstate.name = "";
+                }
+            }
+            else if (fileexplorerstate.listener == OPEN_ANIMATION) {
+                struct stat buffer;
+                if (stat(fileexplorerstate.return_path.c_str(), &buffer) == 0) {
+                    _animationdata = Resources::getInstance()->animation(fileexplorerstate.return_path, true);
+                    _animationdata->_path = fileexplorerstate.return_path;
+                    strcpy(animationnameinputstate.value, _animationdata->_name.c_str());
+                    for (auto i : _animationdata->_sequence) animationedittingvalues.push_back(InitGuiInputString("", ftostr(i.second, 3).c_str()));
+                }
+                else {
+                    animationedittingvalues.clear();
+                    _animationdata = make_shared<EngineAnimation>();
+                    _animationdata->_path = fileexplorerstate.return_path;
+                }
             }
             else if (fileexplorerstate.listener == OPEN_TILESET) {
                 _tilesetdata = Resources::getInstance()->tileset(fileexplorerstate.return_path, true);
@@ -212,7 +236,16 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                 tileSetcolumns = (int)_tilesetdata->_nTiles.x;
                 tileSetrows    = (int)_tilesetdata->_nTiles.y;
             }
-            fileexplorerstate.return_path = "";
+            else if (fileexplorerstate.listener == SELECT_TILESET) {
+                _animationdata->_data = Resources::getInstance()->tileset(fileexplorerstate.return_path, true);
+            }
+            else if (fileexplorerstate.listener == SELECT_ANIMATION_VERTEX) {
+                shared_ptr<EngineAnimation> anim = Resources::getInstance()->animation(fileexplorerstate.return_path, true);
+                graphrenderstate.graph.graph.AddVertex(anim->_name.c_str());
+                graphrenderstate.graph._animations[anim->_name] = Resources::getInstance()->animation(anim->_path, true);
+            }
+            fileexplorerstate = InitGuiFileExplorer(FILE_EXPLORER_NULL, OPEN_FILE, "", "");
+            fileexplorerwindow.active = false;
         }
 
         if (scene && scenestate == SCENE_EDITOR_STATE_PLAYING) {
@@ -380,21 +413,17 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                 }
 
                 const char* ActionBar000Matrix[2] = {
-                    "File;#08#New Animation;#05#Open Animation;#02#Save Animation",
+                    "File;#05#Open Animation;#02#Save Animation",
                     "Edit;#05#Select TileSet;#66#New Point"
                 };
 
                 if ((ActionBar001Result = GuiActionPane(h, ActionBar000Matrix, 2, &ActionBar001EditMode)) != -1) {
                     if (ActionBar001EditMode == 0) {
                         if (ActionBar001Result == 0) {
-                            animationedittingvalues.clear();
-                            _animationdata = make_shared<EngineAnimation>();
-                        }
-                        else if (ActionBar001Result == 1) {
-                            fileexplorerstate = InitGuiFileExplorer(OPEN_ANIMATION, OPEN_FILE, ".aon", "\\resources");
+                            fileexplorerstate = InitGuiFileExplorer(OPEN_ANIMATION, CREATE_FILE, ".aon", "\\resources");
                             fileexplorerwindow.active = true;
                         }
-                        else if (ActionBar001Result == 2) _animationdata->save();
+                        else if (ActionBar001Result == 1) _animationdata->save();
                     }
                     else if (ActionBar001EditMode == 1) {
                         if (ActionBar001Result == 0) {
@@ -407,20 +436,6 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                         }
                     }
                     ActionBar001EditMode = -1;
-                }
-
-                if (fileexplorerstate.listener == SELECT_TILESET && fileexplorerstate.return_path != "") {
-                    _animationdata = make_shared<EngineAnimation>(Resources::getInstance()->tileset(fileexplorerstate.return_path, true));
-                    fileexplorerstate.return_path = "";
-                    openTileSetFilePath = false;
-                }
-                if (fileexplorerstate.listener == OPEN_ANIMATION && fileexplorerstate.return_path != "") {
-                    _animationdata = Resources::getInstance()->animation(fileexplorerstate.return_path, true);
-                    strcpy(animationnameinputstate.value, _animationdata->_name.c_str());
-                    for (auto i : _animationdata->_sequence) animationedittingvalues.push_back(InitGuiInputString("", ftostr(i.second, 3).c_str()));
-
-                    fileexplorerstate.return_path = "";
-                    openTileSetFilePath = false;
                 }
             }
 
@@ -440,54 +455,32 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                 h.height = 20;
                 h.width -= 2;
 
-                const char* ActionBar000Matrix[2] = {
-                    "File;#08#New Animation;#05#Open Animation;#02#Save Animation",
-                    "Edit;#50#New Vertex;#174#New Edge"
-                };
-                if ((ActionBar002Result = GuiActionPane(h, ActionBar000Matrix, 2, &ActionBar002EditMode)) != -1) {
-                    RenderGraphEditingState act = RENDER_GRAPH_STATE_NULL;
-                    if (ActionBar002EditMode == 0) {
-                        if (ActionBar002Result == 0) {
-                            animation_graph = EngineAnimationGraph();
-                            graphrenderstate.graph = animation_graph;
-                            graphrenderstate.editting = RENDER_GRAPH_STATE_NULL;
-                            graphrenderstate.begin = graphrenderstate.end = graphrenderstate.name = "";
-                        }
-                        else if (ActionBar002Result == 1) {
-                            fileexplorerstate = InitGuiFileExplorer(OPEN_ANIMATION_GRAPH, OPEN_FILE, ".aph", "\\resources");
-                            fileexplorerwindow.active = true;
-                        }
-                        else if (ActionBar002Result == 2) {
-                            animation_graph = graphrenderstate.graph;
-                            animation_graph.save();
-                        }
+                GuiDrawRectangle(h, 0, GetColor(GuiGetStyle(DROPDOWNBOX, BORDER)), GetColor(GuiGetStyle(DROPDOWNBOX, BASE)));
+                if (ActionDropdown001EditMode) GuiLock();
+                int selected = -1;
+                if (GuiActionDropDown(h, "File;#05#Open Animation Graph;#02#Save Animation Graph", &ActionDropdown001EditMode, &selected)) {
+                    ActionDropdown001EditMode = !ActionDropdown001EditMode;
+                    cout << selected << "\n";
+                    if (selected == 1) {
+                        fileexplorerstate = InitGuiFileExplorer(OPEN_ANIMATION_GRAPH, CREATE_FILE, ".aph", "\\resources");
+                        fileexplorerwindow.active = true;
                     }
-                    else if (ActionBar002EditMode == 1) {
-                        if (ActionBar002Result == 0) {
-                            fileexplorerstate = InitGuiFileExplorer(SELECT_ANIMATION_VERTEX, OPEN_FILE, ".aon", "\\resources");
-                            fileexplorerwindow.active = true;
-                        }
-                        else if (ActionBar002Result == 1) {
-                            graphrenderstate.editting = RENDER_GRAPH_EXPECTING_FIRST;
-                            act = RENDER_GRAPH_EXPECTING_FIRST;
-                        }
+                    else if (selected == 2) {
+                        animation_graph = graphrenderstate.graph;
+                        animation_graph.save();
                     }
-                    // if (act == RENDER_GRAPH_STATE_NULL) graphrenderstate = prev;
-                    ActionBar002EditMode = -1;
                 }
 
-                if (fileexplorerstate.listener == SELECT_ANIMATION_VERTEX && fileexplorerstate.return_path != "") {
-                    shared_ptr<EngineAnimation> anim = Resources::getInstance()->animation(fileexplorerstate.return_path, true);
-                    graphrenderstate.graph.graph.AddVertex(anim->_name.c_str());
-                    graphrenderstate.graph._animations[anim->_name] = Resources::getInstance()->animation(anim->_path, true);
-
-                    for (auto i : graphrenderstate.graph._animations) cout << i.first << ' ';
-                    cout << '\n';
-
-                    fileexplorerstate.return_path = "";
-                    openTileSetFilePath = false;
-                    fileexplorerstate.listener = FILE_EXPLORER_NULL;
+                h = moveRectangle(h, { (float)GetTextWidth("File") * 2.0f + 15.0f, 0 });
+                h.width = (float)GetTextWidth("#50#New Vertex") + 15.0f;
+                if (GuiButton(h, "#50#New Vertex")) {
+                    fileexplorerstate = InitGuiFileExplorer(SELECT_ANIMATION_VERTEX, OPEN_FILE, ".aon", "\\resources");
+                    fileexplorerwindow.active = true;
                 }
+
+                h = moveRectangle(h, { h.width + 10.0f, 0 });
+                h.width = (float)GetTextWidth("#174#New Edge") + 15.0f;
+                if (GuiButton(h, "#174#New Edge")) graphrenderstate.editting = RENDER_GRAPH_EXPECTING_FIRST;
 
                 RenderGraphEditingState editting = graphrenderstate.editting;
 

@@ -523,7 +523,7 @@ public:
 
         int align = GuiGetStyle(BUTTON, TEXT_ALIGNMENT);
         GuiSetStyle(BUTTON, TEXT_ALIGNMENT, TEXT_ALIGN_LEFT);
-        if (GuiButton(itemBounds, _tilemap->filename() == "" ? "No File Selected" : (_tilemap->tileSet()->_path.substr(0, _tilemap->tileSet()->_path.find('.')) + ".tsd").c_str())) {
+        if (GuiButton(itemBounds, _tilemap->tileSet() == nullptr ? "No File Selected" : (_tilemap->tileSet()->_path.substr(0, _tilemap->tileSet()->_path.find('.')) + ".tsd").c_str())) {
             fileExplorerListenerState = SELECT_ANIMATION;
             fileexplorerstate.active = true;
             fileextension = ".tsd";
@@ -535,7 +535,13 @@ public:
         itemBounds = { bounds.x + 1, bounds.y, 85, bounds.height };
         GuiDrawText("MetaData", GetTextBounds(DEFAULT, itemBounds), TEXT_ALIGN_LEFT, GetColor(GuiGetStyle(DEFAULT, TEXT_COLOR_NORMAL)));
         itemBounds = { itemBounds.x + itemBounds.width - 1, bounds.y, bounds.width - 86, bounds.height };
-        if (GuiButton(itemBounds, "Edit")) g_pSys->pRCCppMainLoopI->edit_tilemap(_tilemap);
+        if (GuiButton(itemBounds, _tilemap->filename() == "" ? "No File Selected" : _tilemap->filename().c_str())) {
+            fileExplorerListenerState = SELECT_TILESET;
+            fileexplorerstate.active = true;
+            fileextension = ".meta";
+            fileexplorerpath = "/resources";
+        }
+        // if (GuiButton(itemBounds, "Edit")) g_pSys->pRCCppMainLoopI->edit_tilemap(_tilemap);
         // GuiDrawText(filename == "" ? "No File Selected" : filename.c_str(), GetTextBounds(DEFAULT, itemBounds), TEXT_ALIGN_LEFT, GetColor(GuiGetStyle(DEFAULT, TEXT_COLOR_NORMAL)));
         bounds.y += bounds.height + 1;
 
@@ -550,8 +556,13 @@ public:
         bounds.y += bounds.height + 1;
 
         if (fileExplorerListenerState == SELECT_ANIMATION && fileexplorerreturnpath != "") {
-            cout << fileexplorerreturnpath << '\n';
             _tilemap->setTileSet(fileexplorerreturnpath);
+            fileexplorerreturnpath = "";
+            fileExplorerListenerState = FILE_EXPLORER_NULL;
+            fileexplorerstate.active = false;
+        }
+        if (fileExplorerListenerState == SELECT_TILESET && fileexplorerreturnpath != "") {
+            _tilemap->setData(fileexplorerreturnpath);
             fileexplorerreturnpath = "";
             fileExplorerListenerState = FILE_EXPLORER_NULL;
             fileexplorerstate.active = false;
@@ -710,17 +721,19 @@ public:
         open_behaviors = edit_behavior_name = false;
         _bounds = { 0 };
         selected = -1; 
+        /*
         setCreators(vector<pair<string, function<void()>>>{
-            { "New Sprite", bind(&Rastreator::addBehaviour<Sprite>, this, make_shared<Sprite>()) },
-            { "New Animated Sprite", bind(&Rastreator::addBehaviour<AnimatedSprite>, this, make_shared<AnimatedSprite>()) },
-            { "New Animator", bind(&Rastreator::addBehaviour<Animator>, this, make_shared<Animator>()) },
-            { "New Tile Map", bind(&Rastreator::addBehaviour<TileMap>, this, make_shared<TileMap>()) },
-            { "New BaseUI", bind(&Rastreator::addBehaviour<BaseUI>, this, make_shared<BaseUI>()) },
-            { "New Label", bind(&Rastreator::addBehaviour<Label>, this, make_shared<Label>()) },
-            { "New PlayerController", bind(&Rastreator::addBehaviour<PlayerController>, this, make_shared<PlayerController>()) },
-            { "New Rigidbody", bind(&Rastreator::addBehaviour<Rigidbody>, this, make_shared<Rigidbody>()) },
+            { "New Sprite", bind(&Rastreator::addBehaviour<Sprite>, this, unique_ptr<Sprite>()) },
+            { "New Animated Sprite", bind(&Rastreator::addBehaviour<AnimatedSprite>, this, unique_ptr<AnimatedSprite>()) },
+            { "New Animator", bind(&Rastreator::addBehaviour<Animator>, this, unique_ptr<Animator>()) },
+            { "New Tile Map", bind(&Rastreator::addBehaviour<TileMap>, this, unique_ptr<TileMap>()) },
+            { "New BaseUI", bind(&Rastreator::addBehaviour<BaseUI>, this, unique_ptr<BaseUI>()) },
+            { "New Label", bind(&Rastreator::addBehaviour<Label>, this, unique_ptr<Label>()) },
+            { "New PlayerController", bind(&Rastreator::addBehaviour<PlayerController>, this, unique_ptr<PlayerController>()) },
+            { "New Rigidbody", bind(&Rastreator::addBehaviour<Rigidbody>, this, unique_ptr<Rigidbody>()) },
             { "New Behaviour", bind(&Rastreator::ExpextBehaviourName, this) }
         });
+        // */
     }
     Rastreator(const shared_ptr<GameObject>& r) {
         open_behaviors = false;
@@ -746,9 +759,17 @@ public:
         GuiSetStyle(ACTIONDROPDOWN, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
         if (open_behaviors) GuiLock();
         selected = -1;
+        _text = "Add Behaviour;New Sprite;New Animated Sprite;New Animator;New Tile Map;New BaseUI;New Label";
         if (GuiActionDropDown(itemBounds, _text.c_str(), &open_behaviors, &selected)) {
             open_behaviors = !open_behaviors;
-            if (selected != -1) _actions[selected - 1]();
+            if (selected != -1) {
+                if (selected == 1) addBehaviour<Sprite>(make_shared<Sprite>());
+                else if (selected == 2) addBehaviour<AnimatedSprite>(make_shared<AnimatedSprite>());
+                else if (selected == 3) addBehaviour<Animator>(make_shared<Animator>());
+                else if (selected == 4) addBehaviour<TileMap>(make_shared<TileMap>());
+                else if (selected == 5) addBehaviour<BaseUI>(make_shared<BaseUI>());
+                else if (selected == 6) addBehaviour<Label>(make_shared<Label>());
+            }
         }
         GuiUnlock();
         GuiSetStyle(ACTIONDROPDOWN, TEXT_ALIGNMENT, TEXT_ALIGN_LEFT);

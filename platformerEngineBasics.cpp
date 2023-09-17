@@ -111,7 +111,7 @@ void Resources::addAnimationGraph(const string& filename) {
 // */
 shared_ptr<Texture2D> Resources::texture(const string &filename, const bool &load) {
     auto search = _texture_list.find(filename);
-    if(load && search == _texture_list.end()) {
+    if(load) {
         addTexture(filename);
         search = _texture_list.find(filename);
     }
@@ -120,7 +120,7 @@ shared_ptr<Texture2D> Resources::texture(const string &filename, const bool &loa
 
 shared_ptr<Font> Resources::font(const string &filename, const bool &load) {
     auto search = _font_list.find(filename);
-    if(load && search == _font_list.end()) {
+    if(load) {
         addFont(filename);
         search = _font_list.find(filename);
     }
@@ -129,7 +129,7 @@ shared_ptr<Font> Resources::font(const string &filename, const bool &load) {
 
 shared_ptr<TileSetData> Resources::tileset(const string &filename, const bool &load) {
     auto search = _tileset_list.find(filename);
-    if(load && search == _tileset_list.end()) {
+    if(load) {
         addTileset(filename);
         search = _tileset_list.find(filename);
     }
@@ -138,7 +138,7 @@ shared_ptr<TileSetData> Resources::tileset(const string &filename, const bool &l
 
 shared_ptr<EngineAnimation> Resources::animation(const string& filename, const bool& load) {
     auto search = _animation_list.find(filename);
-    if (load && search == _animation_list.end()) {
+    if (load) {
         addAnimation(filename);
         search = _animation_list.find(filename);
     }

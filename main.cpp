@@ -117,7 +117,7 @@ int main() {
     // Initialize RCC++
     RCCppInit();
 
-    SetTargetFPS(144);
+    SetTargetFPS(60);
 
     while (!WindowShouldClose() && !g_SystemTable.pRCCppMainLoopI->WindowShouldClose()) {
         RCCppUpdate();

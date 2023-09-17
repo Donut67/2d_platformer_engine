@@ -77,7 +77,7 @@ class TileSetData {
 
         TileSetData() {
             _tileSize = Vector2{0.0f, 0.0f};
-            _nTiles = Vector2{0.0f, 0.0f};
+            _nTiles = Vector2{1.0f, 1.0f};
             _texture = nullptr;
             _path = "";
         }
@@ -165,6 +165,7 @@ public:
         _data = Resources::getInstance()->tileset(aux[1], true);
         aux.erase(aux.begin());
         aux.erase(aux.begin());
+        cout << line << '\n';
         for (auto i : aux) {
             vector<string> aux1 = splice(i, ':');
             addPoint(stoi(aux1[0]), stof(aux1[1]));
@@ -229,11 +230,10 @@ public:
     }
 
     void save() {
-        _path = _data->_path;
-        string data = _name + ";" + _path.substr(0, _path.find('.')) + ".tsd";
+        string data = _name + ";" + _data->_path.substr(0, _data->_path.find('.')) + ".tsd";
         for (auto i : _sequence) data += ";" + to_string(i.first) + ":" + ftostr(i.second, 3);
 
-        ofstream file(_path.substr(0, _path.find('.')) + _name + ".aon");
+        ofstream file(_path);
         file << data;
         file.close();
     }
@@ -509,18 +509,10 @@ class TileMap : public Behaviour {
         void construct(string set, float scale, string mapMeta) {
             _scale = scale;
             _set = Resources::getInstance()->tileset(set, true);
-            _filename = mapMeta;
             _map_size = { 24.0f, 24.0f };
             actual = { 0.0f, 0.0f };
 
-            if(mapMeta != "") {
-                ifstream map(mapMeta);
-                Vector2 initial;
-                map >> initial.x >> initial.y;
-                _tile_map[{initial.y, initial.y}] = vector<int>(576, -1);
-
-                for (int i = 0; i < _map_size.x; i++) for (int j = 0; j < _map_size.y; j++) map >> _tile_map[{initial.y, initial.y}][j * _map_size.x + i];
-            }
+            setData(mapMeta);
         }
     public:
         TileMap() { 
@@ -540,6 +532,18 @@ class TileMap : public Behaviour {
         void setScale(const float &s) {_scale = s;}
         void setTileSet(const string& path) {
             construct(path, 1.0f, "");
+        }
+        void setData(const string& path) {
+            _filename = path;
+
+            if (path != "") {
+                ifstream map(path);
+                Vector2 initial;
+                map >> initial.x >> initial.y;
+                _tile_map[{initial.y, initial.y}] = vector<int>(576, -1);
+
+                for (int i = 0; i < _map_size.x; i++) for (int j = 0; j < _map_size.y; j++) map >> _tile_map[{initial.y, initial.y}][j * _map_size.x + i];
+            }
         }
         void addPoint(Vector2 pos, int value) {
             Vector2 aux1, aux2;

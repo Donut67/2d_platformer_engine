@@ -226,6 +226,7 @@ GuiFileExplorer InitGuiFileExplorer(GuiFileExplorerListener listener, GuiFileExp
     result.extension = extension;
     result.base_path = base_path;
     strcpy(result.text, "");
+    result.close = false;
 
     if (state == CREATE_FILE) result.editting = false;
 
