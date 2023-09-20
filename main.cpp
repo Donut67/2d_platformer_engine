@@ -143,7 +143,6 @@ bool RCCppInit()
     }
 
     g_SystemTable.pRuntimeObjectSystem->CleanObjectFiles();
-
     g_SystemTable.pRuntimeObjectSystem->SetAdditionalCompileOptions("/std:c++17");
 
     return true;

@@ -22,7 +22,6 @@
 
 #include "RuntimeLinkLibrary.h"
 RUNTIME_COMPILER_LINKLIBRARY("lib\\raylib.lib");
-RUNTIME_COMPILER_LINKLIBRARY("lib\\ferox.lib");
 
 #include "IObject.h"
 #include "SystemTable.h"
