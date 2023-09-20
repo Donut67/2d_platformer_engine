@@ -94,7 +94,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions);WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem; RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)mapbox;$(SolutionDir)include;$(SolutionDir)glm;RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem; RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -112,7 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions);WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem; RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)mapbox;$(SolutionDir)include;$(SolutionDir)glm;RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem; RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -130,7 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions);_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem; RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)mapbox;$(SolutionDir)include;$(SolutionDir)glm;RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem; RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -148,7 +148,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;%(PreprocessorDefinitions);NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem; RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)mapbox;$(SolutionDir)include;$(SolutionDir)glm;RuntimeCompiledCPlusPlus\Aurora\RuntimeObjectSystem; RuntimeCompiledCPlusPlus\Aurora\RuntimeCompiler;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -161,19 +161,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Body.cpp" />
+    <ClCompile Include="Collision.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Manifold.cpp" />
     <ClCompile Include="platformerEngineBasics.cpp" />
+    <ClCompile Include="Precompiled.cpp" />
     <ClCompile Include="RCCppMainLoop.cpp" />
     <ClCompile Include="StdioLogSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Body.h" />
+    <ClInclude Include="Collision.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="gui_draggable_window_box.h" />
+    <ClInclude Include="IEMath.h" />
+    <ClInclude Include="Manifold.h" />
     <ClInclude Include="observer_pattern.h" />
+    <ClInclude Include="physics.h" />
     <ClInclude Include="platformerEngineBasics.h" />
+    <ClInclude Include="Precompiled.h" />
     <ClInclude Include="raygui.h" />
     <ClInclude Include="raylib.h" />
+    <ClInclude Include="raymath.h" />
     <ClInclude Include="RCCppMainLoop.h" />
+    <ClInclude Include="Shape.h" />
     <ClInclude Include="StdioLogSystem.h" />
     <ClInclude Include="style_dark.h" />
     <ClInclude Include="SystemTable.h" />

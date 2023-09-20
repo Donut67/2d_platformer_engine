@@ -17,10 +17,12 @@
 #define GUI_DRAGGABLE_WINDOW_BOX_IMPLEMENTATION
 #include "gui_draggable_window_box.h"
 #include "observer_pattern.h"
+#include "physics.h"
 // */
 
 #include "RuntimeLinkLibrary.h"
 RUNTIME_COMPILER_LINKLIBRARY("lib\\raylib.lib");
+RUNTIME_COMPILER_LINKLIBRARY("lib\\ferox.lib");
 
 #include "IObject.h"
 #include "SystemTable.h"
@@ -108,7 +110,7 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
     GuiInputStringState animationnameinputstate  = InitGuiInputString("Name", "");
     vector<GuiInputStringState> animationedittingvalues;
 
-    GuiTileMapEdittingState tilemapedittingstate;
+    GuiTileMapEdittingState *tilemapedittingstate;
 
     int scenestate = SCENE_EDITOR_STATE_PLAYING;
 
@@ -120,6 +122,12 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
 
     Vector2 initial{ 0.0f, 0.0f }, prev{ 0.0f, 0.0f }, grid_position{ 0.0f, 0.0f }, cell_size{ 50.0f,50.0f };
     bool moving_scene = false, editting_tilemap = false;
+
+    PhysycsManager *manager;
+
+    Vec2 aux_points[64];
+    bool editting_new_polygon = false;
+    int new_polygon_count = 0;
 
     RCCppMainLoop() {
         g_pSys->pRCCppMainLoopI = this;
@@ -144,6 +152,18 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
         rastreator = new Rastreator();
 
         graphrenderstate = InitGuiGraphRenderState(graph, Rectangle{ 400.0f, 200, 400, 424 });
+
+        manager = new PhysycsManager();
+
+        Circle c(16.0f);
+        Body* b = manager->Add(&c, 248, 48);
+        // b->SetStatic();
+
+        PolygonShape poly;
+        poly.SetBox(320.0f, 8.0f);
+        b = manager->Add(&poly, 360, 480);
+        b->SetStatic();
+        b->SetOrient(0);
     }
 
     void Serialize(ISimpleSerializer* pSerializer) override {
@@ -173,9 +193,92 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
         SERIALIZE( initial );
         SERIALIZE( tileSetcolumns );
         SERIALIZE( tileSetrows );
+
+        // SERIALIZE( world );
     }
 
     void MainLoop() override {
+        manager->bodies[0]->velocity.x = 0;
+
+        if (IsKeyPressed(KEY_SPACE)) manager->bodies[0]->ApplyForce(Vec2(0.0f, -30000000.0f));
+        if (IsKeyDown(KEY_A)) manager->bodies[0]->ApplyForce(Vec2(-40000000.0f, 0.0f));
+        if (IsKeyDown(KEY_D)) manager->bodies[0]->ApplyForce(Vec2( 40000000.0f, 0.0f));
+
+        manager->Step();
+
+        if (IsKeyPressed(KEY_E)) {
+            editting_new_polygon = true;
+            new_polygon_count = 0;
+        }
+
+        if (editting_new_polygon) {
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+                aux_points[new_polygon_count] = Vec2(GetMousePosition().x, GetMousePosition().y);
+                new_polygon_count++;
+            }
+            else if (IsKeyPressed(KEY_ENTER)) {
+                PolygonShape poly;
+                poly.Set(aux_points, new_polygon_count);
+
+                Vec2 c(0.0f, 0.0f);
+                for (int i = 0; i < new_polygon_count; i++) c += aux_points[i];
+                c = Vec2(c.x / new_polygon_count, c.y / new_polygon_count);
+
+                Body* b = manager->Add(&poly, c.x, c.y);
+                b->SetStatic();
+                b->SetOrient(0);
+
+                editting_new_polygon = false;
+            }
+        }
+
+        BeginDrawing();
+            ClearBackground(GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
+
+            for (auto i : manager->bodies) {
+                if (i->shape->GetType() == 0) DrawCircleLines(i->position.x, i->position.y, i->shape->radius, WHITE);
+                if (i->shape->GetType() == 1) {
+                    auto aux = dynamic_cast<PolygonShape*>(i->shape);
+                    int count = aux->m_vertexCount;
+                    Vector2 vertices[64];
+                    for (uint32 j = 0; j < count; ++j) {
+                        Vec2 v = i->position + i->shape->u * aux->m_vertices[j];
+                        vertices[j] = {v.x, v.y};
+                    }
+                    Vec2 v = i->position + i->shape->u * aux->m_vertices[0];
+                    vertices[count] = { v.x, v.y };
+
+                    DrawLineStrip(vertices, count + 1, WHITE);
+                }
+            }
+
+            GuiDrawText("Press 'E' to start creating a polygon\nPress 'Enter' to submit the current polygon\nPress 'Esc' to cancel current polygon", { 0.0f, 20.0f, 300.0f, 20.0f }, TEXT_ALIGN_LEFT, WHITE);
+
+            if (editting_new_polygon) for (int i = 0; i < new_polygon_count; i++) DrawCircle(aux_points[i].x, aux_points[i].y, 1, WHITE);
+
+            // Setting compiling info
+            double time = GetTime();
+            bool bCompiling = g_pSys->pRuntimeObjectSystem->GetIsCompiling();
+            double timeSinceLastCompile = time - compileEndTime;
+
+            if (bCompiling || timeSinceLastCompile < SHOW_AFTER_COMPILE_TIME) {
+                if (bCompiling) {
+                    if (timeSinceLastCompile > SHOW_AFTER_COMPILE_TIME) compileStartTime = time;
+                    compileEndTime = time; // ensure always updated
+                }
+
+                bool bCompileOk = g_pSys->pRuntimeObjectSystem->GetLastLoadModuleSuccess();
+                char text[80];
+
+                if (bCompiling) sprintf(text, "#16#Compiling... time %.2fs", (float)(time - compileStartTime));
+                else if (bCompileOk) sprintf(text, "#112#Compiling... time %.2fs. SUCCEED", (float)(compileEndTime - compileStartTime));
+                else sprintf(text, "#113#Compiling... time %.2fs. FAILED", (float)(compileEndTime - compileStartTime));
+
+                GuiLabel({ GetScreenWidth() - 230.0f, GetScreenHeight() - 20.0f, 230.0f, 20.0f }, text);
+            }
+        EndDrawing();
+
+        /*
         bool doRCCppUndo = false;
         bool doRCCppRedo = false;
 
@@ -270,7 +373,7 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
             ClearBackground(GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR)));
             if(scene) scene->draw();
 
-            if (editting_tilemap) GuiDrawScreenGrid(initial, &tilemapedittingstate);
+            GuiDrawScreenGrid(initial, tilemapedittingstate);
 
             // /*
             if (GuiDraggableWindowBox(&hierarchystate)) {
@@ -460,7 +563,6 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
                 int selected = -1;
                 if (GuiActionDropDown(h, "File;#05#Open Animation Graph;#02#Save Animation Graph", &ActionDropdown001EditMode, &selected)) {
                     ActionDropdown001EditMode = !ActionDropdown001EditMode;
-                    cout << selected << "\n";
                     if (selected == 1) {
                         fileexplorerstate = InitGuiFileExplorer(OPEN_ANIMATION_GRAPH, CREATE_FILE, ".aph", "\\resources");
                         fileexplorerwindow.active = true;
@@ -667,6 +769,7 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
         // Do not add any code after this point as Undo/Redo will delete this
         if (doRCCppUndo) g_pSys->pRuntimeObjectSystem->GetObjectFactorySystem()->UndoObjectConstructorChange();
         if (doRCCppRedo) g_pSys->pRuntimeObjectSystem->GetObjectFactorySystem()->RedoObjectConstructorChange();
+        // */
     }
 
     bool WindowShouldClose() {
@@ -688,7 +791,7 @@ struct RCCppMainLoop : RCCppMainLoopI, TInterface<IID_IRCCPP_MAIN_LOOP, IObject>
 
     void edit_tilemap(shared_ptr<TileMap> tilemap) {
         editting_tilemap = !editting_tilemap;
-        tilemapedittingstate = InitGuiTileMapEdittingState(tilemap);
+        tilemapedittingstate = new GuiTileMapEdittingState(InitGuiTileMapEdittingState(tilemap));
     }
 };
 

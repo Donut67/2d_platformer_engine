@@ -113,8 +113,8 @@ class TileSetData {
         }
         Vector2 operator [](const int& pos) const {
             Vector2 res{ 0 };
-            res.x = int(pos % (int)_nTiles.x);
-            res.y = int(pos / (int)_nTiles.x);
+            res.x = pos % (int)_nTiles.x;
+            res.y = pos / (int)_nTiles.x;
             return res;
         }
         void save() {

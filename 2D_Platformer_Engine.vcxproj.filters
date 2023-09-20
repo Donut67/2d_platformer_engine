@@ -12,6 +12,9 @@
     <Filter Include="RuntimeCompiled">
       <UniqueIdentifier>{109b7b8c-4722-49eb-bfdc-f755401ed5a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{f10f67d3-f6a0-40cd-b014-ee059e78db1a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -26,6 +29,18 @@
     <ClCompile Include="RCCppMainLoop.cpp">
       <Filter>RuntimeCompiled</Filter>
     </ClCompile>
+    <ClCompile Include="Body.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Manifold.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Precompiled.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RCCppMainLoop.h">
@@ -34,29 +49,53 @@
     <ClInclude Include="SystemTable.h">
       <Filter>RuntimeCompiled</Filter>
     </ClInclude>
-    <ClInclude Include="platformerEngineBasics.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="raylib.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StdioLogSystem.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="raygui.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="style_dark.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Graph.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gui_draggable_window_box.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="observer_pattern.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Graph.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="platformerEngineBasics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="raygui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="raylib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdioLogSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="style_dark.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="raymath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Body.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IEMath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Manifold.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Precompiled.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="physics.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

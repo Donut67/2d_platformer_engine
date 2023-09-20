@@ -4,39 +4,60 @@ Terrain: 0.00000 0.00000,10.00000 10.00000
 objects:
 Layer0: 0.00000 0.00000,10.00000 10.00000
 behavior:
-tilemap: resources\tileset.tsd,5.00000,resources\tileset1.meta
+tilemap: resources\tileset.tsd,4.00000,resources\tileset1.meta
 end
 end
 Layer1: 0.00000 0.00000,10.00000 10.00000
 behavior:
-tilemap: resources\tileset.tsd,5.00000,resources\tileset2.meta
+tilemap: resources\tileset.tsd,4.00000,resources\tileset2.meta
 end
 end
 end
 end
 Objects: 0.00000 0.00000,10.00000 10.00000
 objects:
-Coin: 400.00000 400.00000,96.00000 96.00000
+Coin: 480.00000 480.00000,96.00000 96.00000
 behavior:
 animatedsprite: resources\coin.aon,0
 end
 end
-Coin: 496.00000 400.00000,96.00000 96.00000
+Coin: 384.00000 384.00000,96.00000 96.00000
 behavior:
 animatedsprite: resources\coin.aon,0
 end
 end
-Coin: 400.00000 496.00000,96.00000 96.00000
+Coin: 1440.00000 480.00000,96.00000 96.00000
 behavior:
 animatedsprite: resources\coin.aon,0
 end
 end
 end
 end
-Player: 496.00000 496.00000,96.00000 96.00000
+Player: 576.00000 576.00000,96.00000 96.00000
 behavior:
 animatedsprite: resources\player-idle.aon,0
 animator: resources\NewAnimationGraph1.aph,Idle
+end
+end
+end
+end
+UI: 0.00000 0.00000,10.00000 10.00000
+behavior:
+
+end
+objects:
+Coins: 0.00000 0.00000,96.00000 96.00000
+objects:
+Icon: 0.00000 0.00000,96.00000 96.00000
+behavior:
+animatedsprite: resources\coin.aon,0
+end
+end
+Label: 96.00000 10.00000,96.00000 96.00000
+behavior:
+label: x 9,86,l,255 255 255 255
+end
+end
 end
 end
 end

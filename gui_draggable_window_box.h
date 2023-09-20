@@ -574,7 +574,7 @@ int GuiActionPane(Rectangle bounds, const char** text, int count, int *editMode)
         const char** items = GuiTextSplit(text[i], ';', &itemCount, NULL);
 
         Rectangle itemBounds = { bounds.x + pos, bounds.y, GetTextWidth(items[0]) + GuiGetStyle(ACTIONDROPDOWN, TEXT_PADDING) * 2.0f, bounds.height };
-        pos += (GetTextWidth(items[0]) + GuiGetStyle(ACTIONDROPDOWN, TEXT_PADDING) * 2.0f + 1.0f);
+        pos += int(GetTextWidth(items[0]) + GuiGetStyle(ACTIONDROPDOWN, TEXT_PADDING) * 2.0f + 1.0f);
 
         if (edit) GuiLock();
         if (GuiActionDropDown(itemBounds, text[i], &edit, &selected)) {
@@ -677,25 +677,30 @@ void GuiTree_i(Rectangle bounds, Rectangle *itemBounds, Nary<pair<bool, shared_p
 }
 
 int GuiDrawScreenGrid(Vector2 initial, GuiTileMapEdittingState* map) {
-    Vector2 cell_size{ map->_tilemap->tileSet()->_tileSize.x * map->_tilemap->scale(), map->_tilemap->tileSet()->_tileSize.y * map->_tilemap->scale() };
+    Vector2 cell_size;
+    if(!map) cell_size = { 96.0f, 96.0f };
+    else cell_size = { map->_tilemap->tileSet()->_tileSize.x * map->_tilemap->scale(), map->_tilemap->tileSet()->_tileSize.y * map->_tilemap->scale() };
+
     Vector2 origin{ float(int(initial.x) % (int)cell_size.x) - cell_size.x, float(int(initial.y) % (int)cell_size.y) - cell_size.y };
     Rectangle dst{ initial.x, initial.y, (float)GetScreenWidth(), (float)GetScreenHeight() };
-
-    Vector2 result{ GetMousePosition().x - dst.x, GetMousePosition().y - dst.y };
-    Vector2 position{ 
-        result.x > 0 ? (int)(result.x / cell_size.x) : (int)((result.x - cell_size.x) / cell_size.x),
-        result.y > 0 ? (int)(result.y / cell_size.y) : (int)((result.y - cell_size.y) / cell_size.y) 
-    };
-
-    result.x = result.x > 0? (int)(result.x / cell_size.x) * cell_size.x : (int)((result.x - cell_size.x) / cell_size.x) * cell_size.x;
-    result.y = result.y > 0? (int)(result.y / cell_size.y) * cell_size.y : (int)((result.y - cell_size.y) / cell_size.y) * cell_size.y;
-    GuiDrawRectangle({ result.x + dst.x, result.y + dst.y, cell_size.x, cell_size.y }, 0, GetColor(GuiGetStyle(DROPDOWNBOX, BORDER)), Color{ 255, 255, 255, 100 });
     
-    for (int i = (int)origin.x; i <= GetScreenWidth() + cell_size.x * 2; i += cell_size.x) DrawLine(i, (int)origin.y, i, (int)origin.y + GetScreenHeight() + cell_size.x * 2, i == initial.x ? GREEN : Color{ 255, 255, 255, 100 });
-    for (int i = (int)origin.y; i <= GetScreenWidth() + cell_size.y * 2; i += cell_size.y) DrawLine((int)origin.x, i, (int)origin.x + GetScreenWidth() + cell_size.y * 2, i, i == initial.y ? RED : Color{ 255, 255, 255, 100 });
+    if (map) {
+        Vector2 result{ GetMousePosition().x - dst.x, GetMousePosition().y - dst.y };
+        Vector2 position{ 
+            result.x > 0 ? (int)(result.x / cell_size.x) : (int)((result.x - cell_size.x) / cell_size.x),
+            result.y > 0 ? (int)(result.y / cell_size.y) : (int)((result.y - cell_size.y) / cell_size.y) 
+        };
 
-    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) map->_tilemap->addPoint(position, map->current);
-    else if(IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) map->_tilemap->addPoint(position, -1);
+        result.x = result.x > 0? (int)(result.x / cell_size.x) * cell_size.x : (int)((result.x - cell_size.x) / cell_size.x) * cell_size.x;
+        result.y = result.y > 0? (int)(result.y / cell_size.y) * cell_size.y : (int)((result.y - cell_size.y) / cell_size.y) * cell_size.y;
+        GuiDrawRectangle({ result.x + dst.x, result.y + dst.y, cell_size.x, cell_size.y }, 0, GetColor(GuiGetStyle(DROPDOWNBOX, BORDER)), Color{ 255, 255, 255, 100 });
+    }
+    
+    for (int i = (int)origin.x; i <= GetScreenWidth() + cell_size.x * 2; i += (int)cell_size.x) DrawLine(i, (int)origin.y, i, (int)origin.y + GetScreenHeight() + cell_size.x * 2, i == initial.x ? GREEN : Color{ 255, 255, 255, 40 });
+    for (int i = (int)origin.y; i <= GetScreenWidth() + cell_size.y * 2; i += (int)cell_size.y) DrawLine((int)origin.x, i, (int)origin.x + GetScreenWidth() + cell_size.y * 2, i, i == initial.y ? RED : Color{ 255, 255, 255, 40 });
+
+    // if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) map->_tilemap->addPoint(position, map->current);
+    // else if(IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) map->_tilemap->addPoint(position, -1);
 
     return IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 }

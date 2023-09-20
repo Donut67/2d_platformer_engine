@@ -87,6 +87,7 @@ typedef struct tagBITMAPINFOHEADER {
 #endif
 
 #include "raylib.h"
+
 // #include "platformerEngineUI.h"
 #include <cstdlib>
 #include <iostream>
@@ -126,6 +127,7 @@ int main() {
 
     // Cleaning up the closing
     RCCppCleanup();
+
     CloseWindow();
 }
 
